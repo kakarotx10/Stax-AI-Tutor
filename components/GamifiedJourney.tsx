@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { SUBJECTS, type Subject, type SubTopic } from '@/lib/subjects'
+import { SUBJECTS, type Subject } from '@/lib/subjects'
 import { Lock, CheckCircle2, Sparkles, BookOpen, FileQuestion, Code2, Trophy, Target } from 'lucide-react'
 
 interface GamifiedJourneyProps {
@@ -18,7 +18,6 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
   const subject = SUBJECTS[subjectId]
   const unit = subject?.units.find(u => u.id === unitId)
   const containerRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: containerRef })
 
   const [currentSubTopicIndex, setCurrentSubTopicIndex] = useState(0)
   const [currentPhase, setCurrentPhase] = useState<JourneyPhase>('theory')
@@ -85,25 +84,10 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
     }
   }
 
-  // Calculate path for snake-like line
-  const getPathPoints = () => {
-    const points: Array<{ x: number; y: number; subtopic: SubTopic; phase: JourneyPhase }> = []
-    subtopics.forEach((subtopic, subIdx) => {
-      phases.forEach((phase, phaseIdx) => {
-        const x = 100 + phaseIdx * 150
-        const y = 100 + subIdx * 200
-        points.push({ x, y, subtopic, phase })
-      })
-    })
-    return points
-  }
-
-  const pathPoints = getPathPoints()
-
   return (
-    <div ref={containerRef} className="h-screen overflow-y-auto overflow-x-hidden relative bg-dark-bg">
+    <div ref={containerRef} className="min-h-screen overflow-x-hidden bg-dark-bg">
       {/* Background Grid */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="pointer-events-none fixed inset-0 opacity-10">
         <div className="grid grid-cols-20 grid-rows-20 h-full w-full">
           {Array.from({ length: 400 }).map((_, i) => (
             <div key={i} className="border border-neon-cyan/10" />
@@ -111,138 +95,137 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
         </div>
       </div>
 
-      {/* Snake-like Path */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
-        <motion.path
-          d={pathPoints.reduce((acc, point, idx) => {
-            if (idx === 0) return `M ${point.x} ${point.y}`
-            return `${acc} L ${point.x} ${point.y}`
-          }, '')}
-          fill="none"
-          stroke="url(#gradient)"
-          strokeWidth="3"
-          strokeDasharray="10 5"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 2, ease: 'easeInOut' }}
-        />
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00ffff" stopOpacity="0.8" />
-            <stop offset="50%" stopColor="#9d4edd" stopOpacity="0.8" />
-            <stop offset="100%" stopColor="#ff00ff" stopOpacity="0.8" />
-          </linearGradient>
-        </defs>
-      </svg>
-
       {/* Journey Nodes */}
-      <div className="relative z-10 p-8">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8 text-center"
+          className="mx-auto mb-12 max-w-3xl text-center"
         >
-          <h1 className="text-5xl font-bold neon-text mb-4">{unit.name}</h1>
-          <p className="text-xl text-gray-400">Complete each phase to progress</p>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-medium text-cyan-100">
+            <Sparkles className="h-4 w-4 text-cyan-300" />
+            Guided unit journey
+          </div>
+          <h1 className="text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            {unit.name}
+          </h1>
+          <p className="mt-4 text-lg text-slate-400">
+            Complete each phase to progress
+          </p>
         </motion.div>
 
-        <div className="max-w-7xl mx-auto">
+        <div className="space-y-6 pb-28">
           {subtopics.map((subtopic, subIdx) => (
-            <div key={subtopic.id} className="mb-16">
+            <motion.section
+              key={subtopic.id}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ delay: subIdx * 0.08, duration: 0.45 }}
+              className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.055] p-5 shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-6"
+            >
               <motion.div
-                initial={{ opacity: 0, x: -50 }}
+                initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: subIdx * 0.2 }}
-                className="mb-6"
+                transition={{ delay: subIdx * 0.08 + 0.08 }}
+                className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
               >
-                <h2 className="text-3xl font-bold text-neon-cyan mb-2">
-                  {subIdx + 1}. {subtopic.name}
-                </h2>
-                <p className="text-gray-400">{subtopic.description}</p>
+                <div>
+                  <div className="mb-3 inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-100">
+                    Module {subIdx + 1}
+                  </div>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                    {subtopic.name}
+                  </h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-400 sm:text-base">
+                    {subtopic.description}
+                  </p>
+                </div>
+                <div className="shrink-0 rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3 text-sm">
+                  <div className="text-slate-500">Available XP</div>
+                  <div className="mt-1 text-xl font-semibold text-cyan-200">
+                    {subtopic.xpReward}
+                  </div>
+                </div>
               </motion.div>
 
               {/* Phase Nodes */}
-              <div className="flex items-center gap-4 flex-wrap">
-                {phases.map((phase, phaseIdx) => {
-                  const phaseKey = `${subtopic.id}-${phase}`
-                  const isCompleted = completedPhases.has(phaseKey)
-                  const isFirstUnit = unitId === subject.units[0]?.id
-                  const isFirstSubtopic = subtopic.id === unit.subtopics[0]?.id
-                  // Unlock all phases for first unit's first subtopic
-                  const isLocked = !(isFirstUnit && isFirstSubtopic) && phaseIdx > 0 && !completedPhases.has(`${subtopic.id}-${phases[phaseIdx - 1]}`)
-                  const Icon = phaseIcons[phase]
+              <div className="relative">
+                <div
+                  aria-hidden="true"
+                  className="absolute left-8 right-8 top-10 hidden h-px bg-gradient-to-r from-cyan-300/70 via-violet-300/45 to-fuchsia-300/70 lg:block"
+                />
+                <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+                  {phases.map((phase, phaseIdx) => {
+                    const phaseKey = `${subtopic.id}-${phase}`
+                    const isCompleted = completedPhases.has(phaseKey)
+                    const isFirstUnit = unitId === subject.units[0]?.id
+                    const isFirstSubtopic = subtopic.id === unit.subtopics[0]?.id
+                    // Unlock all phases for first unit's first subtopic
+                    const isLocked = !(isFirstUnit && isFirstSubtopic) && phaseIdx > 0 && !completedPhases.has(`${subtopic.id}-${phases[phaseIdx - 1]}`)
+                    const Icon = phaseIcons[phase]
 
-                  return (
-                    <motion.div
-                      key={phaseKey}
-                      initial={{ opacity: 0, scale: 0 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: subIdx * 0.1 + phaseIdx * 0.1 }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => !isLocked && handlePhaseClick(phase, subtopic.id)}
-                      className={`relative cursor-pointer ${
-                        isLocked ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
-                      }`}
-                    >
-                      {/* Node Circle */}
-                      <div
-                        className={`w-20 h-20 rounded-full flex items-center justify-center border-4 transition-all ${
-                          isCompleted
-                            ? 'bg-neon-green/20 border-neon-green neon-glow'
-                            : isLocked
-                            ? 'bg-dark-card border-gray-600'
-                            : 'bg-dark-card border-neon-cyan hover:border-neon-purple hover:scale-110'
+                    return (
+                      <motion.div
+                        key={phaseKey}
+                        initial={{ opacity: 0, scale: 0 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: subIdx * 0.1 + phaseIdx * 0.1 }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => !isLocked && handlePhaseClick(phase, subtopic.id)}
+                        className={`relative flex flex-col items-center text-center ${
+                          isLocked ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'
                         }`}
                       >
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-10 h-10 text-neon-green" />
-                        ) : isLocked ? (
-                          <Lock className="w-8 h-8 text-gray-600" />
-                        ) : (
-                          <Icon className={`w-8 h-8 text-neon-cyan`} />
-                        )}
-                      </div>
-
-                      {/* Phase Label */}
-                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                        <span
-                          className={`text-xs font-bold ${
+                        {/* Node Circle */}
+                        <div
+                          className={`relative z-10 flex h-20 w-20 items-center justify-center rounded-2xl border transition-all ${
                             isCompleted
-                              ? 'text-neon-green'
+                              ? 'bg-emerald-400/15 border-emerald-300 text-emerald-200 shadow-[0_14px_36px_rgba(52,211,153,0.16)]'
                               : isLocked
-                              ? 'text-gray-600'
-                              : 'text-neon-cyan'
+                              ? 'bg-slate-900 border-slate-700 text-slate-600'
+                              : 'bg-slate-950 border-cyan-300 text-cyan-200 hover:border-violet-300 hover:-translate-y-1 hover:shadow-[0_14px_36px_rgba(34,211,238,0.16)]'
                           }`}
                         >
-                          {phaseLabels[phase]}
-                        </span>
-                      </div>
-
-                      {/* XP Badge */}
-                      {!isLocked && (
-                        <div className="absolute -top-2 -right-2 bg-neon-purple text-white text-xs font-bold px-2 py-1 rounded-full">
-                          +{Math.round(subtopic.xpReward / phases.length)}
+                          {isCompleted ? (
+                            <CheckCircle2 className="w-9 h-9" />
+                          ) : isLocked ? (
+                            <Lock className="w-8 h-8" />
+                          ) : (
+                            <Icon className="w-8 h-8" />
+                          )}
                         </div>
-                      )}
-                    </motion.div>
-                  )
-                })}
 
-                {/* Arrow to next subtopic */}
-                {subIdx < subtopics.length - 1 && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="flex-1 h-1 bg-gradient-to-r from-neon-cyan via-neon-purple to-neon-pink mx-4"
-                    style={{ minWidth: '100px' }}
-                  />
-                )}
+                        {/* Phase Label */}
+                        <div className="mt-3 min-h-5">
+                          <span
+                            className={`text-sm font-semibold ${
+                              isCompleted
+                                ? 'text-emerald-200'
+                                : isLocked
+                                ? 'text-slate-600'
+                                : 'text-cyan-200'
+                            }`}
+                          >
+                            {phaseLabels[phase]}
+                          </span>
+                        </div>
+
+                        {/* XP Badge */}
+                        {!isLocked && (
+                          <div className="absolute left-1/2 top-0 z-20 translate-x-5 -translate-y-2 rounded-full bg-violet-400 px-2 py-1 text-xs font-bold text-white shadow-lg">
+                            +{Math.round(subtopic.xpReward / phases.length)}
+                          </div>
+                        )}
+                      </motion.div>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
+            </motion.section>
           ))}
         </div>
 
@@ -250,13 +233,13 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="fixed bottom-8 right-8 glass-card p-4"
+          className="fixed bottom-6 right-6 z-40 rounded-2xl border border-white/10 bg-dark-card/90 p-4 shadow-[0_18px_60px_rgba(0,0,0,0.32)] backdrop-blur-xl"
         >
           <div className="flex items-center gap-4">
-            <Trophy className="w-6 h-6 text-neon-cyan" />
+            <Trophy className="w-6 h-6 text-cyan-200" />
             <div>
-              <div className="text-sm text-gray-400">Progress</div>
-              <div className="text-lg font-bold text-neon-cyan">
+              <div className="text-sm text-slate-400">Progress</div>
+              <div className="text-lg font-semibold text-cyan-200">
                 {completedPhases.size} / {subtopics.length * phases.length} phases
               </div>
             </div>
@@ -266,4 +249,3 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
     </div>
   )
 }
-

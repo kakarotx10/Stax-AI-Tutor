@@ -1,10 +1,21 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navigation from '@/components/Navigation'
 
-const inter = Inter({ subsets: ['latin'] })
+const sans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+})
+
+const serif = Fraunces({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-serif',
+  axes: ['opsz'],
+})
 
 export const metadata: Metadata = {
   title: 'AI Tutor - Gamified CS Learning Platform',
@@ -18,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} overflow-x-hidden`}>
+      <body className={`${sans.variable} ${serif.variable} ${sans.className} overflow-x-hidden`}>
         <Navigation />
         <div className="pt-16 overflow-x-hidden">
           {children}
@@ -27,9 +38,10 @@ export default function RootLayout({
           position="top-right"
           toastOptions={{
             style: {
-              background: '#1a1a2e',
-              color: '#00ffff',
-              border: '1px solid #00ffff',
+              background: '#111827',
+              color: '#f8fafc',
+              border: '1px solid rgba(255,255,255,0.12)',
+              boxShadow: '0 18px 60px rgba(0,0,0,0.28)',
             },
           }}
         />
@@ -37,5 +49,4 @@ export default function RootLayout({
     </html>
   )
 }
-
 

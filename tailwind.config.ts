@@ -8,18 +8,24 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+      },
       colors: {
         neon: {
-          cyan: '#00ffff',
-          pink: '#ff00ff',
-          green: '#00ff00',
-          purple: '#9d4edd',
-          blue: '#4cc9f0',
+          cyan: '#22d3ee',
+          pink: '#f472b6',
+          green: '#34d399',
+          purple: '#a78bfa',
+          blue: '#60a5fa',
+          yellow: '#facc15',
+          orange: '#fb923c',
         },
         dark: {
-          bg: '#0a0a0f',
-          card: '#1a1a2e',
-          hover: '#16213e',
+          bg: '#070b12',
+          card: '#111827',
+          hover: '#1f2937',
         },
       },
       animation: {

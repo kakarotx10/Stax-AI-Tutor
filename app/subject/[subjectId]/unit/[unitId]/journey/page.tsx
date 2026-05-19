@@ -37,7 +37,7 @@ export default function JourneyPage() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         onClick={() => router.push(`/subject/${subjectId}`)}
-        className="fixed top-8 left-8 z-50 btn-secondary flex items-center gap-2"
+        className="fixed left-4 top-20 z-50 btn-secondary flex items-center gap-2 sm:left-8"
       >
         <ArrowLeft className="w-5 h-5" />
         Back
@@ -47,7 +47,6 @@ export default function JourneyPage() {
     </div>
   )
 }
-
 
 
 
