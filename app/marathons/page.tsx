@@ -109,7 +109,7 @@ export default function MarathonsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading marathons...</p>
+          <p className="text-muted-foreground">Loading marathons...</p>
         </div>
       </div>
     )
@@ -128,7 +128,7 @@ export default function MarathonsPage() {
             <Flame className="w-12 h-12 text-neon-orange" />
             Coding Marathons
           </h1>
-          <p className="text-xl text-gray-400">Extended coding sessions with massive XP multipliers!</p>
+          <p className="text-xl text-muted-foreground">Extended coding sessions with massive XP multipliers!</p>
         </motion.div>
 
         {/* Domain Filters */}
@@ -139,8 +139,8 @@ export default function MarathonsPage() {
               onClick={() => setDomainFilter('all')}
               className={`px-4 py-2 rounded-lg font-bold transition-all ${
                 domainFilter === 'all'
-                  ? 'bg-neon-cyan text-black'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                  ? 'bg-neon-cyan text-primary-foreground'
+                  : 'bg-card text-muted-foreground hover:bg-card/80'
               }`}
             >
               All Domains
@@ -153,8 +153,8 @@ export default function MarathonsPage() {
                   onClick={() => setDomainFilter(domainId)}
                   className={`px-4 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
                     domainFilter === domainId
-                      ? 'bg-neon-cyan text-black'
-                      : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                      ? 'bg-neon-cyan text-primary-foreground'
+                      : 'bg-card text-muted-foreground hover:bg-card/80'
                   }`}
                 >
                   <span>{domain.icon}</span>
@@ -173,14 +173,14 @@ export default function MarathonsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="glass-card p-6 hover:scale-105 transition-transform"
+              className="glass-card p-6 hover: transition-transform"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex flex-col gap-2">
                   <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                     marathon.status === 'active' ? 'bg-neon-green/20 text-neon-green' :
                     marathon.status === 'upcoming' ? 'bg-neon-cyan/20 text-neon-cyan' :
-                    'bg-gray-600/20 text-gray-400'
+                    'bg-muted text-muted-foreground'
                   }`}>
                     {marathon.status.toUpperCase()}
                   </div>
@@ -195,20 +195,20 @@ export default function MarathonsPage() {
               </div>
 
               <h2 className="text-2xl font-bold mb-2">{marathon.title}</h2>
-              <p className="text-gray-400 mb-4">{marathon.description}</p>
+              <p className="text-muted-foreground mb-4">{marathon.description}</p>
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="w-4 h-4 text-neon-purple" />
-                  <span className="text-gray-300">{marathon.duration} hours</span>
+                  <span className="text-foreground/80">{marathon.duration} hours</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Users className="w-4 h-4 text-neon-cyan" />
-                  <span className="text-gray-300">{marathon.participants} participants</span>
+                  <span className="text-foreground/80">{marathon.participants} participants</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Zap className="w-4 h-4 text-neon-yellow" />
-                  <span className="text-gray-300">{marathon.xpMultiplier}x XP Multiplier</span>
+                  <span className="text-foreground/80">{marathon.xpMultiplier}x XP Multiplier</span>
                 </div>
               </div>
 

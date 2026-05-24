@@ -8,6 +8,7 @@ import { Domain, DOMAINS } from '@/lib/subjects'
 import Link from 'next/link'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/Button'
 
 export default function ContestsPage() {
   const [contests, setContests] = useState<Contest[]>([])
@@ -142,54 +143,48 @@ export default function ContestsPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading contests...</p>
+          <p className="text-muted-foreground">Loading contests...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-shell">
+      <div className="page-container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="page-header"
         >
-          <h1 className="text-5xl font-bold neon-text mb-4">Contests</h1>
-          <p className="text-xl text-gray-400">Compete and climb the leaderboards!</p>
+          <h1 className="page-title">Contests</h1>
+          <p className="page-description">Compete and climb the leaderboards.</p>
         </motion.div>
 
         {/* Domain Filters */}
         <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-neon-cyan">Filter by Domain</h3>
+          <h3 className="mb-3 text-body-sm font-semibold text-muted-foreground">Filter by Domain</h3>
           <div className="flex flex-wrap gap-3 mb-4">
-            <button
+            <Button
               onClick={() => setDomainFilter('all')}
-              className={`px-4 py-2 rounded-lg font-bold transition-all ${
-                domainFilter === 'all'
-                  ? 'bg-neon-cyan text-black'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-              }`}
+              variant={domainFilter === 'all' ? 'primary' : 'outline'}
+              size="sm"
             >
               All Domains
-            </button>
+            </Button>
             {(Object.keys(DOMAINS) as Domain[]).map(domainId => {
               const domain = DOMAINS[domainId]
               return (
-                <button
+                <Button
                   key={domainId}
                   onClick={() => setDomainFilter(domainId)}
-                  className={`px-4 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
-                    domainFilter === domainId
-                      ? 'bg-neon-cyan text-black'
-                      : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-                  }`}
+                  variant={domainFilter === domainId ? 'primary' : 'outline'}
+                  size="sm"
                 >
                   <span>{domain.icon}</span>
                   <span>{domain.name}</span>
-                </button>
+                </Button>
               )
             })}
           </div>
@@ -197,48 +192,36 @@ export default function ContestsPage() {
 
         {/* Level Filters */}
         <div className="mb-6">
-          <h3 className="text-lg font-bold mb-3 text-neon-cyan">Filter by Level</h3>
+          <h3 className="mb-3 text-body-sm font-semibold text-muted-foreground">Filter by Level</h3>
           <div className="flex gap-3">
-            <button
+            <Button
               onClick={() => setLevelFilter('all')}
-              className={`px-6 py-2 rounded-lg font-bold transition-all ${
-                levelFilter === 'all'
-                  ? 'bg-neon-cyan text-white'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-              }`}
+              variant={levelFilter === 'all' ? 'primary' : 'outline'}
+              size="sm"
             >
               All Levels
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setLevelFilter('city')}
-              className={`px-6 py-2 rounded-lg font-bold transition-all ${
-                levelFilter === 'city'
-                  ? 'bg-neon-green text-white'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-              }`}
+              variant={levelFilter === 'city' ? 'primary' : 'outline'}
+              size="sm"
             >
               City
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setLevelFilter('state')}
-              className={`px-6 py-2 rounded-lg font-bold transition-all ${
-                levelFilter === 'state'
-                  ? 'bg-neon-cyan text-white'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-              }`}
+              variant={levelFilter === 'state' ? 'primary' : 'outline'}
+              size="sm"
             >
               State
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setLevelFilter('national')}
-              className={`px-6 py-2 rounded-lg font-bold transition-all ${
-                levelFilter === 'national'
-                  ? 'bg-neon-purple text-white'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-              }`}
+              variant={levelFilter === 'national' ? 'primary' : 'outline'}
+              size="sm"
             >
               National
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -250,7 +233,7 @@ export default function ContestsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="glass-card p-6 hover:scale-105 transition-transform cursor-pointer"
+              className="glass-card cursor-pointer p-6 transition-colors hover:border-primary/60"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex flex-col gap-2">
@@ -264,27 +247,27 @@ export default function ContestsPage() {
                 <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                   contest.status === 'active' ? 'bg-neon-green/20 text-neon-green' :
                   contest.status === 'upcoming' ? 'bg-neon-cyan/20 text-neon-cyan' :
-                  'bg-gray-600/20 text-gray-400'
+                  'bg-muted text-muted-foreground'
                 }`}>
                   {contest.status.toUpperCase()}
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold mb-2">{contest.title}</h2>
-              <p className="text-gray-400 mb-4">{contest.description}</p>
+              <h2 className="mb-2 text-h4">{contest.title}</h2>
+              <p className="mb-4 text-muted-foreground">{contest.description}</p>
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2 text-sm">
                   <Users className="w-4 h-4 text-neon-cyan" />
-                  <span className="text-gray-300">{contest.participants} / {contest.maxParticipants} participants</span>
+                  <span className="text-muted-foreground">{contest.participants} / {contest.maxParticipants} participants</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Zap className="w-4 h-4 text-neon-yellow" />
-                  <span className="text-gray-300">{contest.xpMultiplier}x XP Multiplier</span>
+                  <span className="text-muted-foreground">{contest.xpMultiplier}x XP Multiplier</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="w-4 h-4 text-neon-purple" />
-                  <span className="text-gray-300">
+                  <span className="text-muted-foreground">
                     {contest.status === 'active' ? 'Ends in ' : 'Starts in '}
                     {Math.ceil((new Date(contest.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
                   </span>
@@ -292,9 +275,9 @@ export default function ContestsPage() {
               </div>
 
               <Link href={`/contests/${contest.id}`}>
-                <button className="btn-primary w-full">
+                <Button className="w-full">
                   {contest.status === 'active' ? 'Join Contest' : 'View Details'}
-                </button>
+                </Button>
               </Link>
             </motion.div>
           ))}
@@ -303,7 +286,6 @@ export default function ContestsPage() {
     </div>
   )
 }
-
 
 
 

@@ -1,20 +1,23 @@
 import type { Metadata } from 'next'
-import { Plus_Jakarta_Sans, Fraunces } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
 import Navigation from '@/components/Navigation'
+import { AuthProvider } from '@/components/providers/AuthProvider'
+import { QueryProvider } from '@/components/providers/QueryProvider'
 
-const sans = Plus_Jakarta_Sans({
+const sans = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans',
+  axes: ['opsz'],
 })
 
-const serif = Fraunces({
+const mono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-serif',
-  axes: ['opsz'],
+  variable: '--font-mono',
+  weight: ['400', '500', '600'],
 })
 
 export const metadata: Metadata = {
@@ -29,24 +32,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${sans.variable} ${serif.variable} ${sans.className} overflow-x-hidden`}>
-        <Navigation />
-        <div className="pt-16 overflow-x-hidden">
-          {children}
-        </div>
-        <Toaster 
-          position="top-right"
-          toastOptions={{
-            style: {
-              background: '#111827',
-              color: '#f8fafc',
-              border: '1px solid rgba(255,255,255,0.12)',
-              boxShadow: '0 18px 60px rgba(0,0,0,0.28)',
-            },
-          }}
-        />
+      <body className={`${sans.variable} ${mono.variable} font-sans overflow-x-hidden`}>
+        <AuthProvider>
+          <QueryProvider>
+            <Navigation />
+            <div className="pt-16 overflow-x-hidden">
+              {children}
+            </div>
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                style: {
+                  background: 'hsl(var(--card))',
+                  color: 'hsl(var(--card-foreground))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: 'var(--radius)',
+                  boxShadow: 'var(--shadow-card)',
+                },
+              }}
+            />
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   )
 }
-

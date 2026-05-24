@@ -2,20 +2,19 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import { Monitor, Code, RefreshCw, Maximize2, Minimize2, FileCode, Palette, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
-
-// Dynamically import Monaco to avoid SSR issues
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
+import MonacoEditor from './MonacoEditor'
 
 interface FrontendEditorProps {
   subject: string
   unit: string
   subtopic: string
+  subjectId?: string
+  unitId?: string
+  subtopicId?: string
+  phase?: string
   difficulty?: 'Basic' | 'Medium' | 'Advanced'
   question?: {
     title: string
@@ -39,6 +38,10 @@ export default function FrontendEditor({
   subject,
   unit,
   subtopic,
+  subjectId,
+  unitId,
+  subtopicId,
+  phase,
   difficulty = 'Basic',
   question,
   onComplete
@@ -135,11 +138,50 @@ export default function FrontendEditor({
     toast.success('Code executed! Check the preview.')
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!htmlCode.trim() && !reactCode.trim()) {
       toast.error('Please write some code first')
       return
     }
+
+    const files = {
+      html: htmlCode,
+      css: cssCode,
+      javascript: jsCode,
+      react: reactCode,
+    }
+
+    await saveUserAttempt({
+      type: 'assignment',
+      subjectId,
+      subjectName: subject,
+      unitId,
+      unitName: unit,
+      subtopicId,
+      subtopicName: subtopic,
+      phase: phase ?? 'assignment',
+      difficulty,
+      problemTitle: question?.title ?? `${subject} frontend challenge`,
+      prompt: question?.description,
+      language: showReactEditor ? 'react' : 'html/css/javascript',
+      code: JSON.stringify(files, null, 2),
+      status: 'completed',
+      score: 100,
+      passedCount: 1,
+      totalCount: 1,
+      metadata: {
+        category: 'frontend',
+        requirements: question?.requirements ?? [],
+      },
+    })
+
+    await saveUserProgress({
+      subjectId,
+      unitId,
+      subtopicId,
+      phase: phase ?? 'assignment',
+      codingScore: 100,
+    })
 
     // For now, mark as completed
     // In future, can add actual validation
@@ -191,10 +233,10 @@ export default function FrontendEditor({
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold text-neon-cyan mb-2">{question.title}</h2>
-              <p className="text-gray-300 mb-4">{question.description}</p>
+              <p className="text-foreground/80 mb-4">{question.description}</p>
               <div className="space-y-2">
                 <h3 className="text-lg font-semibold text-neon-purple">Requirements:</h3>
-                <ul className="list-disc list-inside space-y-1 text-gray-300">
+                <ul className="list-disc list-inside space-y-1 text-foreground/80">
                   {question.requirements.map((req, idx) => (
                     <li key={idx}>{req}</li>
                   ))}
@@ -224,7 +266,7 @@ export default function FrontendEditor({
               className="mt-4 p-4 bg-neon-cyan/10 border border-neon-cyan/30 rounded-lg"
             >
               <h4 className="font-semibold text-neon-cyan mb-2">Hints:</h4>
-              <ul className="list-disc list-inside space-y-1 text-gray-300">
+              <ul className="list-disc list-inside space-y-1 text-foreground/80">
                 {question.hints.map((hint, idx) => (
                   <li key={idx}>{hint}</li>
                 ))}
@@ -241,8 +283,8 @@ export default function FrontendEditor({
             onClick={() => setViewMode('code')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'code' 
-                ? 'bg-neon-cyan text-black' 
-                : 'bg-dark-card text-gray-400 hover:text-white'
+                ? 'bg-neon-cyan text-primary-foreground' 
+                : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
             <Code className="w-4 h-4 inline mr-2" />
@@ -252,8 +294,8 @@ export default function FrontendEditor({
             onClick={() => setViewMode('split')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'split' 
-                ? 'bg-neon-cyan text-black' 
-                : 'bg-dark-card text-gray-400 hover:text-white'
+                ? 'bg-neon-cyan text-primary-foreground' 
+                : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
             Split
@@ -262,8 +304,8 @@ export default function FrontendEditor({
             onClick={() => setViewMode('preview')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'preview' 
-                ? 'bg-neon-cyan text-black' 
-                : 'bg-dark-card text-gray-400 hover:text-white'
+                ? 'bg-neon-cyan text-primary-foreground' 
+                : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
             <Monitor className="w-4 h-4 inline mr-2" />
@@ -291,7 +333,7 @@ export default function FrontendEditor({
             className="glass-card p-4"
           >
             {/* Editor Tabs */}
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-700">
+            <div className="flex items-center gap-2 mb-4 border-b border-border">
               {tabs.map((tab) => (
                 <button
                   key={tab}
@@ -299,7 +341,7 @@ export default function FrontendEditor({
                   className={`px-4 py-2 flex items-center gap-2 transition-all border-b-2 ${
                     activeTab === tab
                       ? 'border-neon-cyan text-neon-cyan'
-                      : 'border-transparent text-gray-400 hover:text-white'
+                      : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {tab === 'html' && <FileCode className="w-4 h-4" />}
@@ -361,7 +403,7 @@ export default function FrontendEditor({
       <div className="flex items-center justify-end gap-4">
         <button
           onClick={handleRun}
-          className="px-6 py-3 bg-neon-purple hover:bg-neon-purple/80 text-white rounded-lg font-semibold transition-all flex items-center gap-2"
+          className="px-6 py-3 bg-neon-purple hover:bg-neon-purple/80 text-foreground rounded-lg font-semibold transition-all flex items-center gap-2"
         >
           <Zap className="w-5 h-5" />
           Run Code
@@ -369,13 +411,13 @@ export default function FrontendEditor({
         {!completed && (
           <button
             onClick={handleSubmit}
-            className="px-6 py-3 bg-neon-cyan hover:bg-neon-cyan/80 text-black rounded-lg font-semibold transition-all"
+            className="px-6 py-3 bg-neon-cyan hover:bg-neon-cyan/80 text-primary-foreground rounded-lg font-semibold transition-all"
           >
             Submit Solution
           </button>
         )}
         {completed && (
-          <div className="px-6 py-3 bg-neon-green text-black rounded-lg font-semibold">
+          <div className="px-6 py-3 bg-neon-green text-primary-foreground rounded-lg font-semibold">
             ✓ Completed!
           </div>
         )}

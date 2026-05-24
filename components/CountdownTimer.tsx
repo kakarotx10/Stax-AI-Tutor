@@ -61,15 +61,15 @@ export default function CountdownTimer({ endDate, onComplete, className = '' }: 
         {days > 0 && (
           <>
             <span className="font-bold text-xl">{days.toString().padStart(2, '0')}</span>
-            <span className="text-gray-400">d</span>
+            <span className="text-muted-foreground">d</span>
           </>
         )}
         <span className="font-bold text-xl">{hours.toString().padStart(2, '0')}</span>
-        <span className="text-gray-400">h</span>
+        <span className="text-muted-foreground">h</span>
         <span className="font-bold text-xl">{minutes.toString().padStart(2, '0')}</span>
-        <span className="text-gray-400">m</span>
+        <span className="text-muted-foreground">m</span>
         <span className="font-bold text-xl">{seconds.toString().padStart(2, '0')}</span>
-        <span className="text-gray-400">s</span>
+        <span className="text-muted-foreground">s</span>
       </div>
     </motion.div>
   )

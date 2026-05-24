@@ -90,7 +90,7 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-2xl text-gray-300 mb-8"
+          className="text-2xl text-foreground/80 mb-8"
         >
           Mastered: {unit}
         </motion.p>
@@ -106,17 +106,17 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
               <div className="text-center">
                 <Zap className="w-8 h-8 text-neon-cyan mx-auto mb-2" />
                 <div className="text-3xl font-bold text-neon-cyan">{xp}</div>
-                <div className="text-sm text-gray-400">XP Earned</div>
+                <div className="text-sm text-muted-foreground">XP Earned</div>
               </div>
               <div className="text-center">
                 <Star className="w-8 h-8 text-neon-purple mx-auto mb-2" />
                 <div className="text-3xl font-bold text-neon-purple">1</div>
-                <div className="text-sm text-gray-400">Unit Completed</div>
+                <div className="text-sm text-muted-foreground">Unit Completed</div>
               </div>
               <div className="text-center">
                 <Sparkles className="w-8 h-8 text-neon-pink mx-auto mb-2" />
                 <div className="text-3xl font-bold text-neon-pink">85%</div>
-                <div className="text-sm text-gray-400">Accuracy</div>
+                <div className="text-sm text-muted-foreground">Accuracy</div>
               </div>
             </div>
 
@@ -136,7 +136,7 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
                     className={`flex items-center justify-between p-3 rounded-lg ${
                       entry.isCurrentUser
                         ? 'bg-neon-cyan/20 border border-neon-cyan'
-                        : 'bg-dark-card/50'
+                        : 'bg-card/50'
                     }`}
                   >
                     <div className="flex items-center gap-3">

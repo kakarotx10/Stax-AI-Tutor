@@ -5,13 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, MicOff, Volume2, VolumeX, Code, X, RotateCcw, CheckCircle2 } from 'lucide-react'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import dynamic from 'next/dynamic'
 import type { InterviewType, InterviewDomain } from '@/app/stax-interview/page'
-
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-64 bg-dark-card animate-pulse rounded-lg" />,
-})
+import MonacoEditor from './MonacoEditor'
 
 interface StaxInterviewerProps {
   interviewType: InterviewType
@@ -246,7 +241,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg p-4 pt-20">
+    <div className="min-h-screen bg-background p-4 pt-20">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -267,7 +262,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
             </motion.div>
             <div>
               <h1 className="text-3xl font-bold neon-text">Stax AI Interviewer</h1>
-              <p className="text-gray-400 capitalize">
+              <p className="text-muted-foreground capitalize">
                 {interviewType} Round {domain !== 'all' && `- ${domain}`}
               </p>
             </div>
@@ -297,8 +292,8 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                     <div
                       className={`max-w-[80%] rounded-lg p-4 ${
                         message.role === 'user'
-                          ? 'bg-neon-cyan/20 text-white'
-                          : 'bg-neon-purple/20 text-white'
+                          ? 'bg-neon-cyan/20 text-foreground'
+                          : 'bg-neon-purple/20 text-foreground'
                       }`}
                     >
                       {message.role === 'stax' && (
@@ -310,7 +305,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                         </div>
                       )}
                       <p className="whitespace-pre-wrap">{message.content}</p>
-                      <p className="text-xs text-gray-400 mt-2">
+                      <p className="text-xs text-muted-foreground mt-2">
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
@@ -328,7 +323,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                 className="glass-card p-6"
               >
                 <h3 className="text-xl font-bold mb-4">{codingChallenge.title}</h3>
-                <p className="text-gray-300 mb-4">{codingChallenge.description}</p>
+                <p className="text-foreground/80 mb-4">{codingChallenge.description}</p>
                 <div className="border border-neon-cyan/30 rounded-lg overflow-hidden mb-4">
                   <MonacoEditor
                     height="300px"
@@ -364,9 +359,9 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                   } disabled:opacity-50`}
                 >
                   {isListening ? (
-                    <MicOff className="w-8 h-8 text-white" />
+                    <MicOff className="w-8 h-8 text-foreground" />
                   ) : (
-                    <Mic className="w-8 h-8 text-white" />
+                    <Mic className="w-8 h-8 text-foreground" />
                   )}
                 </button>
                 <button
@@ -377,11 +372,11 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                   {isSpeaking ? (
                     <VolumeX className="w-6 h-6 text-neon-purple" />
                   ) : (
-                    <Volume2 className="w-6 h-6 text-gray-400" />
+                    <Volume2 className="w-6 h-6 text-muted-foreground" />
                   )}
                 </button>
               </div>
-              <p className="text-center text-gray-400 mt-4">
+              <p className="text-center text-muted-foreground mt-4">
                 {isListening ? 'Listening... Speak now' : isSpeaking ? 'Stax is speaking...' : 'Click mic to respond'}
               </p>
             </div>
@@ -401,14 +396,14 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
               }}
               className="glass-card p-8 text-center"
             >
-              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-neon-purple via-neon-cyan to-neon-green rounded-full flex items-center justify-center text-6xl font-bold shadow-[0_0_50px_rgba(147,51,234,0.5)]">
+              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-neon-purple via-neon-cyan to-neon-green rounded-full flex items-center justify-center text-6xl font-bold shadow-card">
                 S
               </div>
               <h2 className="text-2xl font-bold mb-2">Stax</h2>
-              <p className="text-gray-400 text-sm mb-4">Your AI Interviewer</p>
+              <p className="text-muted-foreground text-sm mb-4">Your AI Interviewer</p>
               <div className="flex items-center justify-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-neon-green animate-pulse' : 'bg-gray-600'}`} />
-                <span className="text-xs text-gray-400">
+                <div className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-neon-green animate-pulse' : 'bg-muted'}`} />
+                <span className="text-xs text-muted-foreground">
                   {isSpeaking ? 'Speaking' : 'Ready'}
                 </span>
               </div>
@@ -419,15 +414,15 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
               <h3 className="text-lg font-bold mb-4">Interview Details</h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <span className="text-gray-400">Type:</span>
+                  <span className="text-muted-foreground">Type:</span>
                   <span className="ml-2 capitalize font-semibold">{interviewType}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Domain:</span>
+                  <span className="text-muted-foreground">Domain:</span>
                   <span className="ml-2 capitalize font-semibold">{domain}</span>
                 </div>
                 <div>
-                  <span className="text-gray-400">Questions:</span>
+                  <span className="text-muted-foreground">Questions:</span>
                   <span className="ml-2 font-semibold">{messages.filter(m => m.type === 'question').length}</span>
                 </div>
               </div>

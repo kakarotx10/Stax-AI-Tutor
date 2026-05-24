@@ -41,7 +41,7 @@ export default function ArticleDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading article...</p>
+          <p className="text-muted-foreground">Loading article...</p>
         </div>
       </div>
     )
@@ -51,7 +51,7 @@ export default function ArticleDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Article not found</p>
+          <p className="text-muted-foreground mb-4">Article not found</p>
           <button onClick={() => router.back()} className="btn-primary">
             Go Back
           </button>
@@ -66,7 +66,7 @@ export default function ArticleDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-neon-cyan transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -84,7 +84,7 @@ export default function ArticleDetailPage() {
             <div className="w-full h-64 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-lg mb-6" />
           )}
 
-          <div className="flex items-center gap-4 text-gray-400 mb-4">
+          <div className="flex items-center gap-4 text-muted-foreground mb-4">
             <div className="flex items-center gap-2">
               <span>{DOMAINS[article.domain]?.icon}</span>
               <span>{DOMAINS[article.domain]?.name}</span>
@@ -94,7 +94,7 @@ export default function ArticleDetailPage() {
           </div>
 
           {/* Meta Info */}
-          <div className="flex items-center gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
               <span>{article.authorName}</span>
@@ -127,7 +127,7 @@ export default function ArticleDetailPage() {
           className="glass-card p-8 mb-6"
         >
           <div className="prose prose-invert max-w-none">
-            <div className="whitespace-pre-wrap text-gray-300 leading-relaxed text-lg">
+            <div className="whitespace-pre-wrap text-foreground/80 leading-relaxed text-lg">
               {article.content}
             </div>
           </div>
@@ -143,12 +143,12 @@ export default function ArticleDetailPage() {
           <div className="flex items-center gap-6">
             <button
               onClick={handleLike}
-              className="flex items-center gap-2 px-4 py-2 bg-dark-card rounded-lg hover:bg-dark-card/80 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all"
             >
               <Heart className="w-5 h-5 text-red-400" />
               <span>{article.likes}</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-dark-card rounded-lg hover:bg-dark-card/80 transition-all">
+            <button className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all">
               <MessageCircle className="w-5 h-5 text-neon-cyan" />
               <span>{article.comments}</span>
             </button>

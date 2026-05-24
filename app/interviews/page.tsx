@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Briefcase, BookOpen, Users, TrendingUp, Search, Plus, Filter } from 'lucide-react'
+import { Briefcase, BookOpen, Users, Search, Plus, Filter, Eye, Heart, MessageCircle } from 'lucide-react'
 import { InterviewExperience, InterviewArticle } from '@/lib/types/interviews'
 import { Domain, DOMAINS } from '@/lib/subjects'
 import Link from 'next/link'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
 
 export default function InterviewsPage() {
   const [activeTab, setActiveTab] = useState<'experiences' | 'articles'>('experiences')
@@ -60,102 +62,88 @@ export default function InterviewsPage() {
   )
 
   return (
-    <div className="min-h-screen p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-shell">
+      <div className="page-container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="page-header"
         >
-          <h1 className="text-5xl font-bold neon-text mb-4 flex items-center gap-3">
-            <Briefcase className="w-12 h-12 text-neon-cyan" />
+          <h1 className="page-title flex items-center gap-3">
+            <Briefcase className="h-10 w-10 text-primary" />
             Interview Resources
           </h1>
-          <p className="text-xl text-gray-400">
+          <p className="page-description">
             Learn from real interview experiences and expert articles
           </p>
         </motion.div>
 
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
-          <button
+          <Button
             onClick={() => setActiveTab('experiences')}
-            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'experiences'
-                ? 'bg-neon-cyan text-black'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-            }`}
+            variant={activeTab === 'experiences' ? 'primary' : 'outline'}
           >
             <Users className="w-5 h-5" />
             Experiences
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setActiveTab('articles')}
-            className={`px-6 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
-              activeTab === 'articles'
-                ? 'bg-neon-cyan text-black'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-            }`}
+            variant={activeTab === 'articles' ? 'primary' : 'outline'}
           >
             <BookOpen className="w-5 h-5" />
             Articles
-          </button>
+          </Button>
         </div>
 
         {/* Filters and Search */}
         <div className="mb-6 space-y-4">
           <div className="flex gap-4 items-center">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
+              <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <Input
                 type="text"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                className="pl-10"
               />
             </div>
             <Link href="/interviews/post">
-              <button className="btn-primary flex items-center gap-2">
+              <Button>
                 <Plus className="w-5 h-5" />
                 Post {activeTab === 'experiences' ? 'Experience' : 'Article'}
-              </button>
+              </Button>
             </Link>
           </div>
 
           {/* Domain Filter */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
+            <h3 className="mb-2 flex items-center gap-2 text-body-sm font-semibold text-muted-foreground">
               <Filter className="w-4 h-4" />
               Filter by Domain
             </h3>
             <div className="flex flex-wrap gap-2">
-              <button
+              <Button
                 onClick={() => setDomainFilter('all')}
-                className={`px-4 py-1 rounded-lg text-sm font-bold transition-all ${
-                  domainFilter === 'all'
-                    ? 'bg-neon-cyan text-black'
-                    : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-                }`}
+                variant={domainFilter === 'all' ? 'primary' : 'outline'}
+                size="sm"
               >
                 All
-              </button>
+              </Button>
               {(Object.keys(DOMAINS) as Domain[]).map(domainId => {
                 const domain = DOMAINS[domainId]
                 return (
-                  <button
+                  <Button
                     key={domainId}
                     onClick={() => setDomainFilter(domainId)}
-                    className={`px-4 py-1 rounded-lg text-sm font-bold transition-all flex items-center gap-1 ${
-                      domainFilter === domainId
-                        ? 'bg-neon-cyan text-black'
-                        : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
-                    }`}
+                    variant={domainFilter === domainId ? 'primary' : 'outline'}
+                    size="sm"
                   >
                     <span>{domain.icon}</span>
                     <span>{domain.name}</span>
-                  </button>
+                  </Button>
                 )
               })}
             </div>
@@ -166,16 +154,16 @@ export default function InterviewsPage() {
         {loading ? (
           <div className="glass-card p-12 text-center">
             <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-400">Loading...</p>
+            <p className="text-muted-foreground">Loading...</p>
           </div>
         ) : activeTab === 'experiences' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredExperiences.length === 0 ? (
               <div className="col-span-2 glass-card p-12 text-center">
-                <Briefcase className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">No interview experiences found</p>
+                <Briefcase className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">No interview experiences found</p>
                 <Link href="/interviews/post">
-                  <button className="btn-primary">Share Your Experience</button>
+                  <Button>Share Your Experience</Button>
                 </Link>
               </div>
             ) : (
@@ -185,33 +173,33 @@ export default function InterviewsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="glass-card p-6 hover:scale-105 transition-transform cursor-pointer"
+                  className="glass-card cursor-pointer p-6 transition-colors hover:border-primary/60"
                 >
                   <Link href={`/interviews/experiences/${exp.id}`}>
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold mb-2 text-neon-cyan">{exp.title}</h3>
-                        <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <h3 className="mb-2 text-h4 text-primary">{exp.title}</h3>
+                        <div className="mb-2 flex items-center gap-2 text-body-sm text-muted-foreground">
                           <span>{exp.company}</span>
-                          <span>•</span>
+                          <span>-</span>
                           <span>{exp.position}</span>
                         </div>
                       </div>
                       <div className={`px-3 py-1 rounded-full text-xs font-bold ${
                         exp.verdict === 'selected' ? 'bg-neon-green/20 text-neon-green' :
                         exp.verdict === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                        'bg-gray-600/20 text-gray-400'
+                        'bg-muted text-muted-foreground'
                       }`}>
                         {exp.verdict.toUpperCase()}
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-4">
+                    <div className="mb-4 flex items-center gap-4 text-body-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <span>{DOMAINS[exp.domain]?.icon}</span>
                         <span>{DOMAINS[exp.domain]?.name}</span>
                       </div>
-                      <span>•</span>
+                      <span>-</span>
                       <span>{exp.rounds.length} rounds</span>
                     </div>
 
@@ -223,11 +211,11 @@ export default function InterviewsPage() {
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-gray-400">
+                    <div className="flex items-center justify-between text-body-sm text-muted-foreground">
                       <div className="flex items-center gap-4">
-                        <span>👁️ {exp.views}</span>
-                        <span>❤️ {exp.likes}</span>
-                        <span>💬 {exp.comments}</span>
+                        <span className="flex items-center gap-1"><Eye className="h-4 w-4" /> {exp.views}</span>
+                        <span className="flex items-center gap-1"><Heart className="h-4 w-4" /> {exp.likes}</span>
+                        <span className="flex items-center gap-1"><MessageCircle className="h-4 w-4" /> {exp.comments}</span>
                       </div>
                       <span>{new Date(exp.createdAt).toLocaleDateString()}</span>
                     </div>
@@ -240,10 +228,10 @@ export default function InterviewsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredArticles.length === 0 ? (
               <div className="col-span-3 glass-card p-12 text-center">
-                <BookOpen className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400 mb-4">No articles found</p>
+                <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">No articles found</p>
                 <Link href="/interviews/post">
-                  <button className="btn-primary">Write an Article</button>
+                  <Button>Write an Article</Button>
                 </Link>
               </div>
             ) : (
@@ -253,19 +241,19 @@ export default function InterviewsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className="glass-card p-6 hover:scale-105 transition-transform cursor-pointer"
+                  className="glass-card cursor-pointer p-6 transition-colors hover:border-primary/60"
                 >
                   <Link href={`/interviews/articles/${art.id}`}>
                     {art.featuredImage && (
                       <div className="w-full h-40 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-lg mb-4" />
                     )}
-                    <h3 className="text-xl font-bold mb-2 text-neon-cyan">{art.title}</h3>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-3">{art.excerpt}</p>
+                    <h3 className="mb-2 text-h4 text-primary">{art.title}</h3>
+                    <p className="mb-4 line-clamp-3 text-body-sm text-muted-foreground">{art.excerpt}</p>
                     
-                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                    <div className="mb-4 flex items-center gap-2 text-body-sm text-muted-foreground">
                       <span>{DOMAINS[art.domain]?.icon}</span>
                       <span>{DOMAINS[art.domain]?.name}</span>
-                      <span>•</span>
+                      <span>-</span>
                       <span className="capitalize">{art.category}</span>
                     </div>
 
@@ -277,10 +265,10 @@ export default function InterviewsPage() {
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between text-sm text-gray-400">
+                    <div className="flex items-center justify-between text-body-sm text-muted-foreground">
                       <div className="flex items-center gap-4">
-                        <span>👁️ {art.views}</span>
-                        <span>❤️ {art.likes}</span>
+                        <span className="flex items-center gap-1"><Eye className="h-4 w-4" /> {art.views}</span>
+                        <span className="flex items-center gap-1"><Heart className="h-4 w-4" /> {art.likes}</span>
                       </div>
                       <span>{new Date(art.createdAt).toLocaleDateString()}</span>
                     </div>

@@ -1,16 +1,17 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { SUBJECTS, type Subject } from '@/lib/subjects'
+import { useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { SUBJECTS, type Subject } from '@/content/subjects'
 import ConceptLearning from '@/components/ConceptLearning'
 import MCQGate from '@/components/MCQGate'
 import CodingChallenge from '@/components/CodingChallenge'
 import SQLChallenge from '@/components/SQLChallenge'
 import BadgeUnlock from '@/components/BadgeUnlock'
 import PersonalizedAssignment from '@/components/PersonalizedAssignment'
-import { ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, ChevronRight } from 'lucide-react'
+import { saveUserProgress } from '@/lib/userAttempts'
 
 type Phase = 'theory' | 'mcq' | 'basic' | 'medium' | 'hard' | 'assignment'
 
@@ -26,7 +27,6 @@ export default function SubtopicPhasePage() {
   const unit = subject?.units.find(u => u.id === unitId)
   const subtopic = unit?.subtopics.find(s => s.id === subtopicId)
 
-  const [completed, setCompleted] = useState(false)
   const [showBadge, setShowBadge] = useState(false)
 
   if (!subject || !unit || !subtopic) {
@@ -49,9 +49,15 @@ export default function SubtopicPhasePage() {
     localStorage.setItem('completedPhases', JSON.stringify(completedPhases))
   }
 
-  const handleTheoryComplete = () => {
+  const handleTheoryComplete = async () => {
     // Mark theory as completed
     markPhaseComplete('theory')
+    await saveUserProgress({
+      subjectId,
+      unitId,
+      subtopicId,
+      phase: 'theory',
+    })
     // Theory completed, can proceed to MCQ
     router.push(`/subject/${subjectId}/unit/${unitId}/subtopic/${subtopicId}/mcq`)
   }
@@ -125,57 +131,49 @@ export default function SubtopicPhasePage() {
     router.push(`/subject/${subjectId}/unit/${unitId}/journey`)
   }
 
+  const phaseLabel = phase.charAt(0).toUpperCase() + phase.slice(1)
+  const isTheory = phase === 'theory'
+
   return (
-    <div className="min-h-screen p-8 relative overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 opacity-10"
-        animate={{
-          background: [
-            'radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.2) 0%, transparent 50%)',
-            'radial-gradient(circle at 100% 100%, rgba(157, 78, 221, 0.2) 0%, transparent 50%)',
-            'radial-gradient(circle at 0% 0%, rgba(0, 255, 255, 0.2) 0%, transparent 50%)',
-          ],
-        }}
-        transition={{ duration: 10, repeat: Infinity }}
-      />
+    <div className="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl">
+        {/* Breadcrumb + back */}
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <button
+            onClick={() => router.push(`/subject/${subjectId}/unit/${unitId}/journey`)}
+            className="inline-flex items-center gap-1.5 text-body-sm text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to journey
+          </button>
+          <nav className="hidden items-center gap-1.5 text-caption text-muted-foreground md:flex">
+            <span>{subject.name}</span>
+            <ChevronRight className="h-3 w-3" />
+            <span>{unit.name}</span>
+            <ChevronRight className="h-3 w-3" />
+            <span className="text-foreground">{subtopic.name}</span>
+          </nav>
+        </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <motion.button
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          onClick={() => router.push(`/subject/${subjectId}/unit/${unitId}/journey`)}
-          className="btn-secondary mb-6 flex items-center gap-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Journey
-        </motion.button>
-
-        {/* Phase Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6 mb-8 text-center"
-        >
-          <h1 className="text-4xl font-bold neon-text mb-2">
-            {subtopic.name}
-          </h1>
-          <p className="text-xl text-gray-400 mb-4">{subtopic.description}</p>
-          <div className="inline-block px-4 py-2 bg-neon-cyan/20 border border-neon-cyan rounded-full">
-            <span className="text-neon-cyan font-bold capitalize">{phase} Level</span>
+        {/* Non-theory phases get a tight context header — single level indicator (eyebrow). Component itself owns the difficulty chip. */}
+        {!isTheory && (
+          <div className="mb-10 border-b border-border pb-8">
+            <p className="mb-2 text-eyebrow uppercase text-muted-foreground">
+              {phaseLabel} phase
+            </p>
+            <h1 className="text-h2 font-semibold tracking-tight text-foreground">
+              {subtopic.name}
+            </h1>
+            <p className="mt-2 max-w-2xl text-body-sm text-muted-foreground">
+              {subtopic.description}
+            </p>
           </div>
-        </motion.div>
+        )}
 
         {/* Phase Content */}
-        <AnimatePresence mode="wait">
+        <>
           {phase === 'theory' && (
-            <motion.div
-              key="theory"
-              initial={{ opacity: 0, scale: 0.9, rotateX: -15 }}
-              animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-              exit={{ opacity: 0, scale: 0.9, rotateX: 15 }}
-              transition={{ duration: 0.5, type: 'spring' }}
-            >
+            <div>
               <ConceptLearning
                 subject={subject.name}
                 unit={unit.name}
@@ -185,39 +183,36 @@ export default function SubtopicPhasePage() {
                 unitId={unitId}
                 subtopicId={subtopicId}
               />
-            </motion.div>
+            </div>
           )}
 
           {phase === 'mcq' && (
-            <motion.div
-              key="mcq"
-              initial={{ opacity: 0, scale: 0.9, rotateY: -15 }}
-              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              exit={{ opacity: 0, scale: 0.9, rotateY: 15 }}
-              transition={{ duration: 0.5, type: 'spring' }}
-            >
+            <div>
               <MCQGate
                 subject={subject.name}
                 unit={`${unit.name} - ${subtopic.name}`}
+                subjectId={subjectId}
+                unitId={unitId}
+                subtopicId={subtopicId}
+                subtopicName={subtopic.name}
+                phase="mcq"
                 onPass={handleMCQComplete}
                 isFirstUnit={unitId === subject.units[0]?.id}
               />
-            </motion.div>
+            </div>
           )}
 
           {(phase === 'basic' || phase === 'medium' || phase === 'hard') && (
-            <motion.div
-              key={phase}
-              initial={{ opacity: 0, y: 50, rotateZ: -5 }}
-              animate={{ opacity: 1, y: 0, rotateZ: 0 }}
-              exit={{ opacity: 0, y: -50, rotateZ: 5 }}
-              transition={{ duration: 0.6, type: 'spring' }}
-            >
+            <div>
               {subjectId === 'dbms' ? (
                 <SQLChallenge
                   subject={subject.name}
                   unit={unit.name}
                   subtopic={subtopic.name}
+                  subjectId={subjectId}
+                  unitId={unitId}
+                  subtopicId={subtopicId}
+                  phase={phase}
                   difficulty={phase === 'basic' ? 'Basic' : phase === 'medium' ? 'Medium' : 'Advanced'}
                   onComplete={phase === 'basic' ? handleBasicComplete : handleCodingComplete}
                 />
@@ -226,6 +221,11 @@ export default function SubtopicPhasePage() {
                 <MCQGate
                   subject={subject.name}
                   unit={`${unit.name} - ${subtopic.name}`}
+                  subjectId={subjectId}
+                  unitId={unitId}
+                  subtopicId={subtopicId}
+                  subtopicName={subtopic.name}
+                  phase={phase}
                   onPass={phase === 'basic' ? handleBasicComplete : handleCodingComplete}
                   isFirstUnit={false}
                 />
@@ -234,30 +234,32 @@ export default function SubtopicPhasePage() {
                   subject={subject.name}
                   unit={unit.name}
                   subtopic={subtopic.name}
+                  subjectId={subjectId}
+                  unitId={unitId}
+                  subtopicId={subtopicId}
+                  phase={phase}
                   difficulty={phase === 'basic' ? 'Basic' : phase === 'medium' ? 'Medium' : 'Advanced'}
                   onComplete={phase === 'basic' ? handleBasicComplete : handleCodingComplete}
                 />
               )}
-            </motion.div>
+            </div>
           )}
 
           {phase === 'assignment' && (
-            <motion.div
-              key="assignment"
-              initial={{ opacity: 0, scale: 0.95, rotateY: 10 }}
-              animate={{ opacity: 1, scale: 1, rotateY: 0 }}
-              exit={{ opacity: 0, scale: 0.95, rotateY: -10 }}
-              transition={{ duration: 0.6, type: 'spring' }}
-            >
+            <div>
               <PersonalizedAssignment
                 subject={subject.name}
                 unit={unit.name}
                 subtopic={subtopic.name}
+                subjectId={subjectId}
+                unitId={unitId}
+                subtopicId={subtopicId}
+                phase="assignment"
                 onComplete={handleAssignmentComplete}
               />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </div>
 
       {/* Badge Unlock Modal */}
@@ -272,5 +274,3 @@ export default function SubtopicPhasePage() {
     </div>
   )
 }
-
-

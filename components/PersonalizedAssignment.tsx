@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Play, Loader2, AlertCircle, Lightbulb, CheckCircle2, Sparkles, Target } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -10,12 +9,8 @@ import confetti from 'canvas-confetti'
 import FrontendPreview from './FrontendPreview'
 import FrontendEditor from './FrontendEditor'
 import { DOMAINS } from '@/lib/subjects'
-
-// Dynamically import Monaco to avoid SSR issues
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
+import MonacoEditor from './MonacoEditor'
 
 interface Assignment {
   title: string
@@ -45,6 +40,10 @@ interface PersonalizedAssignmentProps {
   subject: string
   unit: string
   subtopic: string
+  subjectId?: string
+  unitId?: string
+  subtopicId?: string
+  phase?: string
   onComplete: () => void
 }
 
@@ -52,6 +51,10 @@ export default function PersonalizedAssignment({
   subject,
   unit,
   subtopic,
+  subjectId,
+  unitId,
+  subtopicId,
+  phase,
   onComplete,
 }: PersonalizedAssignmentProps) {
   const [assignment, setAssignment] = useState<Assignment | null>(null)
@@ -501,6 +504,42 @@ public class Solution {
             setSqlRowCount(rowCount)
             setTestResults([])
 
+            await saveUserAttempt({
+              type: 'assignment',
+              subjectId,
+              subjectName: subject,
+              unitId,
+              unitName: unit,
+              subtopicId,
+              subtopicName: subtopic,
+              phase: phase ?? 'assignment',
+              difficulty: assignment.targetDifficulty,
+              problemTitle: assignment.title,
+              prompt: assignment.description,
+              language: 'sql',
+              code: code.trim(),
+              status: 'completed',
+              score: 100,
+              passedCount: 1,
+              totalCount: 1,
+              sqlResult: {
+                rows: results,
+                rowCount,
+              },
+              metadata: {
+                executionType: 'sql',
+                learningObjectives: assignment.learningObjectives ?? [],
+              },
+            })
+
+            await saveUserProgress({
+              subjectId,
+              unitId,
+              subtopicId,
+              phase: phase ?? 'assignment',
+              codingScore: 100,
+            })
+
             // For SQL, we'll show results instead of test case validation
             // Since assignments don't have predefined expected outputs for SQL,
             // we'll mark it as completed if query executes successfully
@@ -531,6 +570,33 @@ public class Solution {
             status: 'Error',
             error: errorMessage,
           }])
+          await saveUserAttempt({
+            type: 'assignment',
+            subjectId,
+            subjectName: subject,
+            unitId,
+            unitName: unit,
+            subtopicId,
+            subtopicName: subtopic,
+            phase: phase ?? 'assignment',
+            difficulty: assignment.targetDifficulty,
+            problemTitle: assignment.title,
+            prompt: assignment.description,
+            language: 'sql',
+            code: code.trim(),
+            status: 'failed',
+            score: 0,
+            passedCount: 0,
+            totalCount: 1,
+            sqlResult: {
+              rows: [],
+              rowCount: 0,
+              errorMessage,
+            },
+            metadata: {
+              executionType: 'sql',
+            },
+          })
           toast.error(errorMessage)
         } finally {
           setExecuting(false)
@@ -596,7 +662,59 @@ public class Solution {
         setTestResults(results)
 
         const allPassed = results.every((r: any) => r.passed)
+        const passedCount = results.filter((r: any) => r.passed).length
+        const score = results.length > 0 ? Math.round((passedCount / results.length) * 100) : 0
+        const failedStatus = results.find((r: any) => !r.passed)?.status?.toLowerCase() ?? ''
+        const status = allPassed
+          ? 'completed'
+          : passedCount > 0
+          ? 'partial'
+          : failedStatus.includes('compile')
+          ? 'compile_error'
+          : failedStatus.includes('runtime')
+          ? 'runtime_error'
+          : 'wrong_answer'
+
+        await saveUserAttempt({
+          type: 'assignment',
+          subjectId,
+          subjectName: subject,
+          unitId,
+          unitName: unit,
+          subtopicId,
+          subtopicName: subtopic,
+          phase: phase ?? 'assignment',
+          difficulty: assignment.targetDifficulty,
+          problemTitle: assignment.title,
+          prompt: assignment.description,
+          language,
+          code,
+          status,
+          score,
+          passedCount,
+          totalCount: results.length,
+          testResults: results.map((result: any) => ({
+            passed: result.passed,
+            input: result.input,
+            expected: result.expected,
+            actual: result.got,
+            status: result.status,
+            errorMessage: result.error ?? undefined,
+          })),
+          metadata: {
+            executionType: 'code',
+            learningObjectives: assignment.learningObjectives ?? [],
+          },
+        })
+
         if (allPassed) {
+          await saveUserProgress({
+            subjectId,
+            unitId,
+            subtopicId,
+            phase: phase ?? 'assignment',
+            codingScore: score,
+          })
           setCompleted(true)
           toast.success('🎉 All test cases passed! Assignment completed!')
           
@@ -611,7 +729,6 @@ public class Solution {
             onComplete()
           }, 2000)
         } else {
-          const passedCount = results.filter((r: any) => r.passed).length
           toast.error(`${passedCount}/${results.length} test cases passed. Keep trying!`)
         }
       }
@@ -634,7 +751,7 @@ public class Solution {
             className="text-center"
           >
             <Loader2 className="w-16 h-16 text-neon-cyan animate-spin mx-auto mb-4" />
-            <p className="text-xl text-gray-400">Loading question...</p>
+            <p className="text-xl text-muted-foreground">Loading question...</p>
           </motion.div>
         </div>
       )
@@ -650,7 +767,7 @@ public class Solution {
           >
             <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-4">Failed to Load Question</h2>
-            <p className="text-gray-400 mb-6">{error || 'No question found for this topic'}</p>
+            <p className="text-muted-foreground mb-6">{error || 'No question found for this topic'}</p>
             <button onClick={fetchAssignment} className="btn-primary">
               Try Again
             </button>
@@ -668,6 +785,10 @@ public class Solution {
         subject={subject}
         unit={unit}
         subtopic={subtopic}
+        subjectId={subjectId}
+        unitId={unitId}
+        subtopicId={subtopicId}
+        phase={phase ?? 'assignment'}
         difficulty={difficulty}
         question={frontendQuestion}
         onComplete={onComplete}
@@ -684,8 +805,8 @@ public class Solution {
           className="text-center"
         >
           <Loader2 className="w-16 h-16 text-neon-cyan animate-spin mx-auto mb-4" />
-          <p className="text-xl text-gray-400">Generating your personalized assignment...</p>
-          <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
+          <p className="text-xl text-muted-foreground">Generating your personalized assignment...</p>
+          <p className="text-sm text-muted-foreground/80 mt-2">This may take a moment</p>
         </motion.div>
       </div>
     )
@@ -701,7 +822,7 @@ public class Solution {
         >
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-4">Failed to Load Assignment</h2>
-          <p className="text-gray-400 mb-6">{error}</p>
+          <p className="text-muted-foreground mb-6">{error}</p>
           <button onClick={fetchAssignment} className="btn-primary">
             Try Again
           </button>
@@ -743,7 +864,7 @@ public class Solution {
                   <Target className="w-5 h-5 text-neon-purple mt-0.5" />
                   <div>
                     <p className="font-semibold text-neon-purple mb-1">Personalized for You</p>
-                    <p className="text-gray-300 text-sm">{assignment.personalizedNote}</p>
+                    <p className="text-foreground/80 text-sm">{assignment.personalizedNote}</p>
                   </div>
                 </div>
               </div>
@@ -754,7 +875,7 @@ public class Solution {
         {/* Description */}
         <div className="glass-card p-6">
           <h2 className="text-xl font-bold mb-4">Problem Description</h2>
-          <p className="text-gray-300 whitespace-pre-wrap leading-relaxed">
+          <p className="text-foreground/80 whitespace-pre-wrap leading-relaxed">
             {assignment.description}
           </p>
         </div>
@@ -767,7 +888,7 @@ public class Solution {
               {assignment.learningObjectives.map((objective, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-neon-green mt-0.5 flex-shrink-0" />
-                  <span className="text-gray-300">{objective}</span>
+                  <span className="text-foreground/80">{objective}</span>
                 </li>
               ))}
             </ul>
@@ -780,18 +901,18 @@ public class Solution {
             <h2 className="text-xl font-bold mb-4">Examples</h2>
             <div className="space-y-4">
               {assignment.examples.map((example, idx) => (
-                <div key={idx} className="bg-dark-bg/50 rounded-lg p-4 border border-gray-700">
+                <div key={idx} className="bg-background/50 rounded-lg p-4 border border-border">
                   <div className="grid grid-cols-2 gap-4 mb-2">
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Input</p>
-                      <p className="text-white font-mono text-sm">{example.input}</p>
+                      <p className="text-sm text-muted-foreground mb-1">Input</p>
+                      <p className="text-foreground font-mono text-sm">{example.input}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-400 mb-1">Output</p>
-                      <p className="text-white font-mono text-sm">{example.output}</p>
+                      <p className="text-sm text-muted-foreground mb-1">Output</p>
+                      <p className="text-foreground font-mono text-sm">{example.output}</p>
                     </div>
                   </div>
-                  <p className="text-gray-300 text-sm mt-2">{example.explanation}</p>
+                  <p className="text-foreground/80 text-sm mt-2">{example.explanation}</p>
                 </div>
               ))}
             </div>
@@ -804,7 +925,7 @@ public class Solution {
             <h2 className="text-xl font-bold mb-4">Constraints</h2>
             <ul className="space-y-2">
               {assignment.constraints.map((constraint, idx) => (
-                <li key={idx} className="text-gray-300 flex items-start gap-2">
+                <li key={idx} className="text-foreground/80 flex items-start gap-2">
                   <span className="text-neon-cyan">•</span>
                   <span>{constraint}</span>
                 </li>
@@ -825,7 +946,7 @@ public class Solution {
                   setCode(languageTemplates[e.target.value] || '')
                   setFrontendPreview(null) // Clear preview on language change
                 }}
-                className="bg-dark-card border border-gray-700 rounded-lg px-4 py-2 text-white"
+                className="bg-card border border-border rounded-lg px-4 py-2 text-foreground"
               >
                 {isDBMS ? (
                   <option value="sql">SQL</option>
@@ -876,7 +997,7 @@ public class Solution {
             </div>
           </div>
 
-          <div className="border border-gray-700 rounded-lg overflow-hidden">
+          <div className="border border-border rounded-lg overflow-hidden">
             <MonacoEditor
               height="400px"
               language={language}
@@ -933,7 +1054,7 @@ public class Solution {
                   exit={{ opacity: 0, y: -10 }}
                   className="bg-neon-yellow/10 border border-neon-yellow/30 rounded-lg p-4"
                 >
-                  <p className="text-gray-300">
+                  <p className="text-foreground/80">
                     <span className="font-semibold text-neon-yellow">Hint {currentHintIndex + 1}:</span>{' '}
                     {assignment.hints[currentHintIndex]}
                   </p>
@@ -955,7 +1076,7 @@ public class Solution {
                 <CheckCircle2 className="w-6 h-6 text-neon-green" />
                 Query Results
               </h2>
-              <span className="text-gray-400">{sqlRowCount} row{sqlRowCount !== 1 ? 's' : ''}</span>
+              <span className="text-muted-foreground">{sqlRowCount} row{sqlRowCount !== 1 ? 's' : ''}</span>
             </div>
 
             {/* Results Table */}
@@ -977,10 +1098,10 @@ public class Solution {
                   {sqlResults.map((row, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-gray-700/30 hover:bg-neon-cyan/5 transition-colors"
+                      className="border-b border-border/30 hover:bg-neon-cyan/5 transition-colors"
                     >
                       {Object.values(row).map((value: any, colIdx) => (
-                        <td key={colIdx} className="px-4 py-2 text-gray-300">
+                        <td key={colIdx} className="px-4 py-2 text-foreground/80">
                           {value !== null && value !== undefined ? String(value) : 'NULL'}
                         </td>
                       ))}
@@ -1028,22 +1149,22 @@ public class Solution {
                     </span>
                   </div>
                   {assignment.testCases?.[idx] && (
-                    <p className="text-sm text-gray-400 mb-2">
+                    <p className="text-sm text-muted-foreground mb-2">
                       {assignment.testCases[idx].description}
                     </p>
                   )}
                   <div className="grid grid-cols-3 gap-4 text-sm">
                     <div>
-                      <p className="text-gray-400 mb-1">Input</p>
-                      <p className="text-white font-mono">{result.input}</p>
+                      <p className="text-muted-foreground mb-1">Input</p>
+                      <p className="text-foreground font-mono">{result.input}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 mb-1">Expected</p>
-                      <p className="text-white font-mono">{result.expected}</p>
+                      <p className="text-muted-foreground mb-1">Expected</p>
+                      <p className="text-foreground font-mono">{result.expected}</p>
                     </div>
                     <div>
-                      <p className="text-gray-400 mb-1">Got</p>
-                      <p className="text-white font-mono">{result.got}</p>
+                      <p className="text-muted-foreground mb-1">Got</p>
+                      <p className="text-foreground font-mono">{result.got}</p>
                     </div>
                   </div>
                   {result.error && (
@@ -1067,7 +1188,7 @@ public class Solution {
             <div className="text-center">
               <CheckCircle2 className="w-16 h-16 text-neon-green mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Assignment Completed! 🎉</h2>
-              <p className="text-gray-300">Great job! You've mastered this personalized challenge!</p>
+              <p className="text-foreground/80">Great job! You've mastered this personalized challenge!</p>
             </div>
           </motion.div>
         )}
@@ -1075,4 +1196,3 @@ public class Solution {
     </div>
   )
 }
-

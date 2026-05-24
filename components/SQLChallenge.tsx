@@ -2,31 +2,40 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Play, Loader2, AlertCircle, CheckCircle2, Database, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import confetti from 'canvas-confetti'
 import { getSQLQuestion, type SQLQuestion } from '@/lib/sqlDatabase'
+import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
 import type * as monaco from 'monaco-editor'
-
-// Dynamically import Monaco to avoid SSR issues
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import MonacoEditor from './MonacoEditor'
 
 interface SQLChallengeProps {
   subject: string
   unit: string
   subtopic?: string
+  subjectId?: string
+  unitId?: string
+  subtopicId?: string
+  phase?: string
   difficulty?: 'Basic' | 'Medium' | 'Advanced'
   onComplete: () => void
 }
 
 type Difficulty = 'Basic' | 'Medium' | 'Advanced'
 
-export default function SQLChallenge({ subject, unit, subtopic, difficulty: propDifficulty, onComplete }: SQLChallengeProps) {
+export default function SQLChallenge({
+  subject,
+  unit,
+  subtopic,
+  subjectId,
+  unitId,
+  subtopicId,
+  phase,
+  difficulty: propDifficulty,
+  onComplete,
+}: SQLChallengeProps) {
   const [question, setQuestion] = useState<SQLQuestion | null>(null)
   const [difficulty, setDifficulty] = useState<Difficulty>(propDifficulty || 'Basic')
   const [sqlQuery, setSqlQuery] = useState('')
@@ -162,6 +171,39 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
         
         // Query executed successfully
         toast.success(`Query executed successfully! Returned ${resultRowCount} row${resultRowCount !== 1 ? 's' : ''}.`)
+
+        await saveUserAttempt({
+          type: 'sql',
+          subjectId,
+          subjectName: subject,
+          unitId,
+          unitName: unit,
+          subtopicId,
+          subtopicName: subtopic,
+          phase: phase ?? difficulty.toLowerCase(),
+          difficulty,
+          problemId: question.id,
+          problemTitle: question.title,
+          prompt: question.description,
+          language: 'sql',
+          code: sqlQuery.trim(),
+          status: 'completed',
+          score: 100,
+          passedCount: 1,
+          totalCount: 1,
+          sqlResult: {
+            rows: queryResults,
+            rowCount: resultRowCount,
+          },
+        })
+
+        await saveUserProgress({
+          subjectId,
+          unitId,
+          subtopicId,
+          phase: phase ?? difficulty.toLowerCase(),
+          codingScore: 100,
+        })
         
         // Mark as completed (user can continue to next challenge)
         setCompleted(true)
@@ -177,6 +219,31 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
       const errorMessage = err.response?.data?.error || err.message || 'Query execution failed'
       setError(errorMessage)
       setSqlError(errorMessage)
+      await saveUserAttempt({
+        type: 'sql',
+        subjectId,
+        subjectName: subject,
+        unitId,
+        unitName: unit,
+        subtopicId,
+        subtopicName: subtopic,
+        phase: phase ?? difficulty.toLowerCase(),
+        difficulty,
+        problemId: question.id,
+        problemTitle: question.title,
+        prompt: question.description,
+        language: 'sql',
+        code: sqlQuery.trim(),
+        status: 'failed',
+        score: 0,
+        passedCount: 0,
+        totalCount: 1,
+        sqlResult: {
+          rows: [],
+          rowCount: 0,
+          errorMessage,
+        },
+      })
       
       // Try to extract line number from error
       const lineMatch = errorMessage.match(/line\s+(\d+)/i) || errorMessage.match(/near\s+line\s+(\d+)/i)
@@ -268,7 +335,7 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
             }`}>
               {difficulty}
             </span>
-            <span className="text-gray-400">{unit}</span>
+            <span className="text-muted-foreground">{unit}</span>
           </div>
         </div>
       </div>
@@ -279,13 +346,13 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
           <Database className="w-6 h-6 text-neon-cyan" />
           Problem Description
         </h2>
-        <p className="text-gray-300 mb-4">{question.description}</p>
+        <p className="text-foreground/80 mb-4">{question.description}</p>
 
         {/* Hints */}
         {question.hints && question.hints.length > 0 && (
           <div className="mt-4 p-4 bg-neon-purple/10 border border-neon-purple/30 rounded-lg">
             <h3 className="text-lg font-semibold text-neon-purple mb-2">Hints:</h3>
-            <ul className="list-disc list-inside space-y-1 text-gray-300">
+            <ul className="list-disc list-inside space-y-1 text-foreground/80">
               {question.hints.map((hint, idx) => (
                 <li key={idx}>{hint}</li>
               ))}
@@ -402,7 +469,7 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
                 <CheckCircle2 className="w-6 h-6 text-neon-green" />
                 Query Results
               </h2>
-              <span className="text-gray-400">{results.length} row{results.length !== 1 ? 's' : ''}</span>
+              <span className="text-muted-foreground">{results.length} row{results.length !== 1 ? 's' : ''}</span>
             </div>
 
             {/* Results Table */}
@@ -424,10 +491,10 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
                   {results.map((row, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-gray-700/30 hover:bg-neon-cyan/5 transition-colors"
+                      className="border-b border-border/30 hover:bg-neon-cyan/5 transition-colors"
                     >
                       {Object.values(row).map((value: any, colIdx) => (
-                        <td key={colIdx} className="px-4 py-2 text-gray-300">
+                        <td key={colIdx} className="px-4 py-2 text-foreground/80">
                           {value !== null && value !== undefined ? String(value) : 'NULL'}
                         </td>
                       ))}
@@ -451,7 +518,7 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
             <CheckCircle2 className="w-8 h-8 text-neon-green" />
             <div>
               <h3 className="text-xl font-bold text-neon-green">Query Executed Successfully!</h3>
-              <p className="text-gray-300">Great job! Your SQL query returned the correct results.</p>
+              <p className="text-foreground/80">Great job! Your SQL query returned the correct results.</p>
             </div>
           </div>
           <button
@@ -465,4 +532,3 @@ export default function SQLChallenge({ subject, unit, subtopic, difficulty: prop
     </div>
   )
 }
-

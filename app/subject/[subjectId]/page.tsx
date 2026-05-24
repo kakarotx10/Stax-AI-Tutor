@@ -1,191 +1,160 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
 import { SUBJECTS, type Subject } from '@/lib/subjects'
-import { ArrowLeft, Lock, Unlock, Trophy, Zap, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Lock, ArrowUpRight, CheckCircle2, Zap } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 export default function SubjectPage() {
   const params = useParams()
   const router = useRouter()
   const subjectId = params.subjectId as Subject
   const subject = SUBJECTS[subjectId]
-  const { scrollYProgress } = useScroll()
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0])
 
   if (!subject) {
-    return <div>Subject not found</div>
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-muted-foreground">Subject not found.</p>
+      </div>
+    )
   }
 
   const handleUnitClick = (unitId: string) => {
-    if (subject.units.find(u => u.id === unitId)?.locked) {
-      return
-    }
+    const unit = subject.units.find((u) => u.id === unitId)
+    if (unit?.locked) return
     router.push(`/subject/${subjectId}/unit/${unitId}/journey`)
   }
 
+  const totalXP = subject.units.reduce((sum, u) => sum + u.xpReward, 0)
+  const completedCount = subject.units.filter((u) => u.completed).length
+
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background */}
-      <motion.div
-        className="absolute inset-0 opacity-20"
-        animate={{
-          background: [
-            'radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%)',
-            'radial-gradient(circle at 80% 50%, rgba(157, 78, 221, 0.1) 0%, transparent 50%)',
-            'radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%)',
-          ],
-        }}
-        transition={{ duration: 10, repeat: Infinity }}
-      />
-
-      <div className="relative z-10 p-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-7xl mx-auto"
+    <main className="min-h-screen bg-background">
+      <div className="mx-auto w-full max-w-6xl px-6 pb-24 pt-12 lg:px-8">
+        {/* Back link */}
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="mb-10 inline-flex items-center gap-2 text-body-sm text-muted-foreground transition-colors hover:text-foreground"
         >
-          {/* Header */}
-          <motion.div
-            style={{ opacity }}
-            className="mb-12 sticky top-8 z-20 glass-card p-6 backdrop-blur-xl"
-          >
-            <button
-              onClick={() => router.push('/')}
-              className="btn-secondary mb-4 flex items-center gap-2"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              Back to Journey
-            </button>
+          <ArrowLeft className="h-4 w-4" />
+          All paths
+        </button>
 
-            <div className="text-center">
-              <motion.div
-                animate={{ rotate: [0, 360] }}
-                transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-                className="inline-block mb-4"
-              >
-                <div className="text-6xl">{subject.icon}</div>
-              </motion.div>
-              <motion.h1
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring' }}
-                className="text-5xl font-bold neon-text mb-4"
-              >
-                {subject.name}
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="text-xl text-gray-400"
-              >
-                Master {subject.units.length} units to become an expert
-              </motion.p>
-            </div>
-          </motion.div>
+        {/* Header */}
+        <header className="mb-14">
+          <p className="mb-3 text-eyebrow uppercase text-muted-foreground">
+            {subject.domain === 'placement'
+              ? 'Placement track'
+              : subject.domain === 'frontend'
+              ? 'Frontend track'
+              : subject.domain === 'backend'
+              ? 'Backend track'
+              : subject.domain === 'aiml'
+              ? 'AI / ML track'
+              : 'Track'}
+          </p>
+          <h1 className="text-h1 text-foreground">{subject.name}</h1>
+          <p className="mt-4 max-w-2xl text-body-lg text-muted-foreground">
+            {subject.units.length} units · {totalXP} XP total
+            {completedCount > 0 ? ` · ${completedCount} completed` : ''}
+          </p>
+        </header>
 
-          {/* Units Grid with Scroll Animations */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {subject.units.map((unit, idx) => (
-              <motion.div
-                key={unit.id}
-                initial={{ opacity: 0, y: 50, rotateX: -15 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: false, margin: '-100px' }}
-                transition={{
-                  delay: idx * 0.15,
-                  duration: 0.6,
-                  type: 'spring',
-                  stiffness: 100,
-                }}
-                whileHover={{ scale: 1.05, y: -10, rotateY: 5 }}
-                className={`glass-card p-6 cursor-pointer relative overflow-hidden group ${
-                  unit.locked ? 'opacity-60 cursor-not-allowed' : ''
-                }`}
-                onClick={() => handleUnitClick(unit.id)}
-              >
-                {/* Hover Glow Effect */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-br from-neon-cyan/0 to-neon-purple/0 group-hover:from-neon-cyan/20 group-hover:to-neon-purple/20 transition-all duration-300"
-                  initial={false}
-                />
+        {/* Unit list */}
+        <ul className="space-y-3">
+          {subject.units.map((unit, idx) => {
+            const completed = !!unit.completed
+            const locked = !!unit.locked && !completed
+            const interactive = !locked
 
-                <div className="relative z-10">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <motion.h3
-                        whileHover={{ x: 5 }}
-                        className="text-2xl font-bold mb-2"
-                      >
-                        {unit.name}
-                      </motion.h3>
-                      <p className="text-gray-400 mb-4">{unit.description}</p>
+            return (
+              <li key={unit.id}>
+                <button
+                  type="button"
+                  onClick={() => handleUnitClick(unit.id)}
+                  disabled={!interactive}
+                  className={cn(
+                    'group relative flex w-full flex-col gap-4 rounded-[10px] border border-border bg-card p-6 text-left shadow-soft transition-all duration-150 ease-out-quart',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                    interactive &&
+                      'hover:-translate-y-px hover:border-[hsl(var(--border-strong))] hover:bg-[hsl(var(--card))] hover:shadow-card',
+                    !interactive && 'cursor-not-allowed opacity-60'
+                  )}
+                >
+                  {/* Top row: unit index + state pill */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-eyebrow uppercase text-muted-foreground">
+                      Unit · {String(idx + 1).padStart(2, '0')}
+                    </span>
 
-                      {/* Subtopics Preview */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {unit.subtopics.slice(0, 3).map((subtopic) => (
-                          <span
-                            key={subtopic.id}
-                            className="text-xs px-2 py-1 bg-neon-cyan/10 text-neon-cyan rounded-full border border-neon-cyan/30"
-                          >
-                            {subtopic.name}
-                          </span>
-                        ))}
-                        {unit.subtopics.length > 3 && (
-                          <span className="text-xs px-2 py-1 bg-dark-card text-gray-400 rounded-full">
-                            +{unit.subtopics.length - 3} more
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <motion.div
-                      animate={{ rotate: unit.locked ? 0 : [0, 10, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity, delay: idx * 0.2 }}
-                    >
-                      {unit.locked ? (
-                        <Lock className="w-8 h-8 text-gray-600" />
-                      ) : (
-                        <Unlock className="w-8 h-8 text-neon-cyan" />
-                      )}
-                    </motion.div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4 border-t border-neon-cyan/20">
-                    <div className="flex items-center gap-2">
-                      <motion.div
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        <Zap className="w-5 h-5 text-neon-cyan" />
-                      </motion.div>
-                      <span className="font-bold text-neon-cyan">{unit.xpReward} XP</span>
-                    </div>
-                    {unit.completed && (
-                      <div className="flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-neon-green" />
-                        <span className="text-neon-green">Completed</span>
-                      </div>
-                    )}
-                    {!unit.locked && (
-                      <motion.div
-                        whileHover={{ x: 5 }}
-                        className="flex items-center gap-1 text-neon-cyan"
-                      >
-                        <span className="text-sm font-bold">Start Journey</span>
-                        <ChevronRight className="w-4 h-4" />
-                      </motion.div>
+                    {completed ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-success/25 bg-success/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Done
+                      </span>
+                    ) : locked ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                        <Lock className="h-3 w-3" />
+                        Locked
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-primary">
+                        Available
+                      </span>
                     )}
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+
+                  {/* Title + description */}
+                  <div>
+                    <h2 className="text-h4 font-semibold tracking-tight text-foreground">
+                      {unit.name}
+                    </h2>
+                    <p className="mt-1.5 text-body-sm text-muted-foreground">
+                      {unit.description}
+                    </p>
+                  </div>
+
+                  {/* Subtopic chips */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {unit.subtopics.slice(0, 4).map((subtopic) => (
+                      <span
+                        key={subtopic.id}
+                        className="rounded-md border border-border bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+                      >
+                        {subtopic.name}
+                      </span>
+                    ))}
+                    {unit.subtopics.length > 4 && (
+                      <span className="text-[11px] font-medium text-muted-foreground">
+                        +{unit.subtopics.length - 4} more
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                    <span className="inline-flex items-center gap-1.5 text-body-sm text-muted-foreground">
+                      <Zap className="h-3.5 w-3.5" />
+                      <span className="font-medium tabular-nums text-foreground">
+                        {unit.xpReward}
+                      </span>{' '}
+                      XP
+                    </span>
+
+                    {interactive && (
+                      <span className="inline-flex items-center gap-1 text-body-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                        {completed ? 'Review' : 'Start'}
+                        <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </li>
+            )
+          })}
+        </ul>
       </div>
-    </div>
+    </main>
   )
 }

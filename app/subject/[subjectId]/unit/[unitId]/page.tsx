@@ -1,8 +1,8 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { SUBJECTS, type Subject } from '@/lib/subjects'
 import ConceptLearning from '@/components/ConceptLearning'
 import MCQGate from '@/components/MCQGate'
@@ -34,7 +34,7 @@ export default function UnitPage() {
           className="text-center glass-card p-8"
         >
           <h1 className="text-4xl font-bold text-red-400 mb-4">Unit not found</h1>
-          <p className="text-gray-400 mb-6">The unit you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-6">The unit you're looking for doesn't exist.</p>
           <button
             onClick={() => router.push(`/subject/${subjectId}`)}
             className="btn-primary"
@@ -74,10 +74,10 @@ export default function UnitPage() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            <span className="text-sm text-gray-400">Progress</span>
+            <span className="text-sm text-muted-foreground">Progress</span>
             <span className="text-sm text-neon-cyan font-bold">{xp} XP</span>
           </div>
-          <div className="h-3 bg-dark-card rounded-full overflow-hidden">
+          <div className="h-3 bg-card rounded-full overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple"
               initial={{ width: 0 }}
@@ -88,59 +88,39 @@ export default function UnitPage() {
         </div>
 
         {/* Phase Content */}
-        <AnimatePresence mode="wait">
+        <>
           {phase === 'learning' && (
-            <motion.div
-              key="learning"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
+            <div>
               <ConceptLearning
                 subject={subject.name}
                 unit={unit.name}
                 onComplete={handleLearningComplete}
               />
-            </motion.div>
+            </div>
           )}
 
           {phase === 'mcq' && (
-            <motion.div
-              key="mcq"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-            >
+            <div>
               <MCQGate
                 subject={subject.name}
                 unit={unit.name}
                 onPass={handleMCQPass}
               />
-            </motion.div>
+            </div>
           )}
 
           {phase === 'unlock' && (
-            <motion.div
-              key="unlock"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-            >
+            <div>
               <LeaderboardUnlock
                 xp={xp}
                 unit={unit.name}
                 onComplete={handleUnlockComplete}
               />
-            </motion.div>
+            </div>
           )}
 
           {phase === 'coding' && (
-            <motion.div
-              key="coding"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-            >
+            <div>
               <CodingChallenge
                 subject={subject.name}
                 unit={unit.name}
@@ -149,12 +129,11 @@ export default function UnitPage() {
                   // Could navigate to next unit or show completion
                 }}
               />
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        </>
       </div>
     </div>
   )
 }
-
 

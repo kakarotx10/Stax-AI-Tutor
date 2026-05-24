@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useMemo, useRef } from 'react'
+import { motion, useScroll, useSpring } from 'framer-motion'
 import axios from 'axios'
-import { CheckCircle2, Loader2, Code2, Lightbulb } from 'lucide-react'
+import { CheckCircle2, Loader2, Code2, BookOpen, ArrowRight, Sparkles, Clock, List } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import toast from 'react-hot-toast'
 import YouTubeVideos from './YouTubeVideos'
-import { SUBJECTS, type Subject } from '@/lib/subjects'
+import { SUBJECTS, type Subject } from '@/content/subjects'
 
 interface TheoryData {
   title: string
@@ -36,6 +36,28 @@ export default function ConceptLearning({ subject, unit, subtopic, onComplete, s
   const [loading, setLoading] = useState(true)
   const [currentSection, setCurrentSection] = useState(0)
   const [completed, setCompleted] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: contentRef, offset: ['start start', 'end end'] })
+  const progressX = useSpring(scrollYProgress, { stiffness: 120, damping: 24, mass: 0.3 })
+
+  const readingTime = useMemo(() => {
+    if (!theory) return 0
+    const words = theory.sections.reduce(
+      (acc, s) => acc + (s.content?.split(/\s+/).length || 0) + (s.heading?.split(/\s+/).length || 0),
+      theory.overview?.split(/\s+/).length || 0,
+    )
+    return Math.max(1, Math.round(words / 220))
+  }, [theory])
+
+  const detectLang = (code: string): string => {
+    if (!code) return 'code'
+    if (/SELECT\s|FROM\s|WHERE\s/i.test(code)) return 'sql'
+    if (/function\s|const\s|=>|console\./.test(code)) return 'javascript'
+    if (/def\s|print\(|import\s+\w+$/m.test(code)) return 'python'
+    if (/#include|int\s+main\s*\(/.test(code)) return 'cpp'
+    if (/public\s+class|System\.out/.test(code)) return 'java'
+    return 'code'
+  }
 
   useEffect(() => {
     fetchTheory()
@@ -114,12 +136,10 @@ export default function ConceptLearning({ subject, unit, subtopic, onComplete, s
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        >
-          <Loader2 className="w-12 h-12 text-neon-cyan" />
-        </motion.div>
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <p className="text-sm">Loading lesson…</p>
+        </div>
       </div>
     )
   }
@@ -127,7 +147,7 @@ export default function ConceptLearning({ subject, unit, subtopic, onComplete, s
   if (!theory) {
     return (
       <div className="glass-card p-8 text-center">
-        <p className="text-red-400">Failed to load theory content</p>
+        <p className="text-destructive">Failed to load theory content</p>
         <button onClick={fetchTheory} className="btn-primary mt-4">
           Retry
         </button>
@@ -136,8 +156,8 @@ export default function ConceptLearning({ subject, unit, subtopic, onComplete, s
   }
 
   const section = theory.sections[currentSection]
+  const totalSections = theory.sections.length
 
-  // Get YouTube videos from subtopic if available
   const youtubeVideos: string[] = []
   if (subjectId && unitId && subtopicId) {
     const subjectData = SUBJECTS[subjectId]
@@ -148,131 +168,216 @@ export default function ConceptLearning({ subject, unit, subtopic, onComplete, s
     }
   }
 
+  const codeLang = section.codeExample ? detectLang(section.codeExample) : ''
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div ref={contentRef} className="relative">
+      {/* Top reading progress bar */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center"
-      >
-        <h1 className="text-4xl font-bold neon-text mb-4">{theory.title}</h1>
-        <p className="text-xl text-gray-300">{theory.overview}</p>
-      </motion.div>
+        style={{ scaleX: progressX, transformOrigin: '0% 50%' }}
+        className="fixed left-0 right-0 top-0 z-40 h-[2px] bg-primary"
+      />
 
-      {/* Progress Indicator */}
-      <div className="flex items-center justify-center gap-2">
-        {theory.sections.map((_, idx) => (
-          <div
-            key={idx}
-            className={`h-2 w-12 rounded-full transition-all ${
-              idx <= currentSection
-                ? 'bg-neon-cyan'
-                : 'bg-dark-card'
-            }`}
-          />
-        ))}
-      </div>
-
-      {/* Current Section */}
-      <motion.div
-        key={currentSection}
-        initial={{ opacity: 0, x: 50, rotateY: -15 }}
-        animate={{ opacity: 1, x: 0, rotateY: 0 }}
-        exit={{ opacity: 0, x: -50, rotateY: 15 }}
-        transition={{ duration: 0.5, type: 'spring', stiffness: 100 }}
-        className="glass-card p-8 space-y-6 hover:shadow-[0_0_30px_rgba(0,255,255,0.3)] transition-shadow"
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <Lightbulb className="w-8 h-8 text-neon-cyan" />
-          <h2 className="text-3xl font-bold">{section.heading}</h2>
-        </div>
-
-        <div className="prose prose-invert max-w-none">
-          <p className="text-lg leading-relaxed whitespace-pre-line">
-            {section.content}
-          </p>
-        </div>
-
-        {section.codeExample && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="relative"
-          >
-            <div className="flex items-center gap-2 mb-2">
-              <Code2 className="w-5 h-5 text-neon-cyan" />
-              <span className="text-sm text-gray-400">Code Example</span>
+      <div className="grid grid-cols-12 gap-8">
+        {/* Sidebar — sticky TOC */}
+        <aside className="hidden lg:block col-span-3">
+          <div className="sticky top-8 space-y-6">
+            {/* Lesson meta */}
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Lesson</p>
+              <h2 className="text-lg font-semibold leading-tight">{theory.title}</h2>
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  {readingTime} min read
+                </span>
+                <span className="text-border-strong">·</span>
+                <span>{totalSections} sections</span>
+              </div>
             </div>
-            <pre className="bg-dark-bg p-4 rounded-lg border border-neon-cyan/30 overflow-x-auto">
-              <code className="text-sm text-neon-green">{section.codeExample}</code>
-            </pre>
-          </motion.div>
-        )}
 
-        {section.visualDescription && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="p-4 bg-neon-cyan/10 border border-neon-cyan/30 rounded-lg"
+            <div className="h-px bg-border" />
+
+            {/* TOC */}
+            <nav aria-label="Table of contents" className="space-y-1">
+              <p className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground mb-3">
+                <List className="w-3.5 h-3.5" />
+                On this page
+              </p>
+              {theory.sections.map((s, idx) => {
+                const isActive = idx === currentSection
+                const isDone = idx < currentSection
+                return (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSection(idx)}
+                    className={`group flex w-full items-start gap-3 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
+                      isActive
+                        ? 'bg-primary/10 text-foreground'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <span
+                      className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-mono ${
+                        isActive
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : isDone
+                          ? 'border-success/40 bg-success/10 text-success'
+                          : 'border-border text-muted-foreground'
+                      }`}
+                    >
+                      {isDone ? <CheckCircle2 className="w-3 h-3" /> : String(idx + 1).padStart(2, '0')}
+                    </span>
+                    <span className="line-clamp-2 leading-tight">{s.heading}</span>
+                  </button>
+                )
+              })}
+            </nav>
+
+            {/* Step progress */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>Progress</span>
+                <span className="font-mono">{currentSection + 1} / {totalSections}</span>
+              </div>
+              <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full bg-primary transition-all duration-500"
+                  style={{ width: `${((currentSection + 1) / totalSections) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <article className="col-span-12 lg:col-span-9 space-y-10">
+          {/* Lesson intro */}
+          <motion.header
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-4 border-b border-border pb-8"
           >
-            <p className="text-sm text-gray-300 italic">
-              💡 Visual: {section.visualDescription}
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>{subject}</span>
+              <span className="text-border-strong">/</span>
+              <span>{unit}</span>
+            </div>
+            <h1 className="text-4xl font-semibold tracking-tight">{theory.title}</h1>
+            <p className="text-lg leading-relaxed text-muted-foreground max-w-2xl">
+              {theory.overview}
             </p>
-          </motion.div>
-        )}
-      </motion.div>
+          </motion.header>
 
-      {/* Key Takeaways (if last section) */}
-      {currentSection === theory.sections.length - 1 && theory.keyTakeaways.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6"
-        >
-          <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-            <CheckCircle2 className="w-6 h-6 text-neon-green" />
-            Key Takeaways
-          </h3>
-          <ul className="space-y-2">
-            {theory.keyTakeaways.map((takeaway, idx) => (
-              <li key={idx} className="flex items-start gap-2">
-                <span className="text-neon-cyan">•</span>
-                <span>{takeaway}</span>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-      )}
+          {/* Section */}
+          <motion.section
+            key={currentSection}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="space-y-8"
+          >
+            <div className="space-y-2">
+              <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground">
+                <span className="inline-flex h-6 items-center rounded-md border border-border bg-card px-2">
+                  {String(currentSection + 1).padStart(2, '0')} / {String(totalSections).padStart(2, '0')}
+                </span>
+                <span className="uppercase tracking-wider">Section</span>
+              </div>
+              <h2 className="text-3xl font-semibold tracking-tight">{section.heading}</h2>
+            </div>
 
-      {/* Recommended Videos - shown after theory content */}
-      {youtubeVideos.length > 0 && (
-        <YouTubeVideos videoIds={youtubeVideos} title="Recommended Video Lectures" />
-      )}
+            <div className="prose prose-invert max-w-none">
+              <p className="text-base leading-7 text-foreground/90 whitespace-pre-line">
+                {section.content}
+              </p>
+            </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between">
-        <button
-          onClick={() => setCurrentSection(Math.max(0, currentSection - 1))}
-          disabled={currentSection === 0}
-          className="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
+            {section.codeExample && (
+              <div className="overflow-hidden rounded-lg border border-border bg-[hsl(240_8%_4%)]">
+                {/* Code block header — mac dots + lang */}
+                <div className="flex items-center justify-between border-b border-border bg-card px-4 py-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Code2 className="w-3.5 h-3.5" />
+                    <span className="font-mono">{codeLang}</span>
+                  </div>
+                </div>
+                <pre className="overflow-x-auto p-5">
+                  <code className="text-[13px] leading-6 font-mono text-foreground/90">{section.codeExample}</code>
+                </pre>
+              </div>
+            )}
 
-        {completed ? (
-          <button onClick={handleComplete} className="btn-primary flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5" />
-            Proceed to MCQ Gate
-          </button>
-        ) : (
-          <button onClick={handleNext} className="btn-primary">
-            {currentSection < theory.sections.length - 1 ? 'Next' : 'Complete'}
-          </button>
-        )}
+            {section.visualDescription && (
+              <aside className="flex gap-3 rounded-lg border-l-2 border-primary bg-primary/5 px-4 py-3">
+                <Sparkles className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                <div className="space-y-1">
+                  <p className="text-xs uppercase tracking-wider text-primary">Visual intuition</p>
+                  <p className="text-sm leading-6 text-foreground/85">{section.visualDescription}</p>
+                </div>
+              </aside>
+            )}
+          </motion.section>
+
+          {/* Key Takeaways */}
+          {currentSection === totalSections - 1 && theory.keyTakeaways.length > 0 && (
+            <motion.section
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-lg border border-border bg-card p-6"
+            >
+              <div className="flex items-center gap-2 mb-4 text-xs uppercase tracking-wider text-muted-foreground">
+                <CheckCircle2 className="w-3.5 h-3.5 text-success" />
+                Key Takeaways
+              </div>
+              <ul className="space-y-3">
+                {theory.keyTakeaways.map((takeaway, idx) => (
+                  <li key={idx} className="flex items-start gap-3 text-sm leading-6">
+                    <span className="mt-1 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-success/15 text-xs font-mono text-success">
+                      {idx + 1}
+                    </span>
+                    <span className="text-foreground/90">{takeaway}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.section>
+          )}
+
+          {/* Recommended Videos */}
+          {youtubeVideos.length > 0 && (
+            <YouTubeVideos videoIds={youtubeVideos} title="Recommended Video Lectures" />
+          )}
+
+          {/* Footer nav */}
+          <div className="flex items-center justify-between border-t border-border pt-6">
+            <button
+              onClick={() => setCurrentSection(Math.max(0, currentSection - 1))}
+              disabled={currentSection === 0}
+              className="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ← Previous
+            </button>
+
+            {completed ? (
+              <button onClick={handleComplete} className="btn-primary">
+                Proceed to MCQ Gate
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            ) : (
+              <button onClick={handleNext} className="btn-primary">
+                {currentSection < totalSections - 1 ? 'Next section' : 'Finish lesson'}
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </article>
       </div>
     </div>
   )

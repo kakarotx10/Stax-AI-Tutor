@@ -14,11 +14,11 @@ export function calculateXP(unitXP: number, mcqScore: number, codingProblemsSolv
 export function getDifficultyColor(difficulty: 'Basic' | 'Medium' | 'Advanced'): string {
   switch (difficulty) {
     case 'Basic':
-      return 'text-neon-green'
+      return 'text-success'
     case 'Medium':
-      return 'text-yellow-500'
+      return 'text-warning'
     case 'Advanced':
-      return 'text-red-500'
+      return 'text-destructive'
   }
 }
 

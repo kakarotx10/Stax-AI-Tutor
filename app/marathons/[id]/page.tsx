@@ -104,7 +104,7 @@ export default function MarathonDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-orange border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading marathon...</p>
+          <p className="text-muted-foreground">Loading marathon...</p>
         </div>
       </div>
     )
@@ -114,7 +114,7 @@ export default function MarathonDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400">Marathon not found</p>
+          <p className="text-muted-foreground">Marathon not found</p>
         </div>
       </div>
     )
@@ -135,7 +135,7 @@ export default function MarathonDetailPage() {
                 <Flame className="w-10 h-10 text-neon-orange" />
                 {marathon.title}
               </h1>
-              <p className="text-gray-400">{marathon.description}</p>
+              <p className="text-muted-foreground">{marathon.description}</p>
             </div>
             {marathon.status === 'active' && !joined && (
               <button onClick={handleJoin} className="btn-primary px-6 py-3">
@@ -170,8 +170,8 @@ export default function MarathonDetailPage() {
           </h2>
           {marathon.leaderboard.length === 0 ? (
             <div className="text-center py-12">
-              <Award className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400">No participants yet</p>
+              <Award className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
+              <p className="text-muted-foreground">No participants yet</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -182,7 +182,7 @@ export default function MarathonDetailPage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
                   className={`flex items-center justify-between p-4 rounded-lg ${
-                    entry.userId === userId ? 'bg-neon-cyan/20 border-2 border-neon-cyan' : 'bg-dark-card'
+                    entry.userId === userId ? 'bg-neon-cyan/20 border-2 border-neon-cyan' : 'bg-card'
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -191,14 +191,14 @@ export default function MarathonDetailPage() {
                       <div className={`font-bold ${entry.userId === userId ? 'text-neon-cyan' : ''}`}>
                         {entry.username}
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-muted-foreground">
                         {entry.problemsSolved} problems solved
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-xl font-bold text-neon-yellow">{entry.xp} XP</div>
-                    <div className="text-xs text-gray-400">Rank #{entry.rank}</div>
+                    <div className="text-xs text-muted-foreground">Rank #{entry.rank}</div>
                   </div>
                 </motion.div>
               ))}
@@ -210,7 +210,7 @@ export default function MarathonDetailPage() {
         <div className="glass-card p-6">
           <h2 className="text-2xl font-bold mb-4">About This Marathon</h2>
           <div className="prose prose-invert max-w-none">
-            <p className="text-gray-300 mb-4">
+            <p className="text-foreground/80 mb-4">
               This is an extended coding challenge where you can solve multiple problems and earn massive XP multipliers!
               The marathon runs for {marathon.duration} hours, giving you plenty of time to showcase your skills.
             </p>
@@ -220,14 +220,14 @@ export default function MarathonDetailPage() {
                   <Zap className="w-5 h-5 text-neon-yellow" />
                   XP Multiplier
                 </h3>
-                <p className="text-gray-400">All XP earned during this marathon is multiplied by {marathon.xpMultiplier}x</p>
+                <p className="text-muted-foreground">All XP earned during this marathon is multiplied by {marathon.xpMultiplier}x</p>
               </div>
               <div>
                 <h3 className="font-bold mb-2 flex items-center gap-2">
                   <Trophy className="w-5 h-5 text-neon-yellow" />
                   Rewards
                 </h3>
-                <p className="text-gray-400">Top performers will receive special badges and recognition!</p>
+                <p className="text-muted-foreground">Top performers will receive special badges and recognition!</p>
               </div>
             </div>
           </div>

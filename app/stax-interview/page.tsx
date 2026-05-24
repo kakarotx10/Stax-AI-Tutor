@@ -38,7 +38,7 @@ export default function StaxInterviewPage() {
           <h1 className="text-5xl font-bold neon-text mb-4">
             Meet <span className="text-neon-purple">Stax</span> AI Interviewer
           </h1>
-          <p className="text-xl text-gray-400">
+          <p className="text-xl text-muted-foreground">
             Practice interviews with AI-powered voice conversations
           </p>
         </motion.div>
@@ -50,18 +50,18 @@ export default function StaxInterviewPage() {
             animate={{ opacity: 1, x: 0 }}
             whileHover={{ scale: 1.05 }}
             onClick={() => setSelectedType('technical')}
-            className={`glass-card p-8 rounded-xl border cursor-pointer transition-all ${
+            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
               selectedType === 'technical'
-                ? 'border-neon-cyan shadow-[0_0_30px_rgba(0,255,255,0.4)]'
-                : 'border-gray-700 hover:border-neon-cyan/50'
+                ? 'border-neon-cyan shadow-card'
+                : 'border-border hover:border-neon-cyan/50'
             }`}
           >
             <Code className="w-16 h-16 text-neon-cyan mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-center mb-2">Technical Round</h2>
-            <p className="text-gray-400 text-center mb-4">
+            <p className="text-muted-foreground text-center mb-4">
               Practice coding problems, algorithms, and domain-specific questions
             </p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-foreground/80 space-y-1">
               <li>• Real-time coding challenges</li>
               <li>• Algorithm & DSA questions</li>
               <li>• Domain-specific problems</li>
@@ -74,18 +74,18 @@ export default function StaxInterviewPage() {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ scale: 1.05 }}
             onClick={() => setSelectedType('hr')}
-            className={`glass-card p-8 rounded-xl border cursor-pointer transition-all ${
+            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
               selectedType === 'hr'
-                ? 'border-neon-purple shadow-[0_0_30px_rgba(147,51,234,0.4)]'
-                : 'border-gray-700 hover:border-neon-purple/50'
+                ? 'border-neon-purple shadow-card'
+                : 'border-border hover:border-neon-purple/50'
             }`}
           >
             <Users className="w-16 h-16 text-neon-purple mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-center mb-2">HR Round</h2>
-            <p className="text-gray-400 text-center mb-4">
+            <p className="text-muted-foreground text-center mb-4">
               Practice behavioral questions and soft skills
             </p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-foreground/80 space-y-1">
               <li>• Behavioral questions</li>
               <li>• Situation-based scenarios</li>
               <li>• Teamwork & leadership</li>
@@ -98,18 +98,18 @@ export default function StaxInterviewPage() {
             animate={{ opacity: 1, x: 0 }}
             whileHover={{ scale: 1.05 }}
             onClick={() => setSelectedType('resume')}
-            className={`glass-card p-8 rounded-xl border cursor-pointer transition-all ${
+            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
               selectedType === 'resume'
-                ? 'border-neon-green shadow-[0_0_30px_rgba(34,197,94,0.4)]'
-                : 'border-gray-700 hover:border-neon-green/50'
+                ? 'border-neon-green shadow-card'
+                : 'border-border hover:border-neon-green/50'
             }`}
           >
             <FileText className="w-16 h-16 text-neon-green mx-auto mb-4" />
             <h2 className="text-2xl font-bold text-center mb-2">Resume Round</h2>
-            <p className="text-gray-400 text-center mb-4">
+            <p className="text-muted-foreground text-center mb-4">
               Discuss your projects, experience, and achievements
             </p>
-            <ul className="text-sm text-gray-300 space-y-1">
+            <ul className="text-sm text-foreground/80 space-y-1">
               <li>• Project deep-dives</li>
               <li>• Experience discussion</li>
               <li>• Skills validation</li>
@@ -133,8 +133,8 @@ export default function StaxInterviewPage() {
                   onClick={() => setSelectedDomain(domain)}
                   className={`px-4 py-3 rounded-lg transition-all ${
                     selectedDomain === domain
-                      ? 'bg-neon-cyan text-black font-bold'
-                      : 'bg-dark-card text-gray-400 hover:text-white'
+                      ? 'bg-neon-cyan text-primary-foreground font-bold'
+                      : 'bg-card text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {domain.charAt(0).toUpperCase() + domain.slice(1)}

@@ -3,17 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Play, Loader2, Trophy, RotateCcw, CheckCircle, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import confetti from 'canvas-confetti'
 import { CONTEST_PROBLEMS } from '@/lib/contestProblems'
-
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import MonacoEditor from '@/components/MonacoEditor'
 
 export default function MarathonSolvePage() {
   const params = useParams()
@@ -247,7 +242,7 @@ rl.on('line', (line) => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-orange border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading marathon...</p>
+          <p className="text-muted-foreground">Loading marathon...</p>
         </div>
       </div>
     )
@@ -284,8 +279,8 @@ rl.on('line', (line) => {
                 }}
                 className={`px-4 py-2 rounded-lg transition-all ${
                   currentProblemIndex === index
-                    ? 'bg-neon-orange text-dark-bg font-bold'
-                    : 'bg-dark-card hover:bg-dark-card/80'
+                    ? 'bg-neon-orange text-primary-foreground font-bold'
+                    : 'bg-card hover:bg-card/80'
                 } ${solvedProblems.has(index) ? 'border-2 border-neon-green' : ''}`}
               >
                 <div className="flex items-center gap-2">
@@ -315,7 +310,7 @@ rl.on('line', (line) => {
               </div>
 
               <div className="prose prose-invert max-w-none mb-6">
-                <div className="text-gray-300 mb-6 whitespace-pre-wrap leading-relaxed">
+                <div className="text-foreground/80 mb-6 whitespace-pre-wrap leading-relaxed">
                   {currentProblem.description}
                 </div>
 
@@ -323,17 +318,17 @@ rl.on('line', (line) => {
                   <div className="mb-6">
                     <h3 className="text-xl font-bold mb-3">Examples:</h3>
                     {currentProblem.testCases.examples.map((ex: any, idx: number) => (
-                      <div key={idx} className="mb-4 p-4 bg-dark-card rounded-lg border border-gray-700">
-                        <p className="text-sm text-gray-400 mb-2">
+                      <div key={idx} className="mb-4 p-4 bg-card rounded-lg border border-border">
+                        <p className="text-sm text-muted-foreground mb-2">
                           <span className="font-bold text-neon-cyan">Input:</span>{' '}
-                          <code className="text-white bg-dark-bg px-2 py-1 rounded">{ex.input}</code>
+                          <code className="text-foreground bg-background px-2 py-1 rounded">{ex.input}</code>
                         </p>
-                        <p className="text-sm text-gray-400 mb-2">
+                        <p className="text-sm text-muted-foreground mb-2">
                           <span className="font-bold text-neon-green">Output:</span>{' '}
-                          <code className="text-white bg-dark-bg px-2 py-1 rounded">{ex.output}</code>
+                          <code className="text-foreground bg-background px-2 py-1 rounded">{ex.output}</code>
                         </p>
                         {ex.explanation && (
-                          <p className="text-sm text-gray-500 mt-2 italic">{ex.explanation}</p>
+                          <p className="text-sm text-muted-foreground/80 mt-2 italic">{ex.explanation}</p>
                         )}
                       </div>
                     ))}
@@ -345,7 +340,7 @@ rl.on('line', (line) => {
                     <h3 className="text-xl font-bold mb-3">Constraints:</h3>
                     <ul className="list-disc list-inside space-y-2">
                       {currentProblem.testCases.constraints.map((c: string, idx: number) => (
-                        <li key={idx} className="text-gray-300">{c}</li>
+                        <li key={idx} className="text-foreground/80">{c}</li>
                       ))}
                     </ul>
                   </div>
@@ -359,7 +354,7 @@ rl.on('line', (line) => {
                 <select
                   value={language}
                   onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="bg-dark-card border border-gray-700 rounded-lg px-4 py-2 text-white"
+                  className="bg-card border border-border rounded-lg px-4 py-2 text-foreground"
                 >
                   <option value="python">Python</option>
                   <option value="cpp">C++</option>
@@ -368,7 +363,7 @@ rl.on('line', (line) => {
                 </select>
                 <button
                   onClick={() => setCode(getLanguageTemplate(language))}
-                  className="text-gray-400 hover:text-white flex items-center gap-2"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2"
                 >
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -433,11 +428,11 @@ rl.on('line', (line) => {
                           Test {idx + 1}: {result.passed ? 'Passed' : 'Failed'}
                         </span>
                       </div>
-                      <div className="text-sm text-gray-400 space-y-1">
-                        <p>Input: <code className="text-white">{result.input}</code></p>
-                        <p>Expected: <code className="text-white">{result.expected}</code></p>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        <p>Input: <code className="text-foreground">{result.input}</code></p>
+                        <p>Expected: <code className="text-foreground">{result.expected}</code></p>
                         {!result.passed && (
-                          <p>Got: <code className="text-white">{result.got}</code></p>
+                          <p>Got: <code className="text-foreground">{result.got}</code></p>
                         )}
                       </div>
                     </div>

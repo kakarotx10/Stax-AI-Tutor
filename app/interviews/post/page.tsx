@@ -148,7 +148,7 @@ export default function PostInterviewPage() {
           className="mb-8"
         >
           <h1 className="text-4xl font-bold neon-text mb-4">Share Your Interview Experience</h1>
-          <p className="text-gray-400">Help others by sharing your interview journey</p>
+          <p className="text-muted-foreground">Help others by sharing your interview journey</p>
         </motion.div>
 
         {/* Post Type Selector */}
@@ -158,8 +158,8 @@ export default function PostInterviewPage() {
               onClick={() => setPostType('experience')}
               className={`flex-1 px-6 py-4 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${
                 postType === 'experience'
-                  ? 'bg-neon-cyan text-black'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                  ? 'bg-neon-cyan text-primary-foreground'
+                  : 'bg-card text-muted-foreground hover:bg-card/80'
               }`}
             >
               <Briefcase className="w-5 h-5" />
@@ -169,8 +169,8 @@ export default function PostInterviewPage() {
               onClick={() => setPostType('article')}
               className={`flex-1 px-6 py-4 rounded-lg font-bold transition-all flex items-center justify-center gap-2 ${
                 postType === 'article'
-                  ? 'bg-neon-cyan text-black'
-                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                  ? 'bg-neon-cyan text-primary-foreground'
+                  : 'bg-card text-muted-foreground hover:bg-card/80'
               }`}
             >
               <BookOpen className="w-5 h-5" />
@@ -189,7 +189,7 @@ export default function PostInterviewPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter a descriptive title"
-              className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+              className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
             />
           </div>
 
@@ -199,7 +199,7 @@ export default function PostInterviewPage() {
             <select
               value={domain}
               onChange={(e) => setDomain(e.target.value as Domain)}
-              className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
+              className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:border-ring"
             >
               {(Object.keys(DOMAINS) as Domain[]).map(domainId => (
                 <option key={domainId} value={domainId}>
@@ -220,7 +220,7 @@ export default function PostInterviewPage() {
                     value={company}
                     onChange={(e) => setCompany(e.target.value)}
                     placeholder="Company name"
-                    className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                    className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                   />
                 </div>
                 <div>
@@ -230,7 +230,7 @@ export default function PostInterviewPage() {
                     value={position}
                     onChange={(e) => setPosition(e.target.value)}
                     placeholder="Job position"
-                    className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                    className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                   />
                 </div>
               </div>
@@ -241,7 +241,7 @@ export default function PostInterviewPage() {
                   <select
                     value={companyType}
                     onChange={(e) => setCompanyType(e.target.value as CompanyType)}
-                    className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
+                    className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:border-ring"
                   >
                     <option value="product-based">Product-based</option>
                     <option value="service-based">Service-based</option>
@@ -255,7 +255,7 @@ export default function PostInterviewPage() {
                   <select
                     value={experienceLevel}
                     onChange={(e) => setExperienceLevel(e.target.value as ExperienceLevel)}
-                    className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
+                    className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:border-ring"
                   >
                     <option value="intern">Intern</option>
                     <option value="new-grad">New Grad</option>
@@ -271,7 +271,7 @@ export default function PostInterviewPage() {
                 <select
                   value={verdict}
                   onChange={(e) => setVerdict(e.target.value as any)}
-                  className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
+                  className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:border-ring"
                 >
                   <option value="pending">Pending</option>
                   <option value="selected">Selected</option>
@@ -289,7 +289,7 @@ export default function PostInterviewPage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as any)}
-                  className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white focus:outline-none focus:border-neon-cyan"
+                  className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground focus:outline-none focus:border-ring"
                 >
                   <option value="preparation">Preparation</option>
                   <option value="resume">Resume</option>
@@ -306,7 +306,7 @@ export default function PostInterviewPage() {
                   onChange={(e) => setExcerpt(e.target.value)}
                   placeholder="Short summary (optional, auto-generated if empty)"
                   rows={3}
-                  className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                  className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                 />
               </div>
             </>
@@ -320,7 +320,7 @@ export default function PostInterviewPage() {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Write your experience/article here..."
               rows={15}
-              className="w-full px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+              className="w-full px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
             />
           </div>
 
@@ -334,11 +334,11 @@ export default function PostInterviewPage() {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
                 placeholder="Add a tag and press Enter"
-                className="flex-1 px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                className="flex-1 px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
               />
               <button
                 onClick={addTag}
-                className="px-4 py-2 bg-neon-cyan text-black rounded-lg font-bold hover:bg-neon-cyan/80"
+                className="px-4 py-2 bg-neon-cyan text-primary-foreground rounded-lg font-bold hover:bg-neon-cyan/80"
               >
                 <Plus className="w-5 h-5" />
               </button>
@@ -366,18 +366,18 @@ export default function PostInterviewPage() {
                   onChange={(e) => setTipInput(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTip())}
                   placeholder="Add a tip and press Enter"
-                  className="flex-1 px-4 py-2 bg-dark-card border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-neon-cyan"
+                  className="flex-1 px-4 py-2 bg-card border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                 />
                 <button
                   onClick={addTip}
-                  className="px-4 py-2 bg-neon-cyan text-black rounded-lg font-bold hover:bg-neon-cyan/80"
+                  className="px-4 py-2 bg-neon-cyan text-primary-foreground rounded-lg font-bold hover:bg-neon-cyan/80"
                 >
                   <Plus className="w-5 h-5" />
                 </button>
               </div>
               <div className="space-y-2">
                 {tips.map((tip, idx) => (
-                  <div key={idx} className="px-3 py-2 bg-dark-card rounded-lg flex items-center justify-between">
+                  <div key={idx} className="px-3 py-2 bg-card rounded-lg flex items-center justify-between">
                     <span className="text-sm">{tip}</span>
                     <button onClick={() => removeTip(tip)} className="text-red-400 hover:text-red-300">
                       <X className="w-4 h-4" />
@@ -392,14 +392,14 @@ export default function PostInterviewPage() {
           <div className="flex gap-4">
             <button
               onClick={() => router.back()}
-              className="px-6 py-3 bg-dark-card text-gray-400 rounded-lg font-bold hover:bg-dark-card/80 transition-all"
+              className="px-6 py-3 bg-card text-muted-foreground rounded-lg font-bold hover:bg-card/80 transition-all"
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
               disabled={loading || !title || !content}
-              className="flex-1 px-6 py-3 bg-neon-cyan text-black rounded-lg font-bold hover:bg-neon-cyan/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+              className="flex-1 px-6 py-3 bg-neon-cyan text-primary-foreground rounded-lg font-bold hover:bg-neon-cyan/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

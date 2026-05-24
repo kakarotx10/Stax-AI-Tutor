@@ -20,11 +20,11 @@ function PaymentFailureContent() {
       >
         <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
         <h1 className="text-3xl font-bold mb-2">Payment Failed</h1>
-        <p className="text-gray-400 mb-4">Something went wrong with your payment.</p>
+        <p className="text-muted-foreground mb-4">Something went wrong with your payment.</p>
         {txnid && (
-          <p className="text-sm text-gray-500 mb-4">Transaction ID: {txnid}</p>
+          <p className="text-sm text-muted-foreground/80 mb-4">Transaction ID: {txnid}</p>
         )}
-        <p className="text-sm text-gray-500 mb-6">Status: {status || 'failed'}</p>
+        <p className="text-sm text-muted-foreground/80 mb-6">Status: {status || 'failed'}</p>
         <button
           onClick={() => router.push('/pricing')}
           className="btn-primary flex items-center gap-2 mx-auto"
@@ -39,7 +39,7 @@ function PaymentFailureContent() {
 
 export default function PaymentFailurePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8 text-gray-400">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8 text-muted-foreground">Loading...</div>}>
       <PaymentFailureContent />
     </Suspense>
   )

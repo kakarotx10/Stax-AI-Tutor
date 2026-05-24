@@ -11,6 +11,7 @@ import {
   type PlanType,
 } from '@/lib/pricing'
 import { DOMAINS, type Domain } from '@/lib/subjects'
+import { Button } from '@/components/ui/Button'
 import { Check, X, Sparkles, Crown, Star, Zap } from 'lucide-react'
 
 export default function PricingPage() {
@@ -123,18 +124,18 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white py-20 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="page-shell">
+      <div className="page-container">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="page-header mb-16 text-center"
         >
-          <h1 className="text-5xl md:text-6xl font-bold neon-text mb-4">
+          <h1 className="page-title">
             Choose Your Plan
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="page-description mx-auto">
             Select the perfect plan for your learning journey. Upgrade or downgrade anytime.
           </p>
         </motion.div>
@@ -149,11 +150,11 @@ export default function PricingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: planId === 'platinum' ? 0.1 : planId === 'gold' ? 0.2 : 0.3 }}
-                className={`glass-card p-6 relative ${plan.popular ? 'ring-2 ring-neon-cyan scale-105' : ''}`}
+                className={`glass-card relative p-6 ${plan.popular ? 'ring-2 ring-primary' : ''}`}
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-neon-cyan text-black px-4 py-1 rounded-full text-sm font-bold">
+                    <span className="rounded-full bg-primary px-4 py-1 text-sm font-bold text-primary-foreground">
                       {plan.badge}
                     </span>
                   </div>
@@ -163,21 +164,21 @@ export default function PricingPage() {
                   <div className="text-4xl mb-2">
                     {planId === 'platinum' && <Crown className="w-12 h-12 text-neon-cyan mx-auto mb-2" />}
                     {planId === 'gold' && <Star className="w-12 h-12 text-yellow-400 mx-auto mb-2" />}
-                    {planId === 'silver' && <Zap className="w-12 h-12 text-gray-400 mx-auto mb-2" />}
+                    {planId === 'silver' && <Zap className="w-12 h-12 text-muted-foreground mx-auto mb-2" />}
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
+                  <h3 className="mb-2 text-h4">{plan.name}</h3>
+                  <p className="mb-4 text-body-sm text-muted-foreground">{plan.description}</p>
                   
                   <div className="mb-4">
-                    <span className="text-4xl font-bold text-neon-cyan">
+                    <span className="text-h3 text-primary">
                       ₹{plan.price}
                     </span>
                     {plan.originalPrice && (
-                      <span className="text-gray-500 line-through ml-2">
+                      <span className="ml-2 text-muted-foreground line-through">
                         ₹{plan.originalPrice}
                       </span>
                     )}
-                    <div className="text-sm text-gray-400 mt-1">/{plan.duration}</div>
+                    <div className="mt-1 text-body-sm text-muted-foreground">/{plan.duration}</div>
                   </div>
                 </div>
 
@@ -186,22 +187,19 @@ export default function PricingPage() {
                     Includes {plan.domains.length} domain{plan.domains.length > 1 ? 's' : ''}:
                   </div>
                   {plan.domains.map(domainId => (
-                    <div key={domainId} className="text-sm text-gray-300">
+                    <div key={domainId} className="text-sm text-muted-foreground">
                       • {DOMAINS[domainId].name}
                     </div>
                   ))}
                 </div>
 
-                <button
+                <Button
                   onClick={() => handlePlanSelect(planId)}
-                  className={`w-full py-3 rounded-lg font-bold transition-all ${
-                    plan.popular
-                      ? 'bg-neon-cyan text-black hover:bg-neon-cyan/80'
-                      : 'bg-neon-purple text-white hover:bg-neon-purple/80'
-                  }`}
+                  variant={plan.popular ? 'primary' : 'secondary'}
+                  className="w-full"
                 >
                   Choose Plan
-                </button>
+                </Button>
               </motion.div>
             )
           })}
@@ -211,27 +209,28 @@ export default function PricingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="glass-card p-6 relative border-2 border-dashed border-neon-purple"
+            className="glass-card relative border-2 border-dashed border-secondary p-6"
           >
             <div className="text-center mb-6">
               <Sparkles className="w-12 h-12 text-neon-purple mx-auto mb-2" />
-              <h3 className="text-2xl font-bold mb-2">{PRICING_PLANS.custom.name}</h3>
-              <p className="text-gray-400 text-sm mb-4">{PRICING_PLANS.custom.description}</p>
+              <h3 className="mb-2 text-h4">{PRICING_PLANS.custom.name}</h3>
+              <p className="mb-4 text-body-sm text-muted-foreground">{PRICING_PLANS.custom.description}</p>
               
               <div className="mb-4">
-                <span className="text-4xl font-bold text-neon-purple">
+                <span className="text-h3 text-secondary">
                   ₹{customPrice || 0}
                 </span>
-                <div className="text-sm text-gray-400 mt-1">/month</div>
+                <div className="mt-1 text-body-sm text-muted-foreground">/month</div>
               </div>
             </div>
 
-            <button
+            <Button
               onClick={() => handlePlanSelect('custom')}
-              className="w-full py-3 rounded-lg font-bold bg-neon-purple text-white hover:bg-neon-purple/80 transition-all"
+              variant="secondary"
+              className="w-full"
             >
               Build Custom Plan
-            </button>
+            </Button>
           </motion.div>
         </div>
 
@@ -242,7 +241,7 @@ export default function PricingPage() {
             animate={{ opacity: 1, y: 0 }}
             className="glass-card p-8 max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl font-bold mb-6 text-center">Build Your Custom Plan</h2>
+            <h2 className="mb-6 text-center text-h3">Build Your Custom Plan</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {(Object.keys(DOMAINS) as Domain[]).map(domainId => {
@@ -258,8 +257,8 @@ export default function PricingPage() {
                     onClick={() => toggleDomain(domainId)}
                     className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-neon-cyan bg-neon-cyan/10'
-                        : 'border-gray-700 hover:border-gray-600'
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border hover:border-primary/60'
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -267,13 +266,13 @@ export default function PricingPage() {
                         <span className="text-2xl">{domain.icon}</span>
                         <div>
                           <h3 className="font-bold">{domain.name}</h3>
-                          <p className="text-sm text-gray-400">{domain.subjects.length} subjects</p>
+                          <p className="text-sm text-muted-foreground">{domain.subjects.length} subjects</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-neon-cyan font-bold">₹{price}</div>
+                        <div className="font-bold text-primary">₹{price}</div>
                         {isSelected && (
-                          <Check className="w-5 h-5 text-neon-cyan mt-1" />
+                          <Check className="mt-1 h-5 w-5 text-primary" />
                         )}
                       </div>
                     </div>
@@ -282,33 +281,32 @@ export default function PricingPage() {
               })}
             </div>
 
-            <div className="border-t border-gray-700 pt-6">
+            <div className="border-t border-border pt-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-h4">
                     Total: ₹{customPrice}
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-body-sm text-muted-foreground">
                     {customDomains.length} domain{customDomains.length !== 1 ? 's' : ''} selected
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <button
+                  <Button
                     onClick={() => {
                       setShowCustomBuilder(false)
                       setCustomDomains([])
                     }}
-                    className="px-6 py-2 rounded-lg border border-gray-600 hover:border-gray-500 transition-all"
+                    variant="outline"
                   >
                     Cancel
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={handleCustomPurchase}
                     disabled={customDomains.length === 0}
-                    className="px-6 py-2 rounded-lg bg-neon-cyan text-black font-bold hover:bg-neon-cyan/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                   >
                     Purchase Custom Plan
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -322,12 +320,12 @@ export default function PricingPage() {
           transition={{ delay: 0.5 }}
           className="glass-card p-8 mt-12"
         >
-          <h2 className="text-3xl font-bold mb-8 text-center">Feature Comparison</h2>
+          <h2 className="mb-8 text-center text-h3">Feature Comparison</h2>
           
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-700">
+                <tr className="border-b border-border">
                   <th className="text-left py-4 px-4">Feature</th>
                   <th className="text-center py-4 px-4">Silver</th>
                   <th className="text-center py-4 px-4">Gold</th>
@@ -336,20 +334,20 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {PRICING_PLANS.platinum.features.map((feature, idx) => (
-                  <tr key={feature.id} className="border-b border-gray-800">
+                  <tr key={feature.id} className="border-b border-border">
                     <td className="py-4 px-4">{feature.name}</td>
                     <td className="text-center py-4 px-4">
                       {PRICING_PLANS.silver.features[idx]?.included ? (
                         <Check className="w-5 h-5 text-neon-green mx-auto" />
                       ) : (
-                        <X className="w-5 h-5 text-gray-600 mx-auto" />
+                        <X className="w-5 h-5 text-muted-foreground mx-auto" />
                       )}
                     </td>
                     <td className="text-center py-4 px-4">
                       {PRICING_PLANS.gold.features[idx]?.included ? (
                         <Check className="w-5 h-5 text-neon-green mx-auto" />
                       ) : (
-                        <X className="w-5 h-5 text-gray-600 mx-auto" />
+                        <X className="w-5 h-5 text-muted-foreground mx-auto" />
                       )}
                     </td>
                     <td className="text-center py-4 px-4">
@@ -365,4 +363,3 @@ export default function PricingPage() {
     </div>
   )
 }
-

@@ -14,10 +14,15 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
   const [showContent, setShowContent] = useState(false)
 
   useEffect(() => {
-    // Epic confetti explosion
     const duration = 5000
     const animationEnd = Date.now() + duration
     const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 }
+    const confettiColors = [
+      'hsl(239, 84%, 67%)',
+      'hsl(227, 59%, 57%)',
+      'hsl(160, 84%, 39%)',
+      'hsl(38, 92%, 50%)',
+    ]
 
     function randomInRange(min: number, max: number) {
       return Math.random() * (max - min) + min
@@ -37,7 +42,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
         ...defaults,
         particleCount,
         origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-        colors: ['#00ffff', '#9d4edd', '#ff00ff', '#00ff00'],
+        colors: confettiColors,
       })
       
       // Right side
@@ -45,7 +50,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
         ...defaults,
         particleCount,
         origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-        colors: ['#00ffff', '#9d4edd', '#ff00ff', '#00ff00'],
+        colors: confettiColors,
       })
     }, 250)
 
@@ -60,7 +65,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -74,7 +79,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -89,7 +94,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
             className="mb-6"
           >
             <div className="relative inline-block">
-              <Trophy className="w-32 h-32 text-neon-cyan drop-shadow-[0_0_30px_rgba(0,255,255,0.8)]" />
+              <Trophy className="w-32 h-32 text-primary" />
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -106,16 +111,16 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="text-5xl font-bold neon-text mb-4"
+                className="mb-4 text-h1"
               >
-                🎉 BADGE UNLOCKED! 🎉
+                Badge Unlocked
               </motion.h1>
 
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="text-2xl text-gray-300 mb-8"
+                className="text-2xl text-foreground/80 mb-8"
               >
                 Master of {subtopicName}
               </motion.p>
@@ -132,15 +137,15 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 </h3>
                 <div className="space-y-2 text-left">
                   <div className="flex items-center gap-2">
-                    <span className="text-neon-green">✅</span>
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                     <span>Completed Theory</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-neon-green">✅</span>
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                     <span>Passed MCQ Gate</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-neon-green">✅</span>
+                    <CheckCircle2 className="h-5 w-5 text-success" />
                     <span>Solved Basic Coding Challenge</span>
                   </div>
                 </div>
@@ -154,17 +159,17 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
               >
                 <div className="text-center">
                   <div className="text-3xl font-bold text-neon-cyan">+100</div>
-                  <div className="text-sm text-gray-400">XP Earned</div>
+                  <div className="text-sm text-muted-foreground">XP Earned</div>
                 </div>
                 <div className="w-px h-12 bg-neon-cyan/30" />
                 <div className="text-center">
                   <div className="text-3xl font-bold text-neon-purple">1</div>
-                  <div className="text-sm text-gray-400">Badge</div>
+                  <div className="text-sm text-muted-foreground">Badge</div>
                 </div>
                 <div className="w-px h-12 bg-neon-cyan/30" />
                 <div className="text-center">
                   <div className="text-3xl font-bold text-neon-pink">3</div>
-                  <div className="text-sm text-gray-400">Phases</div>
+                  <div className="text-sm text-muted-foreground">Phases</div>
                 </div>
               </motion.div>
 
@@ -172,12 +177,11 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1.1 }}
-                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onClose}
-                className="btn-primary text-xl px-8 py-4 w-full"
+                className="btn-primary w-full"
               >
-                Continue Journey →
+                Continue Journey
               </motion.button>
             </>
           )}

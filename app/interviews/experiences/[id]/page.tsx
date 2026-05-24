@@ -41,7 +41,7 @@ export default function ExperienceDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading experience...</p>
+          <p className="text-muted-foreground">Loading experience...</p>
         </div>
       </div>
     )
@@ -51,7 +51,7 @@ export default function ExperienceDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400 mb-4">Experience not found</p>
+          <p className="text-muted-foreground mb-4">Experience not found</p>
           <button onClick={() => router.back()} className="btn-primary">
             Go Back
           </button>
@@ -66,7 +66,7 @@ export default function ExperienceDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-neon-cyan transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -81,7 +81,7 @@ export default function ExperienceDetailPage() {
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
               <h1 className="text-4xl font-bold neon-text mb-4">{experience.title}</h1>
-              <div className="flex items-center gap-4 text-gray-400 mb-4">
+              <div className="flex items-center gap-4 text-muted-foreground mb-4">
                 <div className="flex items-center gap-2">
                   <Building className="w-5 h-5" />
                   <span>{experience.company}</span>
@@ -101,14 +101,14 @@ export default function ExperienceDetailPage() {
             <div className={`px-4 py-2 rounded-full text-sm font-bold ${
               experience.verdict === 'selected' ? 'bg-neon-green/20 text-neon-green' :
               experience.verdict === 'rejected' ? 'bg-red-500/20 text-red-400' :
-              'bg-gray-600/20 text-gray-400'
+              'bg-muted text-muted-foreground'
             }`}>
               {experience.verdict.toUpperCase()}
             </div>
           </div>
 
           {/* Meta Info */}
-          <div className="flex items-center gap-6 text-sm text-gray-400">
+          <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
               <span>{experience.authorName}</span>
@@ -141,7 +141,7 @@ export default function ExperienceDetailPage() {
           className="glass-card p-8 mb-6"
         >
           <div className="prose prose-invert max-w-none">
-            <div className="whitespace-pre-wrap text-gray-300 leading-relaxed">
+            <div className="whitespace-pre-wrap text-foreground/80 leading-relaxed">
               {experience.content}
             </div>
           </div>
@@ -170,11 +170,11 @@ export default function ExperienceDetailPage() {
                       {round.difficulty.toUpperCase()}
                     </span>
                   </div>
-                  <p className="text-gray-400 mb-4">{round.description}</p>
+                  <p className="text-muted-foreground mb-4">{round.description}</p>
                   {round.questions && round.questions.length > 0 && (
                     <div className="mb-4">
                       <h4 className="font-semibold mb-2 text-neon-cyan">Questions Asked:</h4>
-                      <ul className="list-disc list-inside space-y-1 text-gray-300">
+                      <ul className="list-disc list-inside space-y-1 text-foreground/80">
                         {round.questions.map((q, qIdx) => (
                           <li key={qIdx}>{q}</li>
                         ))}
@@ -182,9 +182,9 @@ export default function ExperienceDetailPage() {
                     </div>
                   )}
                   {round.feedback && (
-                    <div className="mt-4 p-4 bg-dark-card rounded-lg">
+                    <div className="mt-4 p-4 bg-card rounded-lg">
                       <h4 className="font-semibold mb-2 text-neon-cyan">Feedback:</h4>
-                      <p className="text-gray-300">{round.feedback}</p>
+                      <p className="text-foreground/80">{round.feedback}</p>
                     </div>
                   )}
                 </div>
@@ -206,7 +206,7 @@ export default function ExperienceDetailPage() {
               {experience.tips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-3">
                   <span className="text-neon-cyan mt-1">💡</span>
-                  <span className="text-gray-300">{tip}</span>
+                  <span className="text-foreground/80">{tip}</span>
                 </li>
               ))}
             </ul>
@@ -223,12 +223,12 @@ export default function ExperienceDetailPage() {
           <div className="flex items-center gap-6">
             <button
               onClick={handleLike}
-              className="flex items-center gap-2 px-4 py-2 bg-dark-card rounded-lg hover:bg-dark-card/80 transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all"
             >
               <Heart className="w-5 h-5 text-red-400" />
               <span>{experience.likes}</span>
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-dark-card rounded-lg hover:bg-dark-card/80 transition-all">
+            <button className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all">
               <MessageCircle className="w-5 h-5 text-neon-cyan" />
               <span>{experience.comments}</span>
             </button>

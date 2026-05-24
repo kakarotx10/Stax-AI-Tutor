@@ -54,9 +54,9 @@ const domainStyles: Record<Domain, {
   progress: string
 }> = {
   placement: {
-    icon: 'bg-cyan-400/10 text-cyan-200 ring-cyan-300/20',
-    border: 'hover:border-cyan-300/40',
-    chip: 'border-cyan-300/20 bg-cyan-400/10 text-cyan-100',
+    icon: 'bg-cyan-400/10 text-primary ring-cyan-300/20',
+    border: 'hover:border-primary/40',
+    chip: 'border-primary/20 bg-cyan-400/10 text-primary',
     progress: 'bg-cyan-400',
   },
   frontend: {
@@ -72,10 +72,10 @@ const domainStyles: Record<Domain, {
     progress: 'bg-sky-400',
   },
   aiml: {
-    icon: 'bg-violet-400/10 text-violet-200 ring-violet-300/20',
-    border: 'hover:border-violet-300/40',
-    chip: 'border-violet-300/20 bg-violet-400/10 text-violet-100',
-    progress: 'bg-violet-400',
+    icon: 'bg-secondary/10 text-secondary ring-secondary/20',
+    border: 'hover:border-secondary/40',
+    chip: 'border-secondary/20 bg-secondary/10 text-secondary',
+    progress: 'bg-secondary',
   },
   'stax-interview': {
     icon: 'bg-amber-400/10 text-amber-200 ring-amber-300/20',
@@ -162,14 +162,14 @@ export default function JourneyMap() {
         transition={{ duration: 0.6 }}
         className="mx-auto max-w-3xl text-center"
       >
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-sm font-medium text-cyan-100">
+        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-2 text-sm font-medium text-primary">
           <Sparkles className="h-4 w-4 text-cyan-300" />
           Curriculum pathways
         </div>
-        <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Choose your learning path
         </h2>
-        <p className="mt-4 text-base leading-7 text-slate-400 sm:text-lg">
+        <p className="mt-4 text-base leading-7 text-muted-foreground sm:text-lg">
           Expand a domain to see its subjects, progress signals, units, and XP
           potential in one clean view.
         </p>
@@ -195,7 +195,7 @@ export default function JourneyMap() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: domainIdx * 0.08, duration: 0.45 }}
-              className={`overflow-hidden rounded-3xl border border-white/10 bg-white/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-xl transition duration-200 ${styles.border}`}
+              className={`overflow-hidden rounded-3xl border border-border bg-card shadow-card backdrop-blur-xl transition duration-200 ${styles.border}`}
             >
               <button
                 type="button"
@@ -207,15 +207,15 @@ export default function JourneyMap() {
                   toggleDomain(domainId)
                 }}
                 aria-expanded={domainId === 'stax-interview' ? undefined : isExpanded}
-                className="flex w-full flex-col gap-5 p-5 text-left transition hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-inset sm:p-6 lg:flex-row lg:items-center lg:justify-between"
+                className="flex w-full flex-col gap-5 p-5 text-left transition hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-6 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div className="flex min-w-0 items-start gap-4">
-                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ring-1 ${styles.icon}`}>
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg ring-1 ${styles.icon}`}>
                     <DomainIcon className="h-7 w-7" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
+                      <h3 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
                         {domain.name}
                       </h3>
                       {domainId === 'stax-interview' && (
@@ -224,7 +224,7 @@ export default function JourneyMap() {
                         </span>
                       )}
                     </div>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+                    <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
                       {domain.description}
                     </p>
                   </div>
@@ -236,16 +236,16 @@ export default function JourneyMap() {
                       <span className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${styles.chip}`}>
                         Click to start
                       </span>
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-amber-100">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-muted text-amber-100">
                         <ChevronRight className="h-5 w-5" />
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-sm font-semibold text-slate-200">
+                      <span className="rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground">
                         {domainSubjects.length} subjects
                       </span>
-                      <span className="rounded-full border border-white/10 bg-white/[0.055] px-3 py-1.5 text-sm font-semibold text-slate-200">
+                      <span className="rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground">
                         {totalUnits} units
                       </span>
                       <span className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${styles.chip}`}>
@@ -254,7 +254,7 @@ export default function JourneyMap() {
                       <motion.span
                         animate={{ rotate: isExpanded ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
-                        className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-slate-200"
+                        className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-muted text-foreground"
                       >
                         <ChevronDown className="h-5 w-5" />
                       </motion.span>
@@ -269,7 +269,7 @@ export default function JourneyMap() {
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.3 }}
-                  className="border-t border-white/10 bg-black/10 p-5 sm:p-6"
+                  className="border-t border-border bg-background/10 p-5 sm:p-6"
                 >
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {domainSubjects.map((subject, subjectIdx) => {
@@ -289,28 +289,28 @@ export default function JourneyMap() {
                           transition={{ delay: subjectIdx * 0.04, duration: 0.35 }}
                           whileHover={{ y: -4 }}
                           whileTap={{ scale: 0.98 }}
-                          className="group flex h-full flex-col rounded-2xl border border-white/10 bg-[#0d121d] p-4 text-left shadow-[0_14px_35px_rgba(0,0,0,0.18)] transition duration-200 hover:border-white/20 hover:bg-[#111827] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+                          className="group flex h-full flex-col rounded-lg border border-border bg-card p-4 text-left shadow-card transition duration-200 hover:border-primary/60 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                           onClick={() => handleSubjectClick(subject.id)}
                         >
                           <div className="mb-4 flex items-start justify-between gap-4">
                             <div className="flex items-center gap-3">
-                              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.06] text-cyan-200 ring-1 ring-white/10">
+                              <span className="flex h-11 w-11 items-center justify-center rounded-lg bg-muted text-primary ring-1 ring-white/10">
                                 <SubjectIcon className="h-5 w-5" />
                               </span>
                               <div>
-                                <h4 className="font-semibold text-white">
+                                <h4 className="font-semibold text-foreground">
                                   {subject.name}
                                 </h4>
-                                <p className="mt-1 text-sm text-slate-500">
+                                <p className="mt-1 text-sm text-muted-foreground/80">
                                   {subject.units.length} units
                                 </p>
                               </div>
                             </div>
-                            <ChevronRight className="h-5 w-5 shrink-0 text-slate-500 transition group-hover:translate-x-1 group-hover:text-cyan-200" />
+                            <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground/80 transition group-hover:translate-x-1 group-hover:text-primary" />
                           </div>
 
                           <div className="mb-4">
-                            <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                            <div className="mb-2 flex items-center justify-between text-xs font-semibold uppercase tracking-normal text-muted-foreground/80">
                               <span>Progress</span>
                               <span>{subjectProgress}%</span>
                             </div>
@@ -328,20 +328,20 @@ export default function JourneyMap() {
                                 {unit.completed ? (
                                   <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-300" />
                                 ) : unit.locked ? (
-                                  <Lock className="h-4 w-4 shrink-0 text-slate-600" />
+                                  <Lock className="h-4 w-4 shrink-0 text-muted-foreground/60" />
                                 ) : (
                                   <Sparkles className="h-4 w-4 shrink-0 text-cyan-300" />
                                 )}
-                                <span className={unit.completed ? 'text-emerald-200' : unit.locked ? 'text-slate-600' : 'text-slate-200'}>
+                                <span className={unit.completed ? 'text-emerald-200' : unit.locked ? 'text-muted-foreground/60' : 'text-foreground'}>
                                   {unit.name}
                                 </span>
                               </div>
                             ))}
                           </div>
 
-                          <div className="mt-auto flex items-center justify-between border-t border-white/10 pt-3 text-sm">
-                            <span className="text-slate-500">Total XP</span>
-                            <span className="font-semibold text-cyan-200">
+                          <div className="mt-auto flex items-center justify-between border-t border-border pt-3 text-sm">
+                            <span className="text-muted-foreground/80">Total XP</span>
+                            <span className="font-semibold text-primary">
                               {subjectXP}
                             </span>
                           </div>

@@ -6,6 +6,7 @@ import axios from 'axios'
 import confetti from 'canvas-confetti'
 import { CheckCircle2, XCircle, Loader2, RotateCcw, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
 
 interface MCQ {
   question: string
@@ -19,11 +20,35 @@ interface MCQ {
 interface MCQGateProps {
   subject: string
   unit: string
+  subjectId?: string
+  unitId?: string
+  subtopicId?: string
+  subtopicName?: string
+  phase?: string
   onPass: () => void
   isFirstUnit?: boolean
 }
 
-export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: MCQGateProps) {
+interface MCQAnswerResult {
+  question: string
+  options?: string[]
+  selectedAnswer?: number
+  correctAnswer?: number
+  isCorrect: boolean
+  explanation?: string
+}
+
+export default function MCQGate({
+  subject,
+  unit,
+  subjectId,
+  unitId,
+  subtopicId,
+  subtopicName,
+  phase,
+  onPass,
+  isFirstUnit = false,
+}: MCQGateProps) {
   const [mcqs, setMcqs] = useState<MCQ[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
@@ -31,6 +56,7 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
   const [loading, setLoading] = useState(true)
   const [correctCount, setCorrectCount] = useState(0)
   const [wrongCount, setWrongCount] = useState(0)
+  const [answers, setAnswers] = useState<MCQAnswerResult[]>([])
   const [needsReinforcement, setNeedsReinforcement] = useState(false)
   const [reinforcementMCQ, setReinforcementMCQ] = useState<MCQ | null>(null)
 
@@ -123,6 +149,19 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
     const currentMCQ = mcqs[currentIndex]
     const isCorrect = selectedAnswer === currentMCQ.correctAnswer
 
+    setAnswers((prev) => {
+      const next = [...prev]
+      next[currentIndex] = {
+        question: currentMCQ.question,
+        options: currentMCQ.options,
+        selectedAnswer,
+        correctAnswer: currentMCQ.correctAnswer,
+        isCorrect,
+        explanation: currentMCQ.explanation,
+      }
+      return next
+    })
+
     setShowExplanation(true)
 
     if (isCorrect) {
@@ -155,7 +194,7 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
     }
   }
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (needsReinforcement && reinforcementMCQ) {
       // Complete reinforcement first
       setNeedsReinforcement(false)
@@ -169,7 +208,48 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
       setShowExplanation(false)
     } else {
       // All MCQs completed
-      if (correctCount >= mcqs.length * 0.7) {
+      const answeredResults = mcqs.map((mcq, idx) => answers[idx] ?? {
+        question: mcq.question,
+        options: mcq.options,
+        correctAnswer: mcq.correctAnswer,
+        isCorrect: false,
+        explanation: mcq.explanation,
+      })
+      const finalCorrectCount = answeredResults.filter(answer => answer.isCorrect).length
+      const finalWrongCount = Math.max(0, mcqs.length - finalCorrectCount)
+      const score = mcqs.length > 0 ? Math.round((finalCorrectCount / mcqs.length) * 100) : 0
+      const passed = score >= 70
+
+      await saveUserAttempt({
+        type: 'mcq',
+        subjectId,
+        subjectName: subject,
+        unitId,
+        unitName: unit,
+        subtopicId,
+        subtopicName,
+        phase: phase ?? 'mcq',
+        difficulty: mcqs[currentIndex]?.difficulty,
+        problemTitle: `${unit} MCQ Gate`,
+        status: passed ? 'completed' : 'failed',
+        score,
+        passedCount: finalCorrectCount,
+        totalCount: mcqs.length,
+        mcqResults: answeredResults,
+        metadata: {
+          wrongCount: finalWrongCount,
+          isFirstUnit,
+        },
+      })
+
+      if (passed) {
+        await saveUserProgress({
+          subjectId,
+          unitId,
+          subtopicId,
+          phase: phase ?? 'mcq',
+          mcqScore: score,
+        })
         // 70% threshold to pass
         onPass()
       } else {
@@ -178,6 +258,7 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
         setCurrentIndex(0)
         setCorrectCount(0)
         setWrongCount(0)
+        setAnswers([])
         setSelectedAnswer(null)
         setShowExplanation(false)
       }
@@ -247,7 +328,7 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold neon-text mb-4">MCQ Gate</h1>
-        <p className="text-gray-400">
+        <p className="text-muted-foreground">
           Answer correctly to unlock coding challenges
         </p>
         <div className="flex items-center justify-center gap-4 mt-4">
@@ -259,7 +340,7 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
             <XCircle className="w-5 h-5 text-red-400" />
             <span className="text-red-400 font-bold">{wrongCount}</span>
           </div>
-          <span className="text-gray-400">
+          <span className="text-muted-foreground">
             Question {currentIndex + 1} / {mcqs.length}
           </span>
         </div>
@@ -298,10 +379,10 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
                       ? 'bg-neon-green/20 border-neon-green'
                       : isSelected
                       ? 'bg-red-400/20 border-red-400'
-                      : 'border-gray-600'
+                      : 'border-border'
                     : isSelected
                     ? 'border-neon-cyan bg-neon-cyan/10'
-                    : 'border-gray-600 hover:border-neon-cyan/50'
+                    : 'border-border hover:border-neon-cyan/50'
                 }`}
                 whileHover={!showExplanation ? { scale: 1.02 } : {}}
                 whileTap={!showExplanation ? { scale: 0.98 } : {}}
@@ -381,5 +462,3 @@ export default function MCQGate({ subject, unit, onPass, isFirstUnit = false }: 
     </div>
   )
 }
-
-

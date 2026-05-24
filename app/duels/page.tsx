@@ -120,7 +120,7 @@ export default function DuelsPage() {
             <Sword className="w-12 h-12 text-neon-cyan" />
             1v1 Duels
           </h1>
-          <p className="text-xl text-gray-400">Challenge other coders in head-to-head battles!</p>
+          <p className="text-xl text-muted-foreground">Challenge other coders in head-to-head battles!</p>
         </motion.div>
 
         {/* Tabs */}
@@ -129,8 +129,8 @@ export default function DuelsPage() {
             onClick={() => setActiveTab('find')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'find'
-                ? 'bg-neon-cyan text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-cyan text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             Find Opponent
@@ -139,8 +139,8 @@ export default function DuelsPage() {
             onClick={() => setActiveTab('active')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'active'
-                ? 'bg-neon-cyan text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-cyan text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             Active Duels
@@ -149,8 +149,8 @@ export default function DuelsPage() {
             onClick={() => setActiveTab('history')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'history'
-                ? 'bg-neon-cyan text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-cyan text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             History
@@ -213,11 +213,11 @@ export default function DuelsPage() {
                       }}
                       className="inline-block mb-8"
                     >
-                      <Sword className="w-32 h-32 text-neon-cyan drop-shadow-[0_0_30px_rgba(0,255,255,0.8)]" />
+                      <Sword className="w-32 h-32 text-neon-cyan drop-shadow-card" />
                     </motion.div>
 
                     <h2 className="text-4xl font-bold mb-4 neon-text">Ready for a Challenge?</h2>
-                    <p className="text-gray-400 mb-6 max-w-2xl mx-auto text-lg">
+                    <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-lg">
                       Test your skills against other coders! Solve the same problem faster than your opponent to win XP and climb the leaderboard.
                     </p>
 
@@ -233,8 +233,8 @@ export default function DuelsPage() {
                               onClick={() => setSelectedDomain(domainId)}
                               className={`px-4 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
                                 selectedDomain === domainId
-                                  ? 'bg-neon-cyan text-black'
-                                  : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                                  ? 'bg-neon-cyan text-primary-foreground'
+                                  : 'bg-card text-muted-foreground hover:bg-card/80'
                               }`}
                             >
                               <span>{domain.icon}</span>
@@ -318,11 +318,11 @@ export default function DuelsPage() {
                     </motion.div>
 
                     <h2 className="text-3xl font-bold mb-4 neon-text">Searching for Opponent...</h2>
-                    <p className="text-gray-400 mb-8">Matching you with a skilled coder...</p>
+                    <p className="text-muted-foreground mb-8">Matching you with a skilled coder...</p>
 
                     {/* Progress bar */}
                     <div className="max-w-md mx-auto mb-8">
-                      <div className="w-full bg-dark-card rounded-full h-4 overflow-hidden">
+                      <div className="w-full bg-card rounded-full h-4 overflow-hidden">
                         <motion.div
                           className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple"
                           initial={{ width: 0 }}
@@ -330,7 +330,7 @@ export default function DuelsPage() {
                           transition={{ duration: 0.3 }}
                         />
                       </div>
-                      <p className="text-sm text-gray-400 mt-2">{Math.round(matchingProgress)}%</p>
+                      <p className="text-sm text-muted-foreground mt-2">{Math.round(matchingProgress)}%</p>
                     </div>
 
                     <div className="flex justify-center gap-4">
@@ -381,7 +381,7 @@ export default function DuelsPage() {
                       transition={{ type: 'spring', duration: 0.5 }}
                       className="inline-block mb-8"
                     >
-                      <Trophy className="w-32 h-32 text-neon-green drop-shadow-[0_0_30px_rgba(0,255,0,0.8)]" />
+                      <Trophy className="w-32 h-32 text-neon-green drop-shadow-card" />
                     </motion.div>
 
                     <motion.h2
@@ -391,7 +391,7 @@ export default function DuelsPage() {
                     >
                       Opponent Found!
                     </motion.h2>
-                    <p className="text-gray-400 mb-8 text-lg">
+                    <p className="text-muted-foreground mb-8 text-lg">
                       Get ready to battle! The duel is starting...
                     </p>
 
@@ -405,13 +405,13 @@ export default function DuelsPage() {
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center text-2xl font-bold mb-2 mx-auto">
                           You
                         </div>
-                        <p className="text-sm text-gray-400">vs</p>
+                        <p className="text-sm text-muted-foreground">vs</p>
                       </div>
                       <div className="text-center">
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-neon-green to-neon-yellow flex items-center justify-center text-2xl font-bold mb-2 mx-auto">
                           {foundOpponent.opponentId?.substring(0, 1).toUpperCase() || 'O'}
                         </div>
-                        <p className="text-sm text-gray-400">Opponent</p>
+                        <p className="text-sm text-muted-foreground">Opponent</p>
                       </div>
                     </motion.div>
 
@@ -441,12 +441,12 @@ export default function DuelsPage() {
               {loading ? (
                 <div className="glass-card p-8 text-center">
                   <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Loading active duels...</p>
+                  <p className="text-muted-foreground">Loading active duels...</p>
                 </div>
               ) : duels.length === 0 ? (
                 <div className="glass-card p-8 text-center">
-                  <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">No active duels</p>
+                  <Clock className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
+                  <p className="text-muted-foreground">No active duels</p>
                 </div>
               ) : (
                 duels.map((duel) => (
@@ -467,12 +467,12 @@ export default function DuelsPage() {
                           <h3 className="text-xl font-bold mb-1">
                             {duel.challengerId === userId ? duel.opponentName : duel.challengerName}
                           </h3>
-                          <p className="text-gray-400">{duel.problem.title}</p>
+                          <p className="text-muted-foreground">{duel.problem.title}</p>
                         </div>
                       </div>
                       <div className="text-right">
                         <div className="text-neon-cyan font-bold text-xl">{duel.xpReward} XP</div>
-                        <div className="text-sm text-gray-400">Reward</div>
+                        <div className="text-sm text-muted-foreground">Reward</div>
                         <div className="mt-2 text-xs text-neon-green">Active</div>
                       </div>
                     </div>
@@ -493,12 +493,12 @@ export default function DuelsPage() {
               {loading ? (
                 <div className="glass-card p-8 text-center">
                   <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Loading duel history...</p>
+                  <p className="text-muted-foreground">Loading duel history...</p>
                 </div>
               ) : duels.length === 0 ? (
                 <div className="glass-card p-8 text-center">
-                  <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">No duel history yet</p>
+                  <Trophy className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
+                  <p className="text-muted-foreground">No duel history yet</p>
                 </div>
               ) : (
                 duels.map((duel) => (
@@ -513,14 +513,14 @@ export default function DuelsPage() {
                         {duel.winnerId === userId ? (
                           <Trophy className="w-12 h-12 text-neon-yellow" />
                         ) : (
-                          <Target className="w-12 h-12 text-gray-600" />
+                          <Target className="w-12 h-12 text-muted-foreground/60" />
                         )}
                         <div>
                           <h3 className="text-xl font-bold mb-1">
                             vs {duel.challengerId === userId ? duel.opponentName : duel.challengerName}
                           </h3>
-                          <p className="text-gray-400">{duel.problem.title}</p>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-muted-foreground">{duel.problem.title}</p>
+                          <p className="text-sm text-muted-foreground/80 mt-1">
                             {duel.endTime?.toLocaleDateString()}
                           </p>
                         </div>
@@ -529,9 +529,9 @@ export default function DuelsPage() {
                         {duel.winnerId === userId ? (
                           <div className="text-neon-green font-bold">Victory!</div>
                         ) : (
-                          <div className="text-gray-500">Defeat</div>
+                          <div className="text-muted-foreground/80">Defeat</div>
                         )}
-                        <div className="text-sm text-gray-400 mt-1">{duel.xpReward} XP</div>
+                        <div className="text-sm text-muted-foreground mt-1">{duel.xpReward} XP</div>
                       </div>
                     </div>
                   </motion.div>

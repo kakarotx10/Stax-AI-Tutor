@@ -34,28 +34,11 @@ export default function Home() {
   if (!mounted) return null
 
   return (
-    <main className="relative -mt-16 bg-[#0b0a08] pt-16 text-stone-100">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.18]"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 12% 8%, rgba(201,180,138,0.18), transparent 40%), radial-gradient(circle at 88% 95%, rgba(120,113,108,0.20), transparent 45%)",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 -z-10 opacity-[0.035]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-        }}
-      />
-
-      <section className="relative min-h-[calc(100vh-4rem)] px-6 sm:px-10 lg:px-16">
+    <main className="relative -mt-16 bg-background pt-16 text-foreground">
+      <section className="relative min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex h-full max-w-7xl flex-col">
-          <div className="flex items-center justify-between border-b border-stone-100/10 py-6 text-[11px] font-medium uppercase tracking-[0.28em] text-stone-400">
-            <span>Stax &mdash; Volume 01</span>
+          <div className="flex items-center justify-between border-b border-border py-6 text-caption uppercase text-muted-foreground">
+            <span>Stax - Volume 01</span>
             <span className="hidden sm:inline">A Quiet Manual for Engineers</span>
             <span>MMXXVI</span>
           </div>
@@ -67,38 +50,33 @@ export default function Home() {
               transition={{ duration: 0.9, ease: [0.2, 0.7, 0.1, 1] }}
               className="lg:col-span-8"
             >
-              <p className="mb-10 text-[11px] font-medium uppercase tracking-[0.32em] text-stone-400">
-                <span className="text-[#c9b48a]">&mdash;</span>&nbsp;&nbsp;A new way to learn computer science
+              <p className="mb-8 text-caption uppercase text-muted-foreground">
+                A new way to learn computer science
               </p>
 
-              <h1 className="font-serif text-[15vw] leading-[0.92] tracking-[-0.04em] text-stone-50 sm:text-[10vw] lg:text-[8.2vw]">
-                Master
-                <br />
-                <span className="italic font-light text-[#c9b48a]">the craft,</span>
-                <br />
-                quietly.
+              <h1 className="max-w-4xl text-h1 text-foreground sm:text-6xl lg:text-7xl">
+                Master computer science with structured AI practice.
               </h1>
 
-              <p className="mt-10 max-w-xl font-serif text-xl leading-relaxed text-stone-300 sm:text-2xl">
-                A measured study of computer science &mdash; placement, frontend, backend,
+              <p className="mt-8 max-w-2xl text-body-lg text-muted-foreground sm:text-xl">
+                A measured study of computer science - placement, frontend, backend,
                 AI, and the interview. Read at your pace. Practice in your terms.
               </p>
 
-              <div className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <div className="mt-10 flex flex-wrap items-center gap-3">
                 <motion.button
                   type="button"
                   onClick={scrollToJourney}
-                  whileHover={{ x: 2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group inline-flex items-center gap-3 border-b border-stone-50 pb-1 text-sm font-medium uppercase tracking-[0.22em] text-stone-50"
+                  className="btn-primary group"
                 >
-                  Begin reading
-                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  Start learning
+                  <ArrowUpRight className="h-4 w-4" />
                 </motion.button>
                 <button
                   type="button"
                   onClick={scrollToJourney}
-                  className="text-sm font-medium uppercase tracking-[0.22em] text-stone-400 underline-offset-4 hover:text-stone-50 hover:underline"
+                  className="btn-secondary"
                 >
                   View curriculum
                 </button>
@@ -109,23 +87,23 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 1 }}
-              className="lg:col-span-4 lg:border-l lg:border-stone-100/10 lg:pl-12"
+              className="lg:col-span-4 lg:border-l lg:border-border lg:pl-12"
             >
-              <p className="mb-8 text-[11px] font-medium uppercase tracking-[0.28em] text-stone-400">
+              <p className="mb-8 text-caption uppercase text-muted-foreground">
                 Contents
               </p>
               <ol className="space-y-5">
                 {chapters.map((c) => (
                   <li
                     key={c.num}
-                    className="grid grid-cols-[2rem_1fr_auto] items-baseline gap-4 border-b border-stone-100/10 pb-4 transition-colors hover:border-[#c9b48a]/40"
+                    className="grid grid-cols-[2rem_1fr_auto] items-baseline gap-4 border-b border-border pb-4 transition-colors hover:border-primary/60"
                   >
-                    <span className="font-serif text-base italic text-[#c9b48a]">{c.num}.</span>
-                    <span className="font-serif text-lg text-stone-50">{c.title}</span>
-                    <span className="text-[11px] uppercase tracking-[0.18em] text-stone-400">
-                      &rarr;
+                    <span className="text-base font-semibold text-primary">{c.num}.</span>
+                    <span className="text-lg font-semibold text-foreground">{c.title}</span>
+                    <span className="text-caption uppercase text-muted-foreground">
+                      -
                     </span>
-                    <span className="col-start-2 -mt-3 text-sm leading-relaxed text-stone-400">
+                    <span className="col-start-2 -mt-3 text-body-sm text-muted-foreground">
                       {c.note}
                     </span>
                   </li>
@@ -138,15 +116,15 @@ export default function Home() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="mt-auto grid grid-cols-3 border-t border-stone-100/10 py-6"
+            className="mt-auto grid grid-cols-1 gap-4 border-t border-border py-6 sm:grid-cols-3"
           >
             {stats.map((s, i) => (
               <div
                 key={s.label}
-                className={`flex items-baseline gap-4 ${i > 0 ? 'border-l border-stone-100/10 pl-6' : ''}`}
+                className={`flex items-baseline gap-4 ${i > 0 ? 'sm:border-l sm:border-border sm:pl-6' : ''}`}
               >
-                <span className="font-serif text-3xl text-stone-50 sm:text-4xl">{s.value}</span>
-                <span className="text-[10px] font-medium uppercase tracking-[0.24em] text-stone-400 sm:text-[11px]">
+                <span className="text-h3 text-foreground">{s.value}</span>
+                <span className="text-caption uppercase text-muted-foreground">
                   {s.label}
                 </span>
               </div>
@@ -155,7 +133,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative border-t border-stone-100/10 bg-[#0b0a08] px-4 py-20 text-stone-100 sm:px-6 lg:px-8">
+      <section className="relative border-t border-border bg-background px-4 py-20 text-foreground sm:px-6 lg:px-8">
         <motion.div
           ref={journeyRef}
           id="learning-paths"

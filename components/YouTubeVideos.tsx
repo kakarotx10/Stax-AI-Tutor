@@ -33,7 +33,7 @@ export default function YouTubeVideos({ videoIds, title = 'Video Lectures' }: Yo
             transition={{ delay: idx * 0.1 }}
             className="relative group"
           >
-            <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+            <div className="relative aspect-video bg-background rounded-lg overflow-hidden">
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title={`YouTube video ${idx + 1}`}
@@ -46,7 +46,7 @@ export default function YouTubeVideos({ videoIds, title = 'Video Lectures' }: Yo
               href={`https://www.youtube.com/watch?v=${videoId}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute bottom-2 right-2 px-3 py-1 bg-red-500/80 hover:bg-red-500 text-white rounded-lg text-sm font-bold flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute bottom-2 right-2 px-3 py-1 bg-red-500/80 hover:bg-red-500 text-foreground rounded-lg text-sm font-bold flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ExternalLink className="w-4 h-4" />
               Watch on YouTube

@@ -2,19 +2,41 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Play, Loader2, AlertCircle, Lightbulb, Trophy, ArrowRight, RotateCcw } from 'lucide-react'
 import toast from 'react-hot-toast'
 import confetti from 'canvas-confetti'
 import { DOMAINS } from '@/lib/subjects'
+import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
 import FrontendEditor from './FrontendEditor'
+import MonacoEditor from './MonacoEditor'
 
-// Dynamically import Monaco to avoid SSR issues
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+/**
+ * Render text that contains backtick-wrapped inline code (`like this`) into
+ * <code> spans. Plain segments are returned as text. Newlines preserved by
+ * `whitespace-pre-line` on the parent.
+ *
+ * Cheap alternative to pulling in react-markdown for problem descriptions.
+ */
+function InlineMarkdown({ text }: { text: string }) {
+  const parts = text.split(/(`[^`]+`)/g)
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.startsWith('`') && part.endsWith('`') ? (
+          <code
+            key={i}
+            className="rounded-[4px] border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground"
+          >
+            {part.slice(1, -1)}
+          </code>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  )
+}
 
 interface CodingProblem {
   title: string
@@ -45,6 +67,10 @@ interface CodingChallengeProps {
   subject: string
   unit: string
   subtopic?: string
+  subjectId?: string
+  unitId?: string
+  subtopicId?: string
+  phase?: string
   difficulty?: 'Basic' | 'Medium' | 'Advanced'
   onComplete: () => void
 }
@@ -61,7 +87,17 @@ function isFrontendOrBackendSubject(subject: string): boolean {
          backendSubjects.some(s => s.toLowerCase() === subjectLower)
 }
 
-export default function CodingChallenge({ subject, unit, subtopic, difficulty: propDifficulty, onComplete }: CodingChallengeProps) {
+export default function CodingChallenge({
+  subject,
+  unit,
+  subtopic,
+  subjectId,
+  unitId,
+  subtopicId,
+  phase,
+  difficulty: propDifficulty,
+  onComplete,
+}: CodingChallengeProps) {
   const [problem, setProblem] = useState<CodingProblem | null>(null)
   const [frontendQuestion, setFrontendQuestion] = useState<any>(null)
   const [difficulty, setDifficulty] = useState<Difficulty>(propDifficulty || 'Basic')
@@ -327,7 +363,55 @@ public class Solution {
       setTestResults(results)
 
       const allPassed = results.every(r => r.passed)
+      const passedCount = results.filter(r => r.passed).length
+      const score = results.length > 0 ? Math.round((passedCount / results.length) * 100) : 0
+      const failedStatus = results.find(r => !r.passed)?.status?.toLowerCase() ?? ''
+      const status = allPassed
+        ? 'accepted'
+        : passedCount > 0
+        ? 'partial'
+        : failedStatus.includes('compile')
+        ? 'compile_error'
+        : failedStatus.includes('runtime')
+        ? 'runtime_error'
+        : 'wrong_answer'
+
+      await saveUserAttempt({
+        type: 'coding',
+        subjectId,
+        subjectName: subject,
+        unitId,
+        unitName: unit,
+        subtopicId,
+        subtopicName: subtopic,
+        phase: phase ?? difficulty.toLowerCase(),
+        difficulty,
+        problemTitle: problem.title,
+        prompt: problem.description,
+        language,
+        code,
+        status,
+        score,
+        passedCount,
+        totalCount: results.length,
+        testResults: results.map((result) => ({
+          passed: result.passed,
+          input: result.input,
+          expected: result.expected,
+          actual: result.got,
+          status: result.status,
+          errorMessage: result.error ?? undefined,
+        })),
+      })
+
       if (allPassed) {
+        await saveUserProgress({
+          subjectId,
+          unitId,
+          subtopicId,
+          phase: phase ?? difficulty.toLowerCase(),
+          codingScore: score,
+        })
         setCompleted(true)
         confetti({
           particleCount: 100,
@@ -336,7 +420,6 @@ public class Solution {
         })
         toast.success('All tests passed! 🎉')
       } else {
-        const passedCount = results.filter(r => r.passed).length
         toast.error(`${passedCount}/${results.length} tests passed. Keep trying!`)
       }
     } catch (err: any) {
@@ -413,7 +496,7 @@ public class Solution {
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           >
-            <Loader2 className="w-12 h-12 text-neon-cyan" />
+            <Loader2 className="h-8 w-8 text-primary" />
           </motion.div>
         </div>
       )
@@ -435,6 +518,10 @@ public class Solution {
         subject={subject}
         unit={unit}
         subtopic={subtopic || 'intro'}
+        subjectId={subjectId}
+        unitId={unitId}
+        subtopicId={subtopicId}
+        phase={phase ?? difficulty.toLowerCase()}
         difficulty={difficulty}
         question={frontendQuestion}
         onComplete={onComplete}
@@ -449,7 +536,7 @@ public class Solution {
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         >
-          <Loader2 className="w-12 h-12 text-neon-cyan" />
+          <Loader2 className="h-8 w-8 text-primary" />
         </motion.div>
       </div>
     )
@@ -457,8 +544,8 @@ public class Solution {
 
   if (!problem) {
     return (
-      <div className="glass-card p-8 text-center">
-        <p className="text-red-400">Failed to load problem</p>
+      <div className="surface-card p-8 text-center">
+        <p className="text-body-sm text-destructive">Failed to load problem.</p>
         <button onClick={fetchProblem} className="btn-primary mt-4">
           Retry
         </button>
@@ -469,142 +556,180 @@ public class Solution {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold neon-text mb-2">{problem.title}</h1>
-          <div className="flex items-center gap-4">
-            <span className={`px-4 py-1 rounded-full font-bold ${
-              difficulty === 'Basic' ? 'bg-neon-green/20 text-neon-green' :
-              difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' :
-              'bg-red-500/20 text-red-500'
-            }`}>
+          <h2 className="text-h3 font-semibold tracking-tight text-foreground">
+            {problem.title}
+          </h2>
+          <div className="mt-2 flex items-center gap-2">
+            <span
+              className={
+                difficulty === 'Basic'
+                  ? 'inline-flex items-center rounded-md border border-success/25 bg-success/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success'
+                  : difficulty === 'Medium'
+                  ? 'inline-flex items-center rounded-md border border-warning/25 bg-warning/15 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-warning'
+                  : 'inline-flex items-center rounded-md border border-destructive/25 bg-destructive/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-destructive'
+              }
+            >
               {difficulty}
             </span>
-            <span className="text-gray-400">{unit}</span>
+            <span className="text-caption text-muted-foreground">{unit}</span>
           </div>
         </div>
         <button
-          onClick={() => setDifficulty(difficulty === 'Basic' ? 'Medium' : difficulty === 'Medium' ? 'Advanced' : 'Basic')}
+          onClick={() =>
+            setDifficulty(
+              difficulty === 'Basic' ? 'Medium' : difficulty === 'Medium' ? 'Advanced' : 'Basic'
+            )
+          }
           className="btn-secondary"
         >
-          Change Difficulty
+          Change difficulty
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Problem Description */}
-        <div className="space-y-6">
-          <div className="glass-card p-6">
-            <h2 className="text-2xl font-bold mb-4">Problem Description</h2>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-line">
-              {problem.description}
+        <div className="min-w-0 space-y-6">
+          <section className="surface-card p-6">
+            <h3 className="mb-3 text-h4 font-semibold tracking-tight text-foreground">
+              Problem description
+            </h3>
+            <p className="whitespace-pre-line text-body-sm leading-relaxed text-muted-foreground">
+              <InlineMarkdown text={problem.description} />
             </p>
-          </div>
+          </section>
 
           {/* Examples */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          <motion.section
+            initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="glass-card p-6"
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="surface-card p-6"
           >
-            <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="text-neon-cyan">📝</span>
+            <h3 className="mb-4 text-h4 font-semibold tracking-tight text-foreground">
               Examples
             </h3>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {problem.examples.map((ex, idx) => (
-                <motion.div
+                <div
                   key={idx}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bg-dark-bg p-4 rounded-lg border border-neon-cyan/20 hover:border-neon-cyan/50 transition-colors"
+                  className="rounded-[8px] border border-border bg-surface-1 p-4"
                 >
-                  <div className="mb-2">
-                    <span className="text-sm text-gray-400 font-bold">Input:</span>
-                    <pre className="text-neon-green mt-1 bg-black/30 p-2 rounded">{ex.input}</pre>
+                  <p className="mb-1 text-eyebrow uppercase text-muted-foreground">
+                    Example {idx + 1}
+                  </p>
+                  <div className="space-y-2.5">
+                    <div>
+                      <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                        Input
+                      </p>
+                      <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                        {ex.input}
+                      </pre>
+                    </div>
+                    <div>
+                      <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                        Output
+                      </p>
+                      <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                        {ex.output}
+                      </pre>
+                    </div>
+                    <div>
+                      <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                        Explanation
+                      </p>
+                      <p className="mt-1 text-body-sm leading-relaxed text-muted-foreground">
+                        <InlineMarkdown text={ex.explanation} />
+                      </p>
+                    </div>
                   </div>
-                  <div className="mb-2">
-                    <span className="text-sm text-gray-400 font-bold">Output:</span>
-                    <pre className="text-neon-cyan mt-1 bg-black/30 p-2 rounded">{ex.output}</pre>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-400 font-bold">Explanation:</span>
-                    <p className="text-gray-300 text-sm mt-1 leading-relaxed">{ex.explanation}</p>
-                  </div>
-                </motion.div>
+                </div>
               ))}
             </div>
-          </motion.div>
+          </motion.section>
 
           {/* Test Cases */}
           {problem.testCases && problem.testCases.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+            <motion.section
+              initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="glass-card p-6 border-2 border-neon-purple/30"
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="surface-card p-6"
             >
-              <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <span className="text-neon-purple">🧪</span>
-                Test Cases
+              <h3 className="mb-4 text-h4 font-semibold tracking-tight text-foreground">
+                Test cases
               </h3>
               <div className="space-y-3">
                 {problem.testCases.map((testCase, idx) => (
-                  <motion.div
+                  <div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="bg-neon-purple/10 p-4 rounded-lg border border-neon-purple/30"
+                    className="rounded-[8px] border border-border bg-surface-1 p-4"
                   >
-                    <div className="text-sm text-neon-purple font-bold mb-2">
-                      Test Case {idx + 1}: {testCase.description}
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
+                    <p className="mb-2 flex items-center gap-2 text-eyebrow uppercase text-muted-foreground">
+                      <span>Case {String(idx + 1).padStart(2, '0')}</span>
+                      <span className="text-foreground-subtle">·</span>
+                      <span className="normal-case tracking-normal text-muted-foreground">
+                        {testCase.description}
+                      </span>
+                    </p>
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                       <div>
-                        <span className="text-gray-400">Input:</span>
-                        <pre className="text-neon-green mt-1 bg-black/30 p-2 rounded text-xs">{testCase.input}</pre>
+                        <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                          Input
+                        </p>
+                        <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                          {testCase.input}
+                        </pre>
                       </div>
                       <div>
-                        <span className="text-gray-400">Expected Output:</span>
-                        <pre className="text-neon-cyan mt-1 bg-black/30 p-2 rounded text-xs">{testCase.output}</pre>
+                        <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                          Expected
+                        </p>
+                        <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                          {testCase.output}
+                        </pre>
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 ))}
               </div>
-            </motion.div>
+            </motion.section>
           )}
 
           {/* Constraints */}
-          <div className="glass-card p-6">
-            <h3 className="text-xl font-bold mb-4">Constraints</h3>
-            <ul className="space-y-2">
+          <section className="surface-card p-6">
+            <h3 className="mb-4 text-h4 font-semibold tracking-tight text-foreground">
+              Constraints
+            </h3>
+            <ul className="space-y-1.5">
               {problem.constraints.map((constraint, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <span className="text-neon-cyan">•</span>
-                  <span className="text-gray-300">{constraint}</span>
+                <li
+                  key={idx}
+                  className="border-l-2 border-border pl-3 text-body-sm leading-relaxed text-muted-foreground"
+                >
+                  <InlineMarkdown text={constraint} />
                 </li>
               ))}
             </ul>
-          </div>
+          </section>
         </div>
 
         {/* Code Editor */}
-        <div className="space-y-6">
-          {/* Language Selector */}
-          <div className="flex items-center gap-4">
+        <div className="min-w-0 space-y-6">
+          {/* Language Selector + Hint */}
+          <div className="flex items-center gap-3">
             <select
               value={language}
               onChange={(e) => {
                 setLanguage(e.target.value)
                 setCode(languageTemplates[e.target.value])
               }}
-              className="bg-dark-card border border-neon-cyan/50 text-white px-4 py-2 rounded-lg"
+              className="h-10 rounded-md border border-border bg-surface-1 px-3 text-body-sm text-foreground shadow-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              aria-label="Select language"
             >
               <option value="python">Python</option>
               <option value="cpp">C++</option>
@@ -613,19 +738,19 @@ public class Solution {
             <button
               onClick={handleGetHint}
               disabled={hintLoading}
-              className="btn-secondary flex items-center gap-2"
+              className="btn-secondary"
             >
               {hintLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <Lightbulb className="w-4 h-4" />
+                <Lightbulb className="h-4 w-4" />
               )}
-              Get AI Hint
+              Get AI hint
             </button>
           </div>
 
           {/* Editor */}
-          <div className="glass-card overflow-hidden">
+          <div className="overflow-hidden rounded-[10px] border border-border bg-card shadow-card">
             <MonacoEditor
               height="500px"
               language={language}
@@ -634,10 +759,14 @@ public class Solution {
               theme="vs-dark"
               options={{
                 minimap: { enabled: false },
-                fontSize: 16,
+                fontSize: 14,
+                fontFamily: 'var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace',
                 wordWrap: 'on',
                 scrollBeyondLastLine: false,
                 automaticLayout: true,
+                padding: { top: 16, bottom: 16 },
+                renderLineHighlight: 'gutter',
+                smoothScrolling: true,
               }}
             />
           </div>
@@ -657,20 +786,20 @@ public class Solution {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <span className="text-sm text-gray-400">Problematic Line:</span>
+                    <span className="text-sm text-muted-foreground">Problematic Line:</span>
                     <span className="ml-2 text-neon-cyan font-bold">Line {hint.problematicLine}</span>
                   </div>
                   <div>
-                    <span className="text-sm text-gray-400">Concept:</span>
+                    <span className="text-sm text-muted-foreground">Concept:</span>
                     <span className="ml-2">{hint.concept}</span>
                   </div>
-                  <div className="bg-dark-bg p-4 rounded-lg">
-                    <p className="text-gray-300">{hint.explanation}</p>
+                  <div className="bg-background p-4 rounded-lg">
+                    <p className="text-foreground/80">{hint.explanation}</p>
                   </div>
                   <div className="bg-neon-cyan/10 p-4 rounded-lg border border-neon-cyan/30">
                     <p className="text-neon-cyan font-bold">💡 Hint: {hint.hint}</p>
                   </div>
-                  <div className="text-sm text-gray-400">
+                  <div className="text-sm text-muted-foreground">
                     Review: <span className="text-neon-purple">{hint.reviewConcept}</span>
                   </div>
                 </div>
@@ -682,13 +811,13 @@ public class Solution {
           {problem.hints.length > 0 && (
             <div className="glass-card p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">Progressive Hints</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-sm text-muted-foreground">Progressive Hints</span>
+                <span className="text-xs text-muted-foreground/80">
                   {currentHintIndex + 1} / {problem.hints.length}
                 </span>
               </div>
-              <div className="bg-dark-bg p-3 rounded-lg mb-2">
-                <p className="text-sm text-gray-300">{problem.hints[currentHintIndex]}</p>
+              <div className="bg-background p-3 rounded-lg mb-2">
+                <p className="text-sm text-foreground/80">{problem.hints[currentHintIndex]}</p>
               </div>
               {currentHintIndex < problem.hints.length - 1 && (
                 <button
@@ -723,52 +852,95 @@ public class Solution {
           {/* Test Results */}
           <AnimatePresence>
             {testResults.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
+              <motion.section
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="glass-card p-6"
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="surface-card overflow-hidden p-6"
               >
-                <h3 className="text-xl font-bold mb-4">Test Results</h3>
-                <div className="space-y-2">
-                  {testResults.map((result, idx) => (
-                    <div
-                      key={idx}
-                      className={`p-3 rounded-lg ${
-                        result.passed
-                          ? 'bg-neon-green/20 border border-neon-green'
-                          : 'bg-red-400/20 border border-red-400'
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        {result.passed ? (
-                          <span className="text-neon-green">✅</span>
-                        ) : (
-                          <span className="text-red-400">❌</span>
-                        )}
-                        <span className="font-bold">Test {idx + 1}</span>
-                        {result.status && (
-                          <span className="text-xs text-gray-400 ml-2">({result.status})</span>
-                        )}
+                <h3 className="mb-4 text-h4 font-semibold tracking-tight text-foreground">
+                  Test results
+                </h3>
+                <div className="space-y-3">
+                  {testResults.map((result, idx) => {
+                    const tone = result.passed
+                      ? 'border-success/25 bg-success/8'
+                      : 'border-destructive/25 bg-destructive/8'
+                    const accent = result.passed ? 'text-success' : 'text-destructive'
+                    return (
+                      <div
+                        key={idx}
+                        className={`min-w-0 overflow-hidden rounded-[8px] border p-4 ${tone}`}
+                      >
+                        <div className="mb-3 flex flex-wrap items-center gap-2">
+                          <span
+                            className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] ${
+                              result.passed
+                                ? 'border-success/30 bg-success/15 text-success'
+                                : 'border-destructive/30 bg-destructive/15 text-destructive'
+                            }`}
+                          >
+                            {result.passed ? 'Pass' : 'Fail'}
+                          </span>
+                          <span className="text-body-sm font-medium text-foreground">
+                            Test {String(idx + 1).padStart(2, '0')}
+                          </span>
+                          {result.status && (
+                            <span className="text-caption text-muted-foreground">
+                              · {result.status}
+                            </span>
+                          )}
+                        </div>
+
+                        <dl className="space-y-2 text-body-sm">
+                          <div className="min-w-0">
+                            <dt className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                              Input
+                            </dt>
+                            <dd>
+                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                                {result.input}
+                              </pre>
+                            </dd>
+                          </div>
+                          <div className="min-w-0">
+                            <dt className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
+                              Expected
+                            </dt>
+                            <dd>
+                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                                {result.expected}
+                              </pre>
+                            </dd>
+                          </div>
+                          {!result.passed && (
+                            <div className="min-w-0">
+                              <dt className={`text-caption font-medium uppercase tracking-[0.04em] ${accent}`}>
+                                Got
+                              </dt>
+                              <dd>
+                                <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-destructive/25 bg-destructive/8 px-3 py-2 font-mono text-caption text-destructive">
+                                  {result.got}
+                                </pre>
+                              </dd>
+                            </div>
+                          )}
+                          {!result.passed && result.error && (
+                            <div className="min-w-0 rounded-[6px] border border-destructive/25 bg-destructive/8 p-3">
+                              <p className={`text-caption font-medium uppercase tracking-[0.04em] ${accent}`}>
+                                Error
+                              </p>
+                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all font-mono text-caption text-destructive">
+                                {result.error}
+                              </pre>
+                            </div>
+                          )}
+                        </dl>
                       </div>
-                      <div className="text-sm space-y-1">
-                        <div>Input: <code className="text-neon-green">{result.input}</code></div>
-                        <div>Expected: <code className="text-neon-cyan">{result.expected}</code></div>
-                        {!result.passed && (
-                          <>
-                            <div>Got: <code className="text-red-400">{result.got}</code></div>
-                            {result.error && (
-                              <div className="mt-2 p-2 bg-red-900/20 rounded text-xs">
-                                <span className="text-red-400 font-bold">Error:</span>
-                                <pre className="text-red-300 mt-1 whitespace-pre-wrap">{result.error}</pre>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
-              </motion.div>
+              </motion.section>
             )}
           </AnimatePresence>
 
@@ -783,7 +955,7 @@ public class Solution {
                 <Trophy className="w-8 h-8 text-neon-green" />
                 <h3 className="text-2xl font-bold text-neon-green">Challenge Complete!</h3>
               </div>
-              <p className="text-gray-300 mb-4">
+              <p className="text-foreground/80 mb-4">
                 Great job! You've mastered the {difficulty} level for {unit}.
               </p>
               <button
@@ -800,4 +972,3 @@ public class Solution {
     </div>
   )
 }
-

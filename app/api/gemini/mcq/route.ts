@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       options: mcq.options,
       correctAnswer: mcq.correctAnswer,
       explanation: mcq.explanation,
-      wrongExplanations: {},
+      wrongExplanations: mcq.wrongExplanations ?? {},
       difficulty: mcq.difficulty.toLowerCase() as 'basic' | 'medium' | 'advanced'
     }))
 

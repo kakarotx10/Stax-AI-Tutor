@@ -1,7 +1,6 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { SUBJECTS, type Subject } from '@/lib/subjects'
 import GamifiedJourney from '@/components/GamifiedJourney'
 import { ArrowLeft } from 'lucide-react'
@@ -33,21 +32,18 @@ export default function JourneyPage() {
 
   return (
     <div className="relative">
-      <motion.button
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+      <button
         onClick={() => router.push(`/subject/${subjectId}`)}
         className="fixed left-4 top-20 z-50 btn-secondary flex items-center gap-2 sm:left-8"
       >
         <ArrowLeft className="w-5 h-5" />
         Back
-      </motion.button>
+      </button>
 
       <GamifiedJourney subjectId={subjectId} unitId={unitId} />
     </div>
   )
 }
-
 
 
 

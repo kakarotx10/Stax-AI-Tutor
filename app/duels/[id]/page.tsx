@@ -3,16 +3,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Sword, Clock, Trophy, User, CheckCircle, XCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Duel } from '@/lib/types/contests'
-
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import MonacoEditor from '@/components/MonacoEditor'
 
 export default function DuelDetailPage() {
   const params = useParams()
@@ -93,7 +88,7 @@ export default function DuelDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading duel...</p>
+          <p className="text-muted-foreground">Loading duel...</p>
         </div>
       </div>
     )
@@ -103,7 +98,7 @@ export default function DuelDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400">Duel not found</p>
+          <p className="text-muted-foreground">Duel not found</p>
         </div>
       </div>
     )
@@ -176,17 +171,17 @@ export default function DuelDetailPage() {
           <div className="glass-card p-6 mb-6">
             <h2 className="text-2xl font-bold mb-4">{duel.problem.title}</h2>
             <div className="prose prose-invert max-w-none">
-              <p className="text-gray-300 mb-4">
+              <p className="text-foreground/80 mb-4">
                 {(duel.problem as any).description || 'Solve this problem faster than your opponent!'}
               </p>
               {(duel.problem as any).examples && (duel.problem as any).examples.length > 0 && (
                 <div className="mt-4">
                   <h3 className="font-bold mb-2">Examples:</h3>
                   {(duel.problem as any).examples.map((ex: any, idx: number) => (
-                    <div key={idx} className="mb-4 p-4 bg-dark-card rounded-lg">
-                      <p className="text-sm text-gray-400 mb-1">Input: <code className="text-neon-cyan">{ex.input}</code></p>
-                      <p className="text-sm text-gray-400 mb-1">Output: <code className="text-neon-green">{ex.output}</code></p>
-                      {ex.explanation && <p className="text-sm text-gray-500 mt-2">{ex.explanation}</p>}
+                    <div key={idx} className="mb-4 p-4 bg-card rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Input: <code className="text-neon-cyan">{ex.input}</code></p>
+                      <p className="text-sm text-muted-foreground mb-1">Output: <code className="text-neon-green">{ex.output}</code></p>
+                      {ex.explanation && <p className="text-sm text-muted-foreground/80 mt-2">{ex.explanation}</p>}
                     </div>
                   ))}
                 </div>
@@ -202,7 +197,7 @@ export default function DuelDetailPage() {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="bg-dark-card border border-gray-700 rounded-lg px-4 py-2 text-white"
+                  className="bg-card border border-border rounded-lg px-4 py-2 text-foreground"
                 >
                   <option value="python">Python</option>
                   <option value="javascript">JavaScript</option>
@@ -244,10 +239,10 @@ export default function DuelDetailPage() {
                 {duel.winnerId === userId ? (
                   <span className="text-neon-green">🎉 Victory! 🎉</span>
                 ) : (
-                  <span className="text-gray-400">Defeat</span>
+                  <span className="text-muted-foreground">Defeat</span>
                 )}
               </h3>
-              <p className="text-center text-gray-400">
+              <p className="text-center text-muted-foreground">
                 {duel.winnerId === userId
                   ? 'Congratulations! You won this duel!'
                   : 'Better luck next time!'}
@@ -259,4 +254,3 @@ export default function DuelDetailPage() {
     </div>
   )
 }
-

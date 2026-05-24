@@ -97,7 +97,7 @@ export default function StandoffsPage() {
             <Users className="w-12 h-12 text-neon-purple" />
             3v3 Standoffs
           </h1>
-          <p className="text-xl text-gray-400">Team up and compete in epic 3v3 battles!</p>
+          <p className="text-xl text-muted-foreground">Team up and compete in epic 3v3 battles!</p>
         </motion.div>
 
         {/* Tabs */}
@@ -106,8 +106,8 @@ export default function StandoffsPage() {
             onClick={() => setActiveTab('find')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'find'
-                ? 'bg-neon-purple text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-purple text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             Find Match
@@ -116,8 +116,8 @@ export default function StandoffsPage() {
             onClick={() => setActiveTab('active')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'active'
-                ? 'bg-neon-purple text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-purple text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             Active Standoffs
@@ -126,8 +126,8 @@ export default function StandoffsPage() {
             onClick={() => setActiveTab('history')}
             className={`px-6 py-2 rounded-lg font-bold transition-all ${
               activeTab === 'history'
-                ? 'bg-neon-purple text-white'
-                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                ? 'bg-neon-purple text-foreground'
+                : 'bg-card text-muted-foreground hover:bg-card/80'
             }`}
           >
             History
@@ -189,11 +189,11 @@ export default function StandoffsPage() {
                     }}
                     className="inline-block mb-8"
                   >
-                    <Users className="w-32 h-32 text-neon-purple drop-shadow-[0_0_30px_rgba(147,51,234,0.8)]" />
+                    <Users className="w-32 h-32 text-neon-purple drop-shadow-card" />
                   </motion.div>
 
                   <h2 className="text-4xl font-bold mb-4 neon-text">Ready for Team Battle?</h2>
-                  <p className="text-gray-400 mb-6 max-w-2xl mx-auto text-lg">
+                  <p className="text-muted-foreground mb-6 max-w-2xl mx-auto text-lg">
                     Form a team of 3 and compete against other teams! The team that solves the problem fastest wins!
                   </p>
 
@@ -209,8 +209,8 @@ export default function StandoffsPage() {
                             onClick={() => setSelectedDomain(domainId)}
                             className={`px-4 py-2 rounded-lg font-bold transition-all flex items-center gap-2 ${
                               selectedDomain === domainId
-                                ? 'bg-neon-purple text-white'
-                                : 'bg-dark-card text-gray-400 hover:bg-dark-card/80'
+                                ? 'bg-neon-purple text-foreground'
+                                : 'bg-card text-muted-foreground hover:bg-card/80'
                             }`}
                           >
                             <span>{domain.icon}</span>
@@ -234,7 +234,7 @@ export default function StandoffsPage() {
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-neon-purple to-neon-pink flex items-center justify-center text-2xl font-bold mx-auto mb-2">
                           {num === 1 ? '👤' : num === 2 ? '👤' : '👤'}
                         </div>
-                        <p className="text-sm text-gray-400">Member {num}</p>
+                        <p className="text-sm text-muted-foreground">Member {num}</p>
                       </motion.div>
                     ))}
                   </div>
@@ -290,12 +290,12 @@ export default function StandoffsPage() {
               {loading ? (
                 <div className="glass-card p-8 text-center">
                   <div className="w-16 h-16 border-4 border-neon-purple border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Loading active standoffs...</p>
+                  <p className="text-muted-foreground">Loading active standoffs...</p>
                 </div>
               ) : standoffs.length === 0 ? (
                 <div className="glass-card p-8 text-center">
-                  <Clock className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">No active standoffs</p>
+                  <Clock className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
+                  <p className="text-muted-foreground">No active standoffs</p>
                 </div>
               ) : (
                 standoffs.map((standoff) => (
@@ -310,8 +310,8 @@ export default function StandoffsPage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <h3 className="text-xl font-bold mb-2">Team Battle</h3>
-                        <p className="text-gray-400 mb-2">{standoff.problem.title}</p>
-                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <p className="text-muted-foreground mb-2">{standoff.problem.title}</p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground/80">
                           <span>Team 1: {standoff.team1.length}/3</span>
                           <span>vs</span>
                           <span>Team 2: {standoff.team2.length}/3</span>
@@ -319,7 +319,7 @@ export default function StandoffsPage() {
                       </div>
                       <div className="text-right">
                         <div className="text-neon-purple font-bold text-xl">{standoff.xpReward} XP</div>
-                        <div className="text-sm text-gray-400">Reward</div>
+                        <div className="text-sm text-muted-foreground">Reward</div>
                         <div className="mt-2 text-xs text-neon-green">Active</div>
                       </div>
                     </div>
@@ -340,12 +340,12 @@ export default function StandoffsPage() {
               {loading ? (
                 <div className="glass-card p-8 text-center">
                   <div className="w-16 h-16 border-4 border-neon-purple border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Loading standoff history...</p>
+                  <p className="text-muted-foreground">Loading standoff history...</p>
                 </div>
               ) : standoffs.length === 0 ? (
                 <div className="glass-card p-8 text-center">
-                  <Trophy className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <p className="text-gray-400">No standoff history yet</p>
+                  <Trophy className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
+                  <p className="text-muted-foreground">No standoff history yet</p>
                 </div>
               ) : (
                 standoffs.map((standoff) => (
@@ -360,12 +360,12 @@ export default function StandoffsPage() {
                         {standoff.winnerTeam && userId && standoff.team1.includes(userId) && standoff.winnerTeam === 1 ? (
                           <Trophy className="w-12 h-12 text-neon-yellow" />
                         ) : (
-                          <Users className="w-12 h-12 text-gray-600" />
+                          <Users className="w-12 h-12 text-muted-foreground/60" />
                         )}
                         <div>
                           <h3 className="text-xl font-bold mb-1">Team Battle</h3>
-                          <p className="text-gray-400">{standoff.problem.title}</p>
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-muted-foreground">{standoff.problem.title}</p>
+                          <p className="text-sm text-muted-foreground/80 mt-1">
                             {standoff.endTime?.toLocaleDateString()}
                           </p>
                         </div>
@@ -374,9 +374,9 @@ export default function StandoffsPage() {
                         {standoff.winnerTeam && userId && standoff.team1.includes(userId) && standoff.winnerTeam === 1 ? (
                           <div className="text-neon-green font-bold">Victory!</div>
                         ) : (
-                          <div className="text-gray-500">Completed</div>
+                          <div className="text-muted-foreground/80">Completed</div>
                         )}
-                        <div className="text-sm text-gray-400 mt-1">{standoff.xpReward} XP</div>
+                        <div className="text-sm text-muted-foreground mt-1">{standoff.xpReward} XP</div>
                       </div>
                     </div>
                   </motion.div>

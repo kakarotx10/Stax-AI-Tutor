@@ -3,18 +3,13 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import dynamic from 'next/dynamic'
 import axios from 'axios'
 import { Trophy, Users, Clock, Zap, Award, CheckCircle, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Contest } from '@/lib/types/contests'
 import CountdownTimer from '@/components/CountdownTimer'
 import confetti from 'canvas-confetti'
-
-const MonacoEditor = dynamic(() => import('@monaco-editor/react'), {
-  ssr: false,
-  loading: () => <div className="h-96 bg-dark-card animate-pulse rounded-lg" />,
-})
+import MonacoEditor from '@/components/MonacoEditor'
 
 export default function ContestDetailPage() {
   const params = useParams()
@@ -338,7 +333,7 @@ export default function ContestDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-400">Loading contest...</p>
+          <p className="text-muted-foreground">Loading contest...</p>
         </div>
       </div>
     )
@@ -348,7 +343,7 @@ export default function ContestDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-400">Contest not found</p>
+          <p className="text-muted-foreground">Contest not found</p>
         </div>
       </div>
     )
@@ -368,7 +363,7 @@ export default function ContestDetailPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h1 className="text-4xl font-bold neon-text mb-2">{contest.title}</h1>
-              <p className="text-gray-400">{contest.description}</p>
+              <p className="text-muted-foreground">{contest.description}</p>
             </div>
             {contest.status === 'active' && !joined && (
               <button onClick={handleJoin} className="btn-primary px-6 py-3">
@@ -401,7 +396,7 @@ export default function ContestDetailPage() {
             <div className="glass-card p-6">
               <h2 className="text-2xl font-bold mb-4">Problems</h2>
               {contest.problems.length === 0 ? (
-                <p className="text-gray-400">No problems yet</p>
+                <p className="text-muted-foreground">No problems yet</p>
               ) : (
                 <div className="space-y-2">
                   {contest.problems.map((p) => (
@@ -411,13 +406,13 @@ export default function ContestDetailPage() {
                       className={`w-full text-left p-4 rounded-lg transition-all ${
                         selectedProblem === p.id
                           ? 'bg-neon-cyan/20 border-2 border-neon-cyan'
-                          : 'bg-dark-card hover:bg-dark-card/80'
+                          : 'bg-card hover:bg-card/80'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-bold">{p.title}</h3>
-                          <p className="text-sm text-gray-400">{p.difficulty} • {p.points} pts</p>
+                          <p className="text-sm text-muted-foreground">{p.difficulty} • {p.points} pts</p>
                         </div>
                         {p.solvedBy > 0 && (
                           <CheckCircle className="w-5 h-5 text-neon-green" />
@@ -436,7 +431,7 @@ export default function ContestDetailPage() {
                 Leaderboard
               </h2>
               {contest.leaderboard.length === 0 ? (
-                <p className="text-gray-400">No entries yet</p>
+                <p className="text-muted-foreground">No entries yet</p>
               ) : (
                 <div className="space-y-2">
                   {contest.leaderboard.slice(0, 10).map((entry) => (
@@ -449,7 +444,7 @@ export default function ContestDetailPage() {
                       </div>
                       <div className="text-right">
                         <div className="font-bold">{entry.xp} XP</div>
-                        <div className="text-xs text-gray-400">{entry.problemsSolved} solved</div>
+                        <div className="text-xs text-muted-foreground">{entry.problemsSolved} solved</div>
                       </div>
                     </div>
                   ))}
@@ -472,7 +467,7 @@ export default function ContestDetailPage() {
                   )}
                 </div>
                 <div className="prose prose-invert max-w-none mb-6">
-                  <div className="text-gray-300 mb-6 whitespace-pre-wrap leading-relaxed">
+                  <div className="text-foreground/80 mb-6 whitespace-pre-wrap leading-relaxed">
                     {problemDetails?.description || 'Solve this problem!'}
                   </div>
                   
@@ -483,17 +478,17 @@ export default function ContestDetailPage() {
                         Examples:
                       </h3>
                       {problemDetails.examples.map((ex: any, idx: number) => (
-                        <div key={idx} className="mb-4 p-4 bg-dark-card rounded-lg border border-gray-700">
-                          <p className="text-sm text-gray-400 mb-2">
+                        <div key={idx} className="mb-4 p-4 bg-card rounded-lg border border-border">
+                          <p className="text-sm text-muted-foreground mb-2">
                             <span className="font-bold text-neon-cyan">Input:</span>{' '}
-                            <code className="text-white bg-dark-bg px-2 py-1 rounded">{ex.input}</code>
+                            <code className="text-foreground bg-background px-2 py-1 rounded">{ex.input}</code>
                           </p>
-                          <p className="text-sm text-gray-400 mb-2">
+                          <p className="text-sm text-muted-foreground mb-2">
                             <span className="font-bold text-neon-green">Output:</span>{' '}
-                            <code className="text-white bg-dark-bg px-2 py-1 rounded">{ex.output}</code>
+                            <code className="text-foreground bg-background px-2 py-1 rounded">{ex.output}</code>
                           </p>
                           {ex.explanation && (
-                            <p className="text-sm text-gray-500 mt-2 italic">{ex.explanation}</p>
+                            <p className="text-sm text-muted-foreground/80 mt-2 italic">{ex.explanation}</p>
                           )}
                         </div>
                       ))}
@@ -505,7 +500,7 @@ export default function ContestDetailPage() {
                       <h3 className="text-xl font-bold mb-3">Constraints:</h3>
                       <ul className="list-disc list-inside space-y-2">
                         {problemDetails.constraints.map((c: string, idx: number) => (
-                          <li key={idx} className="text-gray-300">{c}</li>
+                          <li key={idx} className="text-foreground/80">{c}</li>
                         ))}
                       </ul>
                     </div>
@@ -516,7 +511,7 @@ export default function ContestDetailPage() {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="bg-dark-card border border-gray-700 rounded-lg px-4 py-2 text-white"
+                    className="bg-card border border-border rounded-lg px-4 py-2 text-foreground"
                   >
                     <option value="python">Python</option>
                     <option value="javascript">JavaScript</option>
@@ -557,8 +552,8 @@ export default function ContestDetailPage() {
               </div>
             ) : (
               <div className="glass-card p-12 text-center">
-                <Award className="w-24 h-24 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">Select a problem to start coding!</p>
+                <Award className="w-24 h-24 text-muted-foreground/60 mx-auto mb-4" />
+                <p className="text-muted-foreground">Select a problem to start coding!</p>
               </div>
             )}
           </div>
@@ -567,4 +562,3 @@ export default function ContestDetailPage() {
     </div>
   )
 }
-
