@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { InterviewEngine } from '@/lib/interviewEngine'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
     const { interviewType, domain } = await request.json()
 
     if (!interviewType || !domain) {
@@ -16,7 +18,7 @@ export async function POST(request: NextRequest) {
     const engineDomain = domain === 'all' ? 'placement' : domain
 
     // Create interview engine
-    const engine = new InterviewEngine(engineDomain as 'placement' | 'frontend' | 'backend' | 'aiml')
+    const engine = new InterviewEngine(engineDomain as 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml')
     const currentQuestion = engine.getCurrentQuestion()
 
     if (!currentQuestion) {

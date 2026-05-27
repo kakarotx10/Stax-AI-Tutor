@@ -1,12 +1,15 @@
 import { FilterQuery, Types } from 'mongoose';
 import { connectDB } from '@/src/lib/db';
-import { ATTEMPT_STATUSES } from '@/src/lib/constants';
-import { Attempt, User, type IAttempt } from '@/src/models';
+import { ATTEMPT_STATUSES, ATTEMPT_TYPES, LEARNING_PHASES } from '@/src/lib/constants';
+import { Attempt, Progress, User, type IAttempt } from '@/src/models';
 import { ValidationError } from '@/src/lib/errors';
+import { evaluateAttemptForUser } from '@/src/controllers/evaluator.controller';
+import type {
+  DegradedEvaluationResult,
+  EvaluationResult,
+} from '@/src/validators/evaluator.validator';
 import {
-  createAttemptSchema,
   listAttemptsQuerySchema,
-  type CreateAttemptDto,
   type ListAttemptsQueryDto,
 } from '@/src/validators/attempt.validator';
 import { childLogger } from '@/src/lib/logger';
@@ -53,23 +56,12 @@ function parseUserObjectId(userId: string) {
   return new Types.ObjectId(userId);
 }
 
-export async function createAttempt(userId: string, input: unknown) {
-  const parsed = createAttemptSchema.safeParse(input);
-  if (!parsed.success) {
-    throw new ValidationError('Invalid attempt input', parsed.error.flatten());
-  }
-
-  const dto: CreateAttemptDto = parsed.data;
-  await connectDB();
-
-  const userObjId = parseUserObjectId(userId);
+export async function applyEvaluationBookkeeping(
+  userObjId: Types.ObjectId,
+  attemptInput: Record<string, unknown>,
+  evaluation: EvaluationResult | DegradedEvaluationResult
+) {
   const now = new Date();
-  const attempt = await Attempt.create({
-    ...dto,
-    userId: userObjId,
-    completedAt: dto.completedAt ?? now,
-  });
-
   const userUpdate: Record<string, unknown> = {
     $set: {
       lastActiveAt: now,
@@ -78,11 +70,11 @@ export async function createAttempt(userId: string, input: unknown) {
   };
 
   const inc: Record<string, number> = {};
-  if (SUCCESS_STATUSES.has(dto.status)) {
+  if (SUCCESS_STATUSES.has(evaluation.status)) {
     inc['stats.totalSolved'] = 1;
   }
-  if (dto.score > 0) {
-    inc['stats.xp'] = Math.round(dto.score);
+  if (typeof evaluation.score === 'number' && evaluation.score > 0) {
+    inc['stats.xp'] = Math.round(evaluation.score);
   }
   if (Object.keys(inc).length > 0) {
     userUpdate.$inc = inc;
@@ -90,8 +82,87 @@ export async function createAttempt(userId: string, input: unknown) {
 
   await User.findByIdAndUpdate(userObjId, userUpdate);
 
+  const subjectId = typeof attemptInput.subjectId === 'string' ? attemptInput.subjectId : undefined;
+  const unitId = typeof attemptInput.unitId === 'string' ? attemptInput.unitId : undefined;
+  const subtopicId = typeof attemptInput.subtopicId === 'string' ? attemptInput.subtopicId : undefined;
+  if (!subjectId || !unitId || !subtopicId) return;
+
+  const phase = typeof attemptInput.phase === 'string' ? attemptInput.phase : undefined;
+  const validPhase = phase && Object.values(LEARNING_PHASES).includes(phase as never);
+  const nextStepAction = evaluation.feedback.nextStep.action;
+  const shouldCompletePhase = validPhase && (
+    evaluation.status === ATTEMPT_STATUSES.ACCEPTED ||
+    evaluation.status === ATTEMPT_STATUSES.COMPLETED ||
+    nextStepAction === 'advance' ||
+    nextStepAction === 'interview_ready'
+  );
+
+  const update: Record<string, unknown> = {
+    $inc: { attempts: 1 },
+    $set: { lastAttemptAt: now },
+    $setOnInsert: {
+      userId: userObjId,
+      subjectId,
+      unitId,
+      subtopicId,
+      completed: false,
+    },
+  };
+
+  if (typeof evaluation.score === 'number') {
+    if (attemptInput.type === ATTEMPT_TYPES.MCQ) {
+      update.$max = { mcqScore: evaluation.score };
+    }
+    if (
+      attemptInput.type === ATTEMPT_TYPES.CODING ||
+      attemptInput.type === ATTEMPT_TYPES.SQL ||
+      attemptInput.type === ATTEMPT_TYPES.ASSIGNMENT
+    ) {
+      update.$max = { codingScore: evaluation.score };
+    }
+  }
+
+  if (shouldCompletePhase) {
+    update.$addToSet = { phasesCompleted: phase };
+    if (phase === LEARNING_PHASES.ASSIGNMENT || nextStepAction === 'interview_ready') {
+      update.$set = {
+        ...(update.$set as Record<string, unknown>),
+        completed: true,
+        completedAt: now,
+      };
+    }
+  }
+
+  await Progress.findOneAndUpdate(
+    { userId: userObjId, subjectId, unitId, subtopicId },
+    update,
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+}
+
+export async function createAttempt(userId: string, input: unknown) {
+  const userObjId = parseUserObjectId(userId);
+  const { attempt: attemptInput, evaluation } = await evaluateAttemptForUser(userId, input);
+  await connectDB();
+
+  const now = new Date();
+  const attempt = await Attempt.create({
+    ...attemptInput,
+    userId: userObjId,
+    status: evaluation.status,
+    score: evaluation.score,
+    level: evaluation.level,
+    rubric: evaluation.rubric,
+    feedback: evaluation.feedback,
+    evaluatorVersion: evaluation.meta.evaluatorVersion,
+    meta: evaluation.meta,
+    completedAt: (attemptInput.completedAt as Date | undefined) ?? now,
+  });
+
+  await applyEvaluationBookkeeping(userObjId, attemptInput, evaluation);
+
   log.info(
-    { userId, attemptId: attempt._id, type: dto.type, status: dto.status },
+    { userId, attemptId: attempt._id, type: attemptInput.type, status: evaluation.status },
     'attempt created'
   );
 

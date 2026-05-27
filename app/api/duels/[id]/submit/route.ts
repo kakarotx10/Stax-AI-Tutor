@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitDuelSolution } from '@/lib/database/duels'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await requireSessionDatabaseUserId()
     const body = await request.json()
-    const { userId, solution, score } = body
+    const { solution, score } = body
 
-    if (!userId || !solution) {
+    if (!solution) {
       return NextResponse.json(
-        { error: 'User ID and solution required' },
+        { error: 'Solution required' },
         { status: 400 }
       )
     }

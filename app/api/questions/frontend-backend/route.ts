@@ -3,18 +3,33 @@ import { getQuestionsForTopic, getRandomQuestion, type Difficulty } from '@/lib/
 
 export const dynamic = 'force-dynamic'
 
+function normalizeDifficulty(value: string | null): Difficulty | null {
+  if (!value) return null
+  if (value === 'Advanced') return 'Hard'
+  if (value === 'Basic' || value === 'Medium' || value === 'Hard') return value
+  return null
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const subject = searchParams.get('subject')
     const unit = searchParams.get('unit')
     const subtopic = searchParams.get('subtopic')
-    const difficulty = searchParams.get('difficulty') as Difficulty | null
+    const difficultyParam = searchParams.get('difficulty')
+    const difficulty = normalizeDifficulty(difficultyParam)
     const random = searchParams.get('random') === 'true'
 
     if (!subject || !unit || !subtopic) {
       return NextResponse.json(
         { error: 'Subject, unit, and subtopic are required' },
+        { status: 400 }
+      )
+    }
+
+    if (difficultyParam && !difficulty) {
+      return NextResponse.json(
+        { error: 'Difficulty must be Basic, Medium, Hard, or Advanced' },
         { status: 400 }
       )
     }

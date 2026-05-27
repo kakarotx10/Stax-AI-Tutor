@@ -12,6 +12,10 @@ export const submitSchema = z.object({
   code: z.string().min(1).max(MAX_CODE_LENGTH),
   language: z.enum(['python', 'cpp', 'java']),
   contestId: z.string().optional(),
+  subjectId: z.string().min(1).optional(),
+  unitId: z.string().min(1).optional(),
+  subtopicId: z.string().min(1).optional(),
+  difficulty: z.enum(['easy', 'medium', 'hard', 'Basic', 'Medium', 'Advanced']).optional(),
 });
 
 export type ExecuteDto = z.infer<typeof executeSchema>;

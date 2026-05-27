@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createStandoffTeam } from '@/lib/database/standoffs'
 import { Domain } from '@/lib/subjects'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireSessionDatabaseUserId()
     const body = await request.json()
-    const { userId, domain } = body
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
-      )
-    }
+    const { domain } = body
 
     const standoffId = await createStandoffTeam(userId, (domain || 'placement') as Domain)
 
@@ -32,7 +27,6 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
 
 
 

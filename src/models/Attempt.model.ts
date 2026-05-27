@@ -5,6 +5,7 @@ import {
   type AttemptStatus,
   type AttemptType,
 } from '@/src/lib/constants';
+import type { EvaluationLevel, RubricScore } from '@/src/validators/evaluator.validator';
 
 export interface AttemptTestResult {
   passed: boolean;
@@ -48,7 +49,12 @@ export interface IAttempt extends Document {
   language?: string;
   code?: string;
   status: AttemptStatus;
-  score: number;
+  score: number | null;
+  level?: EvaluationLevel;
+  rubric?: RubricScore[];
+  feedback?: Record<string, unknown>;
+  evaluatorVersion?: string;
+  meta?: Record<string, unknown>;
   passedCount?: number;
   totalCount?: number;
   testResults?: AttemptTestResult[];
@@ -60,6 +66,16 @@ export interface IAttempt extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const RubricScoreSchema = new Schema<RubricScore>(
+  {
+    criterion: { type: String, required: true },
+    weight: { type: Number, required: true, min: 0, max: 1 },
+    score: { type: Number, required: true, min: 0, max: 100 },
+    comment: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const TestResultSchema = new Schema<AttemptTestResult>(
   {
@@ -123,7 +139,16 @@ const AttemptSchema = new Schema<IAttempt>(
       required: true,
       index: true,
     },
-    score: { type: Number, required: true, min: 0, max: 100, default: 0 },
+    score: { type: Number, min: 0, max: 100, default: null },
+    level: {
+      type: String,
+      enum: ['beginner', 'intermediate', 'advanced', 'expert'],
+      default: undefined,
+    },
+    rubric: { type: [RubricScoreSchema], default: undefined },
+    feedback: { type: Schema.Types.Mixed, default: undefined },
+    evaluatorVersion: String,
+    meta: { type: Schema.Types.Mixed, default: undefined },
     passedCount: { type: Number, min: 0 },
     totalCount: { type: Number, min: 0 },
     testResults: { type: [TestResultSchema], default: undefined },

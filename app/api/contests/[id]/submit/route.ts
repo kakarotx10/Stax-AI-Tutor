@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { submitContestSolution } from '@/lib/database/contests'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(
   request: NextRequest,
@@ -7,18 +8,16 @@ export async function POST(
 ) {
   try {
     const body = await request.json()
-    const { problemId, userId, code, language, status, score } = body
+    const { problemId, code, language, status, score } = body
 
-    if (!problemId || !userId || !code || !language) {
+    if (!problemId || !code || !language) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Ensure user exists in database and get proper UUID
-    const { getOrCreateUser } = await import('@/lib/database/userManagement')
-    const dbUserId = await getOrCreateUser(userId)
+    const dbUserId = await requireSessionDatabaseUserId()
 
     const success = await submitContestSolution(
       params.id,
@@ -46,4 +45,3 @@ export async function POST(
     )
   }
 }
-

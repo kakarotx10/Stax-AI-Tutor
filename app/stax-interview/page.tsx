@@ -6,7 +6,7 @@ import { Mic, MicOff, Code, FileText, Users, ArrowRight } from 'lucide-react'
 import StaxInterviewer from '@/components/StaxInterviewer'
 
 export type InterviewType = 'technical' | 'hr' | 'resume'
-export type InterviewDomain = 'placement' | 'frontend' | 'backend' | 'aiml' | 'all'
+export type InterviewDomain = 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml' | 'all'
 
 export default function StaxInterviewPage() {
   const [selectedType, setSelectedType] = useState<InterviewType | null>(null)
@@ -126,8 +126,8 @@ export default function StaxInterviewPage() {
             className="glass-card p-6 mb-8"
           >
             <h3 className="text-xl font-bold mb-4">Select Domain:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {(['all', 'placement', 'frontend', 'backend', 'aiml'] as InterviewDomain[]).map((domain) => (
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+              {(['all', 'placement', 'frontend', 'backend', 'fullstack', 'aiml'] as InterviewDomain[]).map((domain) => (
                 <button
                   key={domain}
                   onClick={() => setSelectedDomain(domain)}
@@ -137,7 +137,7 @@ export default function StaxInterviewPage() {
                       : 'bg-card text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  {domain.charAt(0).toUpperCase() + domain.slice(1)}
+                  {domain === 'fullstack' ? 'Full Stack' : domain.charAt(0).toUpperCase() + domain.slice(1)}
                 </button>
               ))}
             </div>

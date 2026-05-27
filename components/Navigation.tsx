@@ -55,7 +55,7 @@ export default function Navigation() {
     { href: '/marathons', label: 'Marathons', icon: Flame },
   ]
 
-  const navItems = isAuthenticated ? privateItems : publicItems
+  const navItems = isLoading ? [] : isAuthenticated ? privateItems : publicItems
 
   const userInitial = (user?.name ?? user?.email ?? '?').charAt(0).toUpperCase()
 
@@ -85,7 +85,12 @@ export default function Navigation() {
           {/* Center nav */}
           <div className="flex min-w-0 flex-1 justify-center">
             <div className="flex max-w-full items-center gap-1 overflow-x-auto rounded-full border border-border bg-card p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {navItems.map((item) => {
+              {isLoading ? (
+                <div className="flex items-center gap-1 px-2 py-1">
+                  <span className="h-7 w-20 animate-pulse rounded-full bg-muted" />
+                  <span className="h-7 w-24 animate-pulse rounded-full bg-muted" />
+                </div>
+              ) : navItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
 

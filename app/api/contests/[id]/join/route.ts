@@ -1,24 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { joinContest } from '@/lib/database/contests'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const body = await request.json()
-    const { userId } = body
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
-      )
-    }
-
-    // Ensure user exists in database and get proper UUID
-    const { getOrCreateUser } = await import('@/lib/database/userManagement')
-    const dbUserId = await getOrCreateUser(userId)
+    const dbUserId = await requireSessionDatabaseUserId()
 
     const success = await joinContest(params.id, dbUserId)
 
@@ -38,4 +27,3 @@ export async function POST(
     )
   }
 }
-

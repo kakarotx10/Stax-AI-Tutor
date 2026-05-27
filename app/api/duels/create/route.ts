@@ -3,15 +3,17 @@ import { createDuel, startDuel } from '@/lib/database/duels'
 import { generateCodingProblem } from '@/lib/gemini'
 import { ContestProblem } from '@/lib/types/contests'
 import { Domain } from '@/lib/subjects'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(request: NextRequest) {
   try {
+    const challengerId = await requireSessionDatabaseUserId()
     const body = await request.json()
-    const { challengerId, opponentId, difficulty, subject, unit, domain } = body
+    const { opponentId, difficulty, subject, unit, domain } = body
 
-    if (!challengerId || !opponentId) {
+    if (!opponentId) {
       return NextResponse.json(
-        { error: 'Challenger ID and Opponent ID required' },
+        { error: 'Opponent ID required' },
         { status: 400 }
       )
     }
@@ -69,7 +71,6 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
 
 
 

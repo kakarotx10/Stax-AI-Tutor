@@ -6,7 +6,7 @@ import { childLogger } from '@/src/lib/logger';
 
 const log = childLogger('ratelimit');
 
-type LimiterKey = 'ai' | 'code' | 'auth' | 'default';
+type LimiterKey = 'ai' | 'code' | 'evaluation' | 'auth' | 'default';
 
 const limiters = new Map<LimiterKey, Ratelimit>();
 
@@ -26,6 +26,7 @@ function getLimiter(key: LimiterKey): Ratelimit | null {
   const limitPerMin: Record<LimiterKey, number> = {
     ai: RATE_LIMITS.AI_REQUESTS_PER_MIN,
     code: RATE_LIMITS.CODE_EXEC_PER_MIN,
+    evaluation: RATE_LIMITS.EVALUATIONS_PER_MIN,
     auth: RATE_LIMITS.AUTH_PER_MIN,
     default: RATE_LIMITS.DEFAULT_PER_MIN,
   };

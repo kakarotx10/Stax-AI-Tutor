@@ -1,24 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { saveUserProgress, getUserProgress, getAllUserProgress } from '@/lib/database/userProgress'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireSessionDatabaseUserId()
     const body = await request.json()
     const { action, ...data } = body
 
     if (action === 'save') {
-      const progress = await saveUserProgress(data)
+      const progress = await saveUserProgress({ ...data, user_id: userId })
       return NextResponse.json({ success: true, data: progress })
     }
 
     if (action === 'get') {
-      const { userId, subjectId, unitId, subtopicId, phase } = data
+      const { subjectId, unitId, subtopicId, phase } = data
       const progress = await getUserProgress(userId, subjectId, unitId, subtopicId, phase)
       return NextResponse.json({ success: true, data: progress })
     }
 
     if (action === 'getAll') {
-      const { userId } = data
       const progress = await getAllUserProgress(userId)
       return NextResponse.json({ success: true, data: progress })
     }

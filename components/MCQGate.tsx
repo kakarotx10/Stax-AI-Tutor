@@ -38,6 +38,13 @@ interface MCQAnswerResult {
   explanation?: string
 }
 
+function difficultyForPhase(phase?: string): 'basic' | 'medium' | 'advanced' | null {
+  if (phase === 'basic') return 'basic'
+  if (phase === 'medium') return 'medium'
+  if (phase === 'hard') return 'advanced'
+  return null
+}
+
 export default function MCQGate({
   subject,
   unit,
@@ -82,7 +89,16 @@ export default function MCQGate({
       })
 
       if (response.data && Array.isArray(response.data.mcqs) && response.data.mcqs.length > 0) {
-        setMcqs(response.data.mcqs)
+        const phaseDifficulty = difficultyForPhase(phase)
+        const phaseMCQs = phaseDifficulty
+          ? response.data.mcqs.filter((mcq: MCQ) => mcq.difficulty === phaseDifficulty)
+          : response.data.mcqs
+
+        if (phaseMCQs.length === 0) {
+          throw new Error(`No ${phaseDifficulty} MCQs available`)
+        }
+
+        setMcqs(phaseMCQs)
         if (response.data.error) {
           toast(response.data.error, { icon: '⚠️' })
         }
@@ -111,7 +127,16 @@ export default function MCQGate({
             wrongExplanations: {},
             difficulty: mcq.difficulty.toLowerCase() as 'basic' | 'medium' | 'advanced',
           }))
-          setMcqs(formattedMCQs)
+          const phaseDifficulty = difficultyForPhase(phase)
+          const phaseMCQs = phaseDifficulty
+            ? formattedMCQs.filter(mcq => mcq.difficulty === phaseDifficulty)
+            : formattedMCQs
+
+          if (phaseMCQs.length === 0) {
+            throw new Error(`No ${phaseDifficulty} MCQs found`)
+          }
+
+          setMcqs(phaseMCQs)
         } else {
           throw new Error('No MCQs found')
         }

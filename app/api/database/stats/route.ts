@@ -1,31 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getUserStats, updateUserStats, addXP, incrementProblemsSolved } from '@/lib/database/userStats'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(request: NextRequest) {
   try {
+    const userId = await requireSessionDatabaseUserId()
     const body = await request.json()
     const { action, ...data } = body
 
     if (action === 'get') {
-      const { userId } = data
       const stats = await getUserStats(userId)
       return NextResponse.json({ success: true, data: stats })
     }
 
     if (action === 'update') {
-      const { userId, updates } = data
+      const { updates } = data
       const stats = await updateUserStats(userId, updates)
       return NextResponse.json({ success: true, data: stats })
     }
 
     if (action === 'addXP') {
-      const { userId, xpAmount } = data
+      const { xpAmount } = data
       const stats = await addXP(userId, xpAmount)
       return NextResponse.json({ success: true, data: stats })
     }
 
     if (action === 'incrementProblemsSolved') {
-      const { userId } = data
       const stats = await incrementProblemsSolved(userId)
       return NextResponse.json({ success: true, data: stats })
     }

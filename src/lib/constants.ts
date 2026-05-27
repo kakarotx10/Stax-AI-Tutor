@@ -25,6 +25,7 @@ export const ATTEMPT_TYPES = {
   CODING: 'coding',
   MCQ: 'mcq',
   SQL: 'sql',
+  WRITTEN: 'written',
   ASSIGNMENT: 'assignment',
   CONTEST: 'contest',
 } as const;
@@ -63,6 +64,7 @@ export type LearningPhase = (typeof LEARNING_PHASES)[keyof typeof LEARNING_PHASE
 export const RATE_LIMITS = {
   AI_REQUESTS_PER_MIN: 10,
   CODE_EXEC_PER_MIN: 20,
+  EVALUATIONS_PER_MIN: 20,
   AUTH_PER_MIN: 5,
   DEFAULT_PER_MIN: 60,
 } as const;

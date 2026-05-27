@@ -61,10 +61,19 @@ export async function ensureUserExists(): Promise<string> {
     return 'temp-user' // SSR fallback
   }
 
+  let sessionUserId: string | null = null
+  try {
+    const { getSession } = await import('next-auth/react')
+    const session = await getSession()
+    sessionUserId = session?.user?.id ?? null
+  } catch {
+    sessionUserId = null
+  }
+
   const saved = localStorage.getItem('userId')
-  const localStorageUserId = saved || `user-${Date.now()}`
+  const localStorageUserId = sessionUserId || saved || `user-${Date.now()}`
   
-  if (!saved) {
+  if (!sessionUserId && !saved) {
     localStorage.setItem('userId', localStorageUserId)
   }
 
@@ -78,4 +87,3 @@ export async function ensureUserExists(): Promise<string> {
 
   return dbUserId
 }
-

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { executeCode, type Judge0Language } from '@/lib/judge0'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
     const { code, language, stdin, expectedOutput } = await request.json()
 
     if (!code || !language) {

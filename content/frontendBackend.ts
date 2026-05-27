@@ -1,5 +1,7 @@
 // Question database for Frontend and Backend domains
-// Each topic has Basic, Medium, and Hard level questions
+// Each journey topic has Basic, Medium, and Hard level questions.
+
+import { SUBJECTS } from './subjects'
 
 export type Difficulty = 'Basic' | 'Medium' | 'Hard'
 export type Subject = string
@@ -23,6 +25,13 @@ export interface FrontendBackendQuestion {
     express?: string
     django?: string
     flask?: string
+    spring?: string
+    nestjs?: string
+    mongodb?: string
+    postgresql?: string
+    redis?: string
+    docker?: string
+    kubernetes?: string
   }
   expectedOutput?: string
   hints: string[]
@@ -35,6 +44,13 @@ export interface FrontendBackendQuestion {
     express?: string
     django?: string
     flask?: string
+    spring?: string
+    nestjs?: string
+    mongodb?: string
+    postgresql?: string
+    redis?: string
+    docker?: string
+    kubernetes?: string
   }
 }
 
@@ -69,7 +85,7 @@ export function getRandomQuestion(
 }
 
 // Main question database
-const FRONTEND_BACKEND_QUESTIONS: FrontendBackendQuestion[] = [
+const CURATED_FRONTEND_BACKEND_QUESTIONS: FrontendBackendQuestion[] = [
   // ============ HTML QUESTIONS ============
   {
     subject: 'HTML',
@@ -766,7 +782,488 @@ app.use(express.json());
   }
 ]
 
-// Export the questions array
+const DIFFICULTIES: Difficulty[] = ['Basic', 'Medium', 'Hard']
+
+const frontendBackendSubjects = Object.values(SUBJECTS).filter(
+  (subject) => subject.domain === 'frontend' || subject.domain === 'backend'
+)
+
+function makeQuestionKey(question: Pick<FrontendBackendQuestion, 'subject' | 'unit' | 'subtopic' | 'difficulty'>): string {
+  return `${question.subject}|||${question.unit}|||${question.subtopic}|||${question.difficulty}`
+}
+
+function readableIdentifier(value: string): string {
+  return value
+    .replace(/[^a-zA-Z0-9]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map((part, index) => {
+      const normalized = part.toLowerCase()
+      if (index === 0) return normalized
+      return normalized.charAt(0).toUpperCase() + normalized.slice(1)
+    })
+    .join('') || 'topic'
+}
+
+function starterCodeFor(subject: string, unit: string, subtopic: string, difficulty: Difficulty): NonNullable<FrontendBackendQuestion['starterCode']> {
+  const lowerSubject = subject.toLowerCase()
+  const topicId = readableIdentifier(subtopic)
+  const levelComment =
+    difficulty === 'Basic'
+      ? 'Focus on the smallest working example first.'
+      : difficulty === 'Medium'
+      ? 'Add validation and one realistic state change.'
+      : 'Handle edge cases and keep the solution easy to test.'
+
+  if (lowerSubject === 'html') {
+    return {
+      html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subtopic} Practice</title>
+</head>
+<body>
+  <main>
+    <!-- Build a ${difficulty} ${subtopic} example from ${unit}. -->
+  </main>
+</body>
+</html>`,
+    }
+  }
+
+  if (lowerSubject === 'css') {
+    return {
+      html: `<section class="${topicId}-demo">
+  <h1>${subtopic}</h1>
+  <p>Use this markup to practice ${unit}.</p>
+  <button>Primary action</button>
+</section>`,
+      css: `.${topicId}-demo {
+  /* ${levelComment} */
+}`,
+    }
+  }
+
+  if (lowerSubject === 'react' || lowerSubject === 'typescript') {
+    return {
+      react: `import React from 'react';
+
+function ${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Practice() {
+  // ${levelComment}
+  return (
+    <section>
+      <h1>${subtopic}</h1>
+    </section>
+  );
+}
+
+export default ${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Practice;`,
+    }
+  }
+
+  if (lowerSubject === 'javascript' || lowerSubject.includes('angular') || lowerSubject.includes('vue') || lowerSubject.includes('next')) {
+    return {
+      html: `<main id="app">
+  <h1>${subtopic}</h1>
+  <button id="run">Run practice</button>
+  <pre id="output"></pre>
+</main>`,
+      javascript: `const output = document.querySelector('#output');
+
+function run${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Practice() {
+  // ${levelComment}
+  output.textContent = '${subtopic} practice ready';
+}
+
+document.querySelector('#run')?.addEventListener('click', run${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Practice);`,
+    }
+  }
+
+  if (lowerSubject.includes('node')) {
+    return {
+      html: `<pre id="output">Implement the Node.js ${subtopic} flow in JavaScript.</pre>`,
+      nodejs: `// ${subject} - ${unit} - ${subtopic}
+// ${levelComment}
+
+function handle${topicId.charAt(0).toUpperCase() + topicId.slice(1)}() {
+  return { ok: true, topic: '${subtopic}' };
+}
+
+console.log(handle${topicId.charAt(0).toUpperCase() + topicId.slice(1)}());`,
+      javascript: `// Browser-friendly draft for the same ${subject} idea.
+function handle${topicId.charAt(0).toUpperCase() + topicId.slice(1)}() {
+  return { ok: true, topic: '${subtopic}' };
+}`,
+    }
+  }
+
+  if (lowerSubject.includes('express')) {
+    return {
+      html: `<pre id="output">Design the Express.js ${subtopic} route or middleware.</pre>`,
+      express: `const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// ${levelComment}
+// Add your ${subtopic} implementation here.
+
+module.exports = app;`,
+      javascript: `// Sketch the route behavior before wiring it into Express.
+function ${topicId}Handler(req) {
+  return { status: 200, body: { topic: '${subtopic}' } };
+}`,
+    }
+  }
+
+  if (lowerSubject.includes('django')) {
+    return {
+      html: `<pre id="output">Plan the Django ${subtopic} view/model/template code.</pre>`,
+      django: `# ${subject} - ${unit} - ${subtopic}
+# ${levelComment}
+
+def ${topicId}_practice(request):
+    return {
+        "topic": "${subtopic}",
+        "status": "ready",
+    }`,
+    }
+  }
+
+  if (lowerSubject.includes('flask')) {
+    return {
+      html: `<pre id="output">Plan the Flask ${subtopic} endpoint.</pre>`,
+      flask: `from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.get("/practice/${topicId}")
+def ${topicId}_practice():
+    # ${levelComment}
+    return jsonify({"topic": "${subtopic}", "status": "ready"})`,
+    }
+  }
+
+  if (lowerSubject.includes('spring')) {
+    return {
+      html: `<pre id="output">Outline the Spring Framework ${subtopic} implementation.</pre>`,
+      spring: `// ${subject} - ${unit} - ${subtopic}
+// ${levelComment}
+
+class ${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Practice {
+  String describe() {
+    return "${subtopic}";
+  }
+}`,
+    }
+  }
+
+  if (lowerSubject.includes('nest')) {
+    return {
+      html: `<pre id="output">Outline the NestJS ${subtopic} provider/controller.</pre>`,
+      nestjs: `// ${subject} - ${unit} - ${subtopic}
+// ${levelComment}
+
+export class ${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Service {
+  describe() {
+    return { topic: '${subtopic}', status: 'ready' };
+  }
+}`,
+      javascript: `class ${topicId.charAt(0).toUpperCase() + topicId.slice(1)}Service {
+  describe() {
+    return { topic: '${subtopic}', status: 'ready' };
+  }
+}`,
+    }
+  }
+
+  if (lowerSubject.includes('mongo')) {
+    return {
+      html: `<pre id="output">Model a MongoDB ${subtopic} operation.</pre>`,
+      mongodb: `// ${subject} - ${unit} - ${subtopic}
+// ${levelComment}
+
+const query = {
+  topic: '${subtopic}',
+};
+
+// db.collection('practice').find(query);`,
+      javascript: `const query = { topic: '${subtopic}' };
+console.log(query);`,
+    }
+  }
+
+  if (lowerSubject.includes('postgres')) {
+    return {
+      html: `<pre id="output">Write a PostgreSQL ${subtopic} example.</pre>`,
+      postgresql: `-- ${subject} - ${unit} - ${subtopic}
+-- ${levelComment}
+
+SELECT '${subtopic}' AS topic;`,
+    }
+  }
+
+  if (lowerSubject.includes('redis')) {
+    return {
+      html: `<pre id="output">Design a Redis ${subtopic} command flow.</pre>`,
+      redis: `# ${subject} - ${unit} - ${subtopic}
+# ${levelComment}
+
+SET practice:${topicId} "ready"
+GET practice:${topicId}`,
+    }
+  }
+
+  if (lowerSubject.includes('docker')) {
+    return {
+      html: `<pre id="output">Create Docker configuration for ${subtopic}.</pre>`,
+      docker: `# ${subject} - ${unit} - ${subtopic}
+# ${levelComment}
+
+FROM node:20-alpine
+WORKDIR /app
+COPY . .
+CMD ["node", "server.js"]`,
+    }
+  }
+
+  if (lowerSubject.includes('kubernetes')) {
+    return {
+      html: `<pre id="output">Draft Kubernetes YAML for ${subtopic}.</pre>`,
+      kubernetes: `apiVersion: v1
+kind: Pod
+metadata:
+  name: ${topicId}-practice
+spec:
+  containers:
+    - name: app
+      image: nginx:stable`,
+    }
+  }
+
+  return {
+    html: `<pre id="output">${subject} ${subtopic} practice</pre>`,
+    javascript: `// ${levelComment}
+console.log('${subject} - ${unit} - ${subtopic}');`,
+  }
+}
+
+function solutionFor(subject: string, unit: string, subtopic: string, difficulty: Difficulty): NonNullable<FrontendBackendQuestion['solution']> {
+  const lowerSubject = subject.toLowerCase()
+  const starterCode = starterCodeFor(subject, unit, subtopic, difficulty)
+
+  if (lowerSubject === 'html') {
+    return {
+      html: (starterCode.html ?? '').replace(
+        '    <!-- Build',
+        `    <h1>${subtopic}</h1>
+    <p>This page demonstrates ${subtopic} in ${unit}.</p>
+    <!-- Build`
+      ),
+    }
+  }
+
+  if (lowerSubject === 'css') {
+    return {
+      css: `.${readableIdentifier(subtopic)}-demo {
+  max-width: 42rem;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-family: system-ui, sans-serif;
+}
+
+.${readableIdentifier(subtopic)}-demo button {
+  padding: 0.625rem 1rem;
+  border: 0;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+}`,
+    }
+  }
+
+  if (starterCode.react) return { react: starterCode.react }
+  if (starterCode.express) return { express: starterCode.express }
+  if (starterCode.nodejs) return { nodejs: starterCode.nodejs }
+  if (starterCode.django) return { django: starterCode.django }
+  if (starterCode.flask) return { flask: starterCode.flask }
+  if (starterCode.javascript) return { javascript: starterCode.javascript }
+  return starterCode
+}
+
+function generatedQuestionFor(subject: string, unit: string, subtopic: string, difficulty: Difficulty): FrontendBackendQuestion {
+  const focus =
+    difficulty === 'Basic'
+      ? 'Build a small beginner-friendly example that demonstrates the core idea.'
+      : difficulty === 'Medium'
+      ? 'Apply the concept in a practical feature with realistic input and state handling.'
+      : 'Solve an interview-style version with validation, edge cases, and clear structure.'
+
+  const titlePrefix =
+    difficulty === 'Basic'
+      ? 'Basic'
+      : difficulty === 'Medium'
+      ? 'Practical'
+      : 'Interview'
+  const starterCode = starterCodeFor(subject, unit, subtopic, difficulty)
+  const editorReadyStarterCode: NonNullable<FrontendBackendQuestion['starterCode']> = {
+    ...starterCode,
+    ...(starterCode.html || starterCode.react
+      ? {}
+      : {
+          html: `<pre id="output">${subject} - ${subtopic} practice</pre>`,
+        }),
+    ...(starterCode.javascript || subject === 'HTML' || subject === 'CSS' || subject === 'React' || subject === 'TypeScript'
+      ? {}
+      : {
+          javascript: `// Use this browser-friendly draft to outline the ${subject} ${subtopic} solution.
+const practicePlan = {
+  subject: '${subject}',
+  unit: '${unit}',
+  subtopic: '${subtopic}',
+  difficulty: '${difficulty}',
+};
+
+console.log(practicePlan);`,
+        }),
+  }
+
+  return {
+    subject,
+    unit,
+    subtopic,
+    difficulty,
+    title: `${titlePrefix} ${subtopic} ${difficulty === 'Hard' ? 'Challenge' : 'Practice'}`,
+    description: `${focus} The task should use ${subtopic} from ${unit} in the context of ${subject}.`,
+    requirements:
+      difficulty === 'Basic'
+        ? [
+            `Create a minimal working example for ${subtopic}`,
+            `Use the exact ${unit} concept named in the prompt`,
+            'Keep the code readable with clear names',
+          ]
+        : difficulty === 'Medium'
+        ? [
+            `Build a practical ${subtopic} workflow`,
+            'Handle one normal case and one empty or invalid case',
+            'Separate setup code from the main logic',
+            'Show a clear result to the user or caller',
+          ]
+        : [
+            `Design a robust ${subtopic} solution`,
+            'Handle edge cases and failure states explicitly',
+            'Keep the implementation modular and easy to test',
+            'Add a short comment explaining the main tradeoff',
+          ],
+    starterCode: editorReadyStarterCode,
+    hints:
+      difficulty === 'Basic'
+        ? [
+            `Start by naming the main ${subtopic} element, function, route, or configuration block.`,
+            'Make the smallest version work before adding styling or extra behavior.',
+            `Check that the output clearly shows ${subtopic}.`,
+          ]
+        : difficulty === 'Medium'
+        ? [
+            'List the inputs, outputs, and state changes before coding.',
+            'Use small helper functions so each part has one job.',
+            'Test both a successful path and a missing-data path.',
+          ]
+        : [
+            'Think through invalid input, repeated actions, and boundary cases first.',
+            'Keep validation close to the boundary of the feature.',
+            'Make the core logic reusable so it can be tested without the UI or server wrapper.',
+          ],
+    solution: solutionFor(subject, unit, subtopic, difficulty),
+  }
+}
+
+function buildGeneratedCoverageQuestions(): FrontendBackendQuestion[] {
+  const covered = new Set(CURATED_FRONTEND_BACKEND_QUESTIONS.map(makeQuestionKey))
+  const generated: FrontendBackendQuestion[] = []
+
+  for (const subject of frontendBackendSubjects) {
+    for (const unit of subject.units) {
+      for (const subtopic of unit.subtopics) {
+        for (const difficulty of DIFFICULTIES) {
+          const candidate = {
+            subject: subject.name,
+            unit: unit.name,
+            subtopic: subtopic.name,
+            difficulty,
+          }
+
+          if (!covered.has(makeQuestionKey(candidate))) {
+            const question = generatedQuestionFor(subject.name, unit.name, subtopic.name, difficulty)
+            covered.add(makeQuestionKey(question))
+            generated.push(question)
+          }
+        }
+      }
+    }
+  }
+
+  return generated
+}
+
+function firstSpecializedStarterCode(starterCode: NonNullable<FrontendBackendQuestion['starterCode']>): string | undefined {
+  return (
+    starterCode.nodejs ??
+    starterCode.express ??
+    starterCode.django ??
+    starterCode.flask ??
+    starterCode.spring ??
+    starterCode.nestjs ??
+    starterCode.mongodb ??
+    starterCode.postgresql ??
+    starterCode.redis ??
+    starterCode.docker ??
+    starterCode.kubernetes
+  )
+}
+
+function ensureEditorReadyQuestion(question: FrontendBackendQuestion): FrontendBackendQuestion {
+  if (!question.starterCode) return question
+
+  const hasVisibleStarterCode =
+    question.starterCode.html ||
+    question.starterCode.css ||
+    question.starterCode.javascript ||
+    question.starterCode.react
+
+  if (hasVisibleStarterCode) return question
+
+  const specializedCode = firstSpecializedStarterCode(question.starterCode)
+
+  return {
+    ...question,
+    starterCode: {
+      ...question.starterCode,
+      html: `<pre id="output">${question.subject} - ${question.subtopic} practice</pre>`,
+      javascript:
+        specializedCode ??
+        `const practice = {
+  subject: '${question.subject}',
+  unit: '${question.unit}',
+  subtopic: '${question.subtopic}',
+};
+
+console.log(practice);`,
+    },
+  }
+}
+
+// Export the complete questions array. Curated entries win first; generated
+// coverage entries fill only exact missing journey combinations.
+const FRONTEND_BACKEND_QUESTIONS: FrontendBackendQuestion[] = [
+  ...CURATED_FRONTEND_BACKEND_QUESTIONS.map(ensureEditorReadyQuestion),
+  ...buildGeneratedCoverageQuestions(),
+]
+
 export { FRONTEND_BACKEND_QUESTIONS }
 
 

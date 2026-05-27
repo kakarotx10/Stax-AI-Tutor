@@ -9,7 +9,12 @@
  * IDs are stable — the StaxInterviewer state machine references them.
  */
 
-export type InterviewTemplate = 'sde-placement' | 'frontend-sde' | 'backend-sde' | 'aiml-engineer'
+export type InterviewTemplate =
+  | 'sde-placement'
+  | 'frontend-sde'
+  | 'backend-sde'
+  | 'fullstack-4yr'
+  | 'aiml-engineer'
 export type QuestionSection = 'intro' | 'resume' | 'dsa' | 'cs-fundamentals' | 'system-design' | 'closing'
 export type QuestionLevel = 'easy' | 'medium' | 'hard'
 export type AnswerQuality = 'weak' | 'ok' | 'strong'
@@ -45,7 +50,7 @@ export interface Question {
 export interface InterviewTemplateConfig {
   id: InterviewTemplate
   name: string
-  domain: 'placement' | 'frontend' | 'backend' | 'aiml'
+  domain: 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml'
   description: string
   questions: Question[]
   startQuestionId: string
@@ -945,6 +950,351 @@ export const BACKEND_SDE_TEMPLATE: InterviewTemplateConfig = {
 }
 
 // ─────────────────────────────────────────────────────────────────────
+// FULL STACK SDE — 4 YEARS EXPERIENCE
+// ─────────────────────────────────────────────────────────────────────
+
+export const FULLSTACK_4YR_TEMPLATE: InterviewTemplateConfig = {
+  id: 'fullstack-4yr',
+  name: '4-Year Full Stack Developer Interview',
+  domain: 'fullstack',
+  description:
+    'Mid-level full-stack loop for ~4 years experience: product ownership, React state, API design, auth, database performance, deployment, and debugging.',
+  startQuestionId: 'intro-1',
+  questions: [
+    {
+      id: 'intro-1',
+      section: 'intro',
+      topic: 'four-year-fullstack-overview',
+      prompt:
+        'You have around four years of full-stack experience. Walk me through the most production-heavy feature you owned end-to-end: frontend, API, database, release, and post-release issues.',
+      rubric: {
+        expectedPoints: [
+          'names a specific feature, not a generic project',
+          'frontend responsibilities: state, forms, UX, validation, or performance',
+          'backend responsibilities: API contract, auth, database, jobs, or integrations',
+          'release ownership: testing, deployment, monitoring, or rollback',
+          'post-release learning: bug, metric, or user feedback',
+        ],
+        redFlags: [
+          'speaks only in team-level "we" without own contribution',
+          'only lists technologies with no ownership story',
+          'no production or user-facing consequence mentioned',
+        ],
+        goodIndicators: [
+          'mentions a measurable result',
+          'can name a trade-off and an incident',
+          'connects UI behavior to backend constraints',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'medium',
+      nextQuestionIfGood: 'fs-1',
+      nextQuestionIfOk: 'fs-1',
+      nextQuestionIfWeak: 'intro-1-followup',
+    },
+    {
+      id: 'intro-1-followup',
+      section: 'resume',
+      topic: 'ownership-clarification',
+      prompt:
+        'Pick one part of that feature that was fully yours. What code did you write, what broke first, and how did you prove the fix worked?',
+      rubric: {
+        expectedPoints: [
+          'specific owned component, endpoint, query, or workflow',
+          'real failure mode',
+          'debugging steps or validation method',
+        ],
+        redFlags: ['cannot isolate personal work', 'answer stays at architecture-diagram level'],
+        goodIndicators: ['mentions tests, logs, metrics, or a reproduction case'],
+        minPointsForStrong: 2,
+      },
+      level: 'medium',
+      nextQuestionIfGood: 'fs-1',
+      nextQuestionIfOk: 'fs-1',
+      nextQuestionIfWeak: 'fs-1',
+    },
+    {
+      id: 'fs-1',
+      section: 'cs-fundamentals',
+      topic: 'react-server-state',
+      prompt:
+        'In a React app, how do you separate local UI state from server state? Give examples, then explain when you would use React Query or SWR instead of keeping fetched data in `useState`.',
+      rubric: {
+        expectedPoints: [
+          'local UI state: modal open, form draft, selected tab',
+          'server state: fetched entities, cache freshness, pagination, user profile',
+          'React Query/SWR handles caching, refetching, dedupe, loading/error states',
+          'mutation invalidation or optimistic update awareness',
+        ],
+        redFlags: [
+          'stores all API responses in global state by default',
+          'cannot explain cache invalidation',
+          'confuses client state with database state',
+        ],
+        goodIndicators: [
+          'mentions staleTime/cacheTime or query keys',
+          'talks about optimistic updates and rollback',
+        ],
+        minPointsForStrong: 3,
+      },
+      level: 'medium',
+      nextQuestionIfGood: 'fs-2',
+      nextQuestionIfOk: 'fs-2',
+      nextQuestionIfWeak: 'fs-1-followup',
+    },
+    {
+      id: 'fs-1-followup',
+      section: 'cs-fundamentals',
+      topic: 'state-management-debugging',
+      prompt:
+        'A user saves a profile form, the API succeeds, but the page still shows old data until refresh. What are the likely causes and fixes?',
+      rubric: {
+        expectedPoints: [
+          'stale client cache or query not invalidated',
+          'component reading from old local copy',
+          'server response shape not updating the same cache key',
+          'fix via invalidation, refetch, optimistic update, or single source of truth',
+        ],
+        redFlags: ['suggests full page reload as the primary fix', 'does not mention cache or state source'],
+        goodIndicators: ['mentions inspecting network response and React DevTools'],
+        minPointsForStrong: 3,
+      },
+      level: 'medium',
+      nextQuestionIfGood: 'fs-2',
+      nextQuestionIfOk: 'fs-2',
+      nextQuestionIfWeak: 'fs-2',
+    },
+    {
+      id: 'fs-2',
+      section: 'cs-fundamentals',
+      topic: 'api-contract-design',
+      prompt:
+        'Design the API contract for an order-management screen: list orders with filters, fetch order detail, update status, and add an internal note. Include methods, status codes, validation, and retry/idempotency concerns.',
+      rubric: {
+        expectedPoints: [
+          'GET /orders with pagination and filters',
+          'GET /orders/:id for detail',
+          'PATCH /orders/:id/status for status transition',
+          'POST /orders/:id/notes for note creation',
+          'status codes like 200, 201, 400, 401, 403, 404, 409',
+          'idempotency or conflict handling for repeated updates',
+        ],
+        redFlags: [
+          'uses verb-heavy URLs like /updateOrder',
+          'no validation or authorization boundary',
+          'treats POST retry as automatically safe',
+        ],
+        goodIndicators: [
+          'mentions request/response schemas',
+          'mentions optimistic locking or version field',
+          'discusses audit trail',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'hard',
+      nextQuestionIfGood: 'fs-3',
+      nextQuestionIfOk: 'fs-3',
+      nextQuestionIfWeak: 'fs-3',
+    },
+    {
+      id: 'fs-3',
+      section: 'cs-fundamentals',
+      topic: 'auth-security',
+      prompt:
+        'Walk me through login in a full-stack app. Compare cookie-based sessions and JWTs, then explain how you protect against XSS, CSRF, and unauthorized API access.',
+      rubric: {
+        expectedPoints: [
+          'cookie session: server-side session or signed token in httpOnly cookie',
+          'JWT: stateless token with expiry, signing, refresh flow caveats',
+          'XSS mitigation: escaping, CSP, no token in localStorage',
+          'CSRF mitigation: SameSite, CSRF token, checking origin for unsafe methods',
+          'server-side authorization checks on every protected action',
+        ],
+        redFlags: [
+          'stores long-lived access token in localStorage without caveat',
+          'relies only on hidden buttons for authorization',
+          'cannot separate authentication from authorization',
+        ],
+        goodIndicators: [
+          'mentions role/ownership checks',
+          'mentions token rotation or session revocation',
+          'mentions rate limiting on login',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'hard',
+      nextQuestionIfGood: 'fs-4',
+      nextQuestionIfOk: 'fs-4',
+      nextQuestionIfWeak: 'fs-4',
+    },
+    {
+      id: 'fs-4',
+      section: 'cs-fundamentals',
+      topic: 'database-performance',
+      prompt:
+        'An orders page is slow in production. It joins users, orders, payments, and shipments, and supports search by customer email plus date range. How do you investigate and improve it?',
+      rubric: {
+        expectedPoints: [
+          'measure first: logs, slow query log, APM, EXPLAIN ANALYZE',
+          'check indexes for filters and join keys',
+          'avoid N+1 queries and over-fetching',
+          'pagination or cursor pagination',
+          'consider denormalized read model or materialized view if needed',
+        ],
+        redFlags: [
+          'adds indexes blindly to every column',
+          'assumes frontend memoization fixes database latency',
+          'does not mention query plan',
+        ],
+        goodIndicators: [
+          'mentions composite index order',
+          'mentions covering index',
+          'talks about selectivity and cardinality',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'hard',
+      nextQuestionIfGood: 'fs-5',
+      nextQuestionIfOk: 'fs-5',
+      nextQuestionIfWeak: 'fs-5',
+    },
+    {
+      id: 'fs-5',
+      section: 'system-design',
+      topic: 'notification-system',
+      prompt:
+        'Design a notification system for a SaaS app. A user can get in-app, email, and Slack notifications. Explain the frontend UX, backend services, queueing, retries, preferences, and observability.',
+      rubric: {
+        expectedPoints: [
+          'frontend: notification center, unread state, preferences UI',
+          'backend: events, notification service, templates, delivery providers',
+          'queue for async delivery and retry',
+          'dedupe/idempotency for repeated events',
+          'user preference and channel routing',
+          'monitoring delivery failures and latency',
+        ],
+        redFlags: [
+          'sends email synchronously in request path',
+          'no retry or idempotency story',
+          'ignores user preferences or unsubscribe rules',
+        ],
+        goodIndicators: [
+          'mentions dead-letter queue',
+          'mentions provider webhooks',
+          'separates notification record from delivery attempt',
+        ],
+        minPointsForStrong: 5,
+      },
+      level: 'hard',
+      nextQuestionIfGood: 'fs-6',
+      nextQuestionIfOk: 'fs-6',
+      nextQuestionIfWeak: 'fs-6',
+    },
+    {
+      id: 'fs-6',
+      section: 'dsa',
+      topic: 'merge-activity-feed',
+      prompt:
+        'Coding question: You receive activity events from multiple services, each service returns events sorted newest-first. Write a function to merge them into one newest-first feed limited to `k` items. Explain complexity and edge cases.',
+      rubric: {
+        expectedPoints: [
+          'uses heap or k-way merge instead of flattening everything for large inputs',
+          'handles empty service lists',
+          'handles duplicate timestamps with deterministic tie-breaker',
+          'time complexity O(k log s) where s is number of services',
+          'space complexity O(s) for heap',
+        ],
+        redFlags: [
+          'sorts all events without discussing cost',
+          'does not handle empty arrays',
+          'ignores timestamp ties',
+        ],
+        goodIndicators: [
+          'mentions cursor pagination',
+          'mentions stable ordering by service/id',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'hard',
+      isCoding: true,
+      codingChallenge: {
+        problem:
+          'Merge multiple newest-first event streams into one newest-first feed of at most k events.',
+        constraints: [
+          'Each input stream is already sorted newest-first by timestamp.',
+          'Do not flatten and sort all events if total event count is large.',
+          'Return stable output when timestamps tie by using service index then event id.',
+        ],
+        expectedApproach: [
+          'Initialize a max-heap with the first event from each non-empty stream.',
+          'Pop the newest event, push the next event from that same stream.',
+          'Repeat until k events are returned or heap is empty.',
+        ],
+        commonPitfalls: [
+          'Flattening all events and sorting without discussing memory cost.',
+          'Forgetting to push the next event from the popped stream.',
+          'No tie-breaker for equal timestamps.',
+        ],
+        testCases: [
+          {
+            input:
+              'streams=[[{id:"a",ts:5},{id:"b",ts:2}],[{id:"c",ts:4}]], k=2',
+            output: '[{id:"a",ts:5},{id:"c",ts:4}]',
+          },
+        ],
+      },
+      nextQuestionIfGood: 'fs-7',
+      nextQuestionIfOk: 'fs-7',
+      nextQuestionIfWeak: 'fs-7',
+    },
+    {
+      id: 'fs-7',
+      section: 'resume',
+      topic: 'incident-debugging',
+      prompt:
+        'A release goes out. Ten minutes later, checkout conversion drops and API latency doubles. What do you check in the first 15 minutes, and how do you decide whether to roll back?',
+      rubric: {
+        expectedPoints: [
+          'check deploy diff and feature flags',
+          'check frontend errors, network failures, API p95/p99, database metrics',
+          'compare affected cohorts and endpoints',
+          'rollback if user impact is broad or root cause is not quickly isolated',
+          'communicate status and preserve logs for postmortem',
+        ],
+        redFlags: [
+          'keeps debugging while impact continues with no rollback threshold',
+          'only checks frontend console',
+          'no communication or ownership',
+        ],
+        goodIndicators: [
+          'mentions canary, dark launch, or feature flag kill switch',
+          'mentions postmortem action items',
+        ],
+        minPointsForStrong: 4,
+      },
+      level: 'hard',
+      nextQuestionIfGood: 'closing-1',
+      nextQuestionIfOk: 'closing-1',
+      nextQuestionIfWeak: 'closing-1',
+    },
+    {
+      id: 'closing-1',
+      section: 'closing',
+      topic: 'candidate-questions',
+      prompt:
+        "We're at time. What would you want to know about our engineering process, ownership expectations, code review, deployment, or incident response?",
+      rubric: {
+        expectedPoints: [],
+        redFlags: ['no questions'],
+        goodIndicators: ['asks about ownership, observability, tech debt, deploy cadence, or team boundaries'],
+        minPointsForStrong: 0,
+      },
+      level: 'easy',
+    },
+  ],
+}
+
+// ─────────────────────────────────────────────────────────────────────
 // AI/ML ENGINEER
 // ─────────────────────────────────────────────────────────────────────
 
@@ -1084,16 +1434,18 @@ export const INTERVIEW_TEMPLATES: Record<InterviewTemplate, InterviewTemplateCon
   'sde-placement': SDE_PLACEMENT_TEMPLATE,
   'frontend-sde': FRONTEND_SDE_TEMPLATE,
   'backend-sde': BACKEND_SDE_TEMPLATE,
+  'fullstack-4yr': FULLSTACK_4YR_TEMPLATE,
   'aiml-engineer': AIML_ENGINEER_TEMPLATE,
 }
 
 export function getTemplateByDomain(
-  domain: 'placement' | 'frontend' | 'backend' | 'aiml'
+  domain: 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml'
 ): InterviewTemplateConfig {
   const templateMap: Record<string, InterviewTemplate> = {
     placement: 'sde-placement',
     frontend: 'frontend-sde',
     backend: 'backend-sde',
+    fullstack: 'fullstack-4yr',
     aiml: 'aiml-engineer',
   }
   return INTERVIEW_TEMPLATES[templateMap[domain] || 'sde-placement']

@@ -2,18 +2,20 @@ import { NextRequest, NextResponse } from 'next/server'
 import { joinStandoffTeam, findStandoffMatch, startStandoff } from '@/lib/database/standoffs'
 import { generateCodingProblem } from '@/lib/gemini'
 import { ContestProblem } from '@/lib/types/contests'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const userId = await requireSessionDatabaseUserId()
     const body = await request.json()
-    const { userId, teamNumber } = body
+    const { teamNumber } = body
 
-    if (!userId || !teamNumber) {
+    if (!teamNumber) {
       return NextResponse.json(
-        { error: 'User ID and team number required' },
+        { error: 'Team number required' },
         { status: 400 }
       )
     }

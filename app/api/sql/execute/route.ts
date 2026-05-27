@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sqlite3 from 'sqlite3'
 import { getSQLSchema } from '@/lib/sqlDatabase'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 
 // Promisify sqlite3 methods
 function createDatabase(): Promise<sqlite3.Database> {
@@ -72,6 +73,7 @@ export async function POST(request: NextRequest) {
   let db: sqlite3.Database | null = null
 
   try {
+    await requireAuth()
     const body = await request.json()
     const { query, questionId, schema, seedData } = body
 
@@ -174,4 +176,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

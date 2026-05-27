@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateCodeFeedback } from '@/lib/interviewAIHelper'
 import { executeCode } from '@/lib/judge0'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
     const { code, challenge, interviewType, domain } = await request.json()
 
     if (!code || !challenge) {

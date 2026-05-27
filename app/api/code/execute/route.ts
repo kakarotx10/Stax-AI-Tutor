@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { executeCode, type Judge0Language } from '@/lib/judge0'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 import sqlite3 from 'sqlite3'
 
 // Helper function to execute SQL
@@ -52,6 +53,7 @@ export type CodeLanguage =
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
     const { code, language, stdin, expectedOutput, context } = await request.json()
 
     if (!code || !language) {
@@ -177,4 +179,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

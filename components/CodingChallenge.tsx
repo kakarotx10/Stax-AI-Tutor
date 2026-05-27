@@ -78,13 +78,15 @@ interface CodingChallengeProps {
 type Difficulty = 'Basic' | 'Medium' | 'Advanced'
 
 // Check if subject is in frontend or backend domain
-function isFrontendOrBackendSubject(subject: string): boolean {
+function isFrontendOrBackendSubject(subject: string, subjectId?: string): boolean {
   const frontendSubjects = DOMAINS.frontend.subjects
   const backendSubjects = DOMAINS.backend.subjects
+  const normalizedSubjectId = subjectId?.toLowerCase()
   const subjectLower = subject.toLowerCase()
+  const normalizedSubjectName = subjectLower.replace(/[^a-z0-9]/g, '')
   
-  return frontendSubjects.some(s => s.toLowerCase() === subjectLower) ||
-         backendSubjects.some(s => s.toLowerCase() === subjectLower)
+  return frontendSubjects.some(s => s.toLowerCase() === normalizedSubjectId || s.toLowerCase() === normalizedSubjectName) ||
+         backendSubjects.some(s => s.toLowerCase() === normalizedSubjectId || s.toLowerCase() === normalizedSubjectName)
 }
 
 export default function CodingChallenge({
@@ -218,7 +220,7 @@ public class Solution {
   const [language, setLanguage] = useState('python')
 
   useEffect(() => {
-    const isFrontendBackend = isFrontendOrBackendSubject(subject)
+    const isFrontendBackend = isFrontendOrBackendSubject(subject, subjectId)
     setIsFrontendBackend(isFrontendBackend)
     
     if (isFrontendBackend) {
@@ -227,7 +229,7 @@ public class Solution {
       fetchProblem()
       setCode(languageTemplates[language])
     }
-  }, [difficulty, subject, unit, subtopic])
+  }, [difficulty, subject, subjectId, unit, subtopic])
 
   const fetchFrontendBackendQuestion = async () => {
     try {
@@ -241,7 +243,7 @@ public class Solution {
           subject,
           unit,
           subtopic: subtopicName,
-          difficulty,
+          difficulty: difficulty === 'Advanced' ? 'Hard' : difficulty,
           random: 'true'
         }
       })

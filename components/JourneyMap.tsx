@@ -72,10 +72,10 @@ const domainStyles: Record<Domain, {
     progress: 'bg-sky-400',
   },
   aiml: {
-    icon: 'bg-secondary/10 text-secondary ring-secondary/20',
-    border: 'hover:border-secondary/40',
-    chip: 'border-secondary/20 bg-secondary/10 text-secondary',
-    progress: 'bg-secondary',
+    icon: 'bg-fuchsia-400/15 text-fuchsia-100 ring-fuchsia-300/30',
+    border: 'hover:border-fuchsia-300/40',
+    chip: 'border-fuchsia-300/30 bg-fuchsia-400/15 text-fuchsia-100',
+    progress: 'bg-fuchsia-400',
   },
   'stax-interview': {
     icon: 'bg-amber-400/10 text-amber-200 ring-amber-300/20',
@@ -210,7 +210,7 @@ export default function JourneyMap() {
                 className="flex w-full flex-col gap-5 p-5 text-left transition hover:bg-white/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset sm:p-6 lg:flex-row lg:items-center lg:justify-between"
               >
                 <div className="flex min-w-0 items-start gap-4">
-                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg ring-1 ${styles.icon}`}>
+                  <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-white/10 ring-1 shadow-soft ${styles.icon}`}>
                     <DomainIcon className="h-7 w-7" />
                   </div>
                   <div className="min-w-0">
@@ -248,7 +248,7 @@ export default function JourneyMap() {
                       <span className="rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground">
                         {totalUnits} units
                       </span>
-                      <span className={`rounded-full border px-3 py-1.5 text-sm font-semibold ${styles.chip}`}>
+                      <span className={`rounded-full border px-3 py-1.5 text-sm font-semibold shadow-soft ${styles.chip}`}>
                         {totalXP} XP
                       </span>
                       <motion.span

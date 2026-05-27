@@ -1,9 +1,11 @@
 import type { NextRequest } from 'next/server';
 import { requireAuth } from '@/src/middleware/auth.middleware';
+import { checkRateLimit } from '@/src/middleware/rateLimit.middleware';
 import { createAttempt, listAttempts } from '@/src/controllers/attempt.controller';
 import { created, ok, withErrorHandler } from '@/src/utils/apiResponse';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export const GET = withErrorHandler(async (req: NextRequest) => {
   const user = await requireAuth();
@@ -14,6 +16,7 @@ export const GET = withErrorHandler(async (req: NextRequest) => {
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await requireAuth();
+  await checkRateLimit(user.id, 'evaluation');
   const body = await req.json();
   const attempt = await createAttempt(user.id, body);
   return created(attempt);

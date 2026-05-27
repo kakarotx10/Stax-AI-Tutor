@@ -86,10 +86,12 @@ export default function PersonalizedAssignment({
   const isFrontendBackend = (() => {
     const frontendSubjects = DOMAINS.frontend.subjects
     const backendSubjects = DOMAINS.backend.subjects
+    const normalizedSubjectId = subjectId?.toLowerCase()
     const subjectLower = subject.toLowerCase()
+    const normalizedSubjectName = subjectLower.replace(/[^a-z0-9]/g, '')
     
-    return frontendSubjects.some(s => s.toLowerCase() === subjectLower) ||
-           backendSubjects.some(s => s.toLowerCase() === subjectLower)
+    return frontendSubjects.some(s => s.toLowerCase() === normalizedSubjectId || s.toLowerCase() === normalizedSubjectName) ||
+           backendSubjects.some(s => s.toLowerCase() === normalizedSubjectId || s.toLowerCase() === normalizedSubjectName)
   })()
 
   const [frontendQuestion, setFrontendQuestion] = useState<any>(null)
@@ -325,7 +327,7 @@ public class Solution {
             subject,
             unit,
             subtopic,
-            difficulty,
+            difficulty: difficulty === 'Advanced' ? 'Hard' : difficulty,
             random: 'true'
           }
         })

@@ -3,22 +3,13 @@ import { findOpponent, createDuel, startDuel } from '@/lib/database/duels'
 import { generateCodingProblem } from '@/lib/gemini'
 import { ContestProblem } from '@/lib/types/contests'
 import { Domain } from '@/lib/subjects'
+import { requireSessionDatabaseUserId } from '@/src/lib/session-user'
 
 export async function POST(request: NextRequest) {
   try {
+    const dbUserId = await requireSessionDatabaseUserId()
     const body = await request.json()
-    const { userId, difficulty, subject, unit, domain } = body
-
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'User ID required' },
-        { status: 400 }
-      )
-    }
-
-    // Ensure user exists in database and get proper UUID
-    const { ensureUserExists } = await import('@/lib/database/userManagement')
-    const dbUserId = await ensureUserExists()
+    const { difficulty, subject, unit, domain } = body
 
     // Find an opponent
     const opponentId = await findOpponent(dbUserId)
@@ -113,4 +104,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

@@ -23,7 +23,7 @@ export interface InterviewState {
 export class InterviewEngine {
   private state: InterviewState
 
-  constructor(domain: 'placement' | 'frontend' | 'backend' | 'aiml') {
+  constructor(domain: 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml') {
     const template = getTemplateByDomain(domain)
     this.state = {
       template,

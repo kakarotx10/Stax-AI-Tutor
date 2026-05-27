@@ -1,10 +1,12 @@
 import { Types } from 'mongoose';
 import { connectDB } from '@/src/lib/db';
-import { Submission, type TestResult } from '@/src/models';
+import { Attempt, Submission, type TestResult } from '@/src/models';
+import { applyEvaluationBookkeeping } from '@/src/controllers/attempt.controller';
+import { evaluatorService } from '@/src/services/evaluator.service';
 import { executeCode, type Judge0Language } from '@/src/services/judge0.service';
 import { executeSchema, submitSchema } from '@/src/validators/code.validator';
 import { ValidationError, NotFoundError } from '@/src/lib/errors';
-import { SUBMISSION_STATUS } from '@/src/lib/constants';
+import { ATTEMPT_TYPES, SUBMISSION_STATUS } from '@/src/lib/constants';
 import { childLogger } from '@/src/lib/logger';
 
 const log = childLogger('code.controller');
@@ -72,6 +74,29 @@ export async function submit(userId: string, input: unknown) {
   const passed = results.filter((r) => r.passed).length;
   const score = Math.round((passed / results.length) * 100);
   const allPassed = passed === results.length;
+  const difficulty = normalizeDifficulty(dto.difficulty);
+  const evaluationTestResults = results.map((result, index) => ({
+    passed: result.passed,
+    input: testCases[index]?.stdin ?? '',
+    expected: result.expected ?? '',
+    actual: result.actual ?? result.errorMessage ?? '',
+    runtimeMs: result.runtimeMs,
+    memoryKb: result.memoryKb,
+    errorMessage: result.errorMessage,
+  }));
+  const evaluation = dto.subjectId && dto.unitId && dto.subtopicId
+    ? await evaluatorService.evaluate({
+        type: 'coding',
+        subjectId: dto.subjectId,
+        unitId: dto.unitId,
+        subtopicId: dto.subtopicId,
+        problemId: dto.problemId,
+        language: dto.language,
+        code: dto.code,
+        testResults: evaluationTestResults,
+        difficulty,
+      })
+    : null;
 
   const submission = await Submission.create({
     userId: new Types.ObjectId(userId),
@@ -87,6 +112,39 @@ export async function submit(userId: string, input: unknown) {
     totalRuntimeMs: Math.round(totalRuntimeMs),
   });
 
+  if (evaluation && dto.subjectId && dto.unitId && dto.subtopicId) {
+    const userObjId = new Types.ObjectId(userId);
+    const attemptInput = {
+      type: ATTEMPT_TYPES.CODING,
+      subjectId: dto.subjectId,
+      unitId: dto.unitId,
+      subtopicId: dto.subtopicId,
+      phase: difficulty === 'easy' ? 'basic' : difficulty,
+      difficulty,
+      problemId: dto.problemId,
+      problemTitle: dto.problemId,
+      language: dto.language,
+      code: dto.code,
+      status: evaluation.status,
+      score: evaluation.score,
+      level: evaluation.level,
+      rubric: evaluation.rubric,
+      feedback: evaluation.feedback,
+      evaluatorVersion: evaluation.meta.evaluatorVersion,
+      meta: evaluation.meta,
+      passedCount: passed,
+      totalCount: results.length,
+      testResults: evaluationTestResults,
+      completedAt: new Date(),
+    };
+
+    await Attempt.create({
+      ...attemptInput,
+      userId: userObjId,
+    });
+    await applyEvaluationBookkeeping(userObjId, attemptInput, evaluation);
+  }
+
   log.info(
     { userId, problemId: dto.problemId, score, passed: `${passed}/${results.length}` },
     'submission graded server-side'
@@ -94,10 +152,18 @@ export async function submit(userId: string, input: unknown) {
 
   return {
     submissionId: submission._id?.toString(),
-    score,
+    score: evaluation?.score ?? score,
     passed,
     total: results.length,
-    status: submission.status,
+    status: evaluation?.status ?? submission.status,
     testResults: results,
+    evaluation,
   };
+}
+
+function normalizeDifficulty(value?: string): 'easy' | 'medium' | 'hard' {
+  const normalized = value?.toLowerCase();
+  if (normalized === 'advanced' || normalized === 'hard') return 'hard';
+  if (normalized === 'medium') return 'medium';
+  return 'easy';
 }

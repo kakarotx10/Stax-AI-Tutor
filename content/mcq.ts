@@ -6,9 +6,10 @@
  *  - `explanation` justifies the correct choice
  *  - `wrongExplanations` keyed by option index — explains why each distractor fails
  *
- * Subject / unit / subtopic strings MUST match `content/subjects.ts` exactly,
- * otherwise `getMCQsForSubtopic` falls through to the synthetic generator below.
+ * Subject / unit / subtopic strings MUST match `content/subjects.ts` exactly.
  */
+
+import { SUBJECTS } from './subjects'
 
 export type Difficulty = 'Basic' | 'Medium' | 'Advanced'
 
@@ -24,7 +25,7 @@ export interface MCQData {
   difficulty: Difficulty
 }
 
-export const MCQ_DATABASE: MCQData[] = [
+const CURATED_MCQ_DATABASE: MCQData[] = [
   // ─────────────────────────────────────────────────────────────
   // C++ Programming → C++ Basics → Introduction to C++
   // ─────────────────────────────────────────────────────────────
@@ -976,6 +977,116 @@ export const MCQ_DATABASE: MCQData[] = [
     },
     difficulty: 'Advanced',
   },
+]
+
+const CONCEPTUAL_PRACTICE_SUBJECT_IDS = ['os', 'cn'] as const
+const MCQ_DIFFICULTIES: Difficulty[] = ['Basic', 'Medium', 'Advanced']
+
+function mcqKey(mcq: Pick<MCQData, 'subject' | 'unit' | 'subtopic' | 'difficulty'>): string {
+  return `${mcq.subject}|||${mcq.unit}|||${mcq.subtopic}|||${mcq.difficulty}`
+}
+
+function generatedConceptualMCQ(subject: string, unit: string, subtopic: string, difficulty: Difficulty): MCQData {
+  if (difficulty === 'Basic') {
+    return {
+      subject,
+      unit,
+      subtopic,
+      difficulty,
+      question: `In ${subject}, what is the main purpose of ${subtopic}?`,
+      options: [
+        `It explains a core responsibility or behavior inside ${unit}.`,
+        'It is only a visual styling rule used in frontend pages.',
+        `It is unrelated to ${subject} and is usually ignored.`,
+        'It is a shortcut that removes the need to understand the rest of the unit.',
+      ],
+      correctAnswer: 0,
+      explanation: `${subtopic} is part of ${unit}; at the basic level, the goal is to understand the responsibility it has in ${subject}.`,
+      wrongExplanations: {
+        1: `${subtopic} is a ${subject} concept, not a frontend styling rule.`,
+        2: `The learning journey includes ${subtopic} because it is relevant to ${unit}.`,
+        3: 'Individual concepts build on each other; none replaces the rest of the unit.',
+      },
+    }
+  }
+
+  if (difficulty === 'Medium') {
+    return {
+      subject,
+      unit,
+      subtopic,
+      difficulty,
+      question: `When applying ${subtopic} in ${unit}, what should you reason about first?`,
+      options: [
+        'The inputs, responsibilities, constraints, and the state changes involved.',
+        'Only the definition, without considering any scenario or tradeoff.',
+        'A random implementation detail from another subject.',
+        'The final answer only; intermediate reasoning does not matter.',
+      ],
+      correctAnswer: 0,
+      explanation: `Medium-level practice should connect ${subtopic} to practical behavior: what enters the system, what changes, what constraints apply, and what output or effect is expected.`,
+      wrongExplanations: {
+        1: 'Definitions help, but practical questions require applying the concept to a scenario.',
+        2: `The scenario should stay anchored to ${subject} and ${unit}.`,
+        3: 'Interviewers and real debugging both depend on the reasoning path, not just the final answer.',
+      },
+    }
+  }
+
+  return {
+    subject,
+    unit,
+    subtopic,
+    difficulty,
+    question: `An interviewer asks you to analyze a failure involving ${subtopic}. What makes the answer strong?`,
+    options: [
+      'Explain the tradeoffs, edge cases, and how the concept interacts with neighboring parts of the system.',
+      'Give a memorized one-line definition and stop.',
+      'Ignore failure modes because advanced questions only test syntax.',
+      'Switch to a different topic that is easier to explain.',
+    ],
+    correctAnswer: 0,
+    explanation: `Advanced ${subject} questions test whether you can reason about ${subtopic} under constraints, failures, and interactions with the rest of ${unit}.`,
+    wrongExplanations: {
+      1: 'A definition is not enough for an advanced scenario.',
+      2: `${subject} concepts are often tested through behavior and failure cases, not syntax alone.`,
+      3: 'A strong answer stays on the asked topic and handles its hard parts directly.',
+    },
+  }
+}
+
+function buildGeneratedConceptualMCQs(): MCQData[] {
+  const covered = new Set(CURATED_MCQ_DATABASE.map(mcqKey))
+  const generated: MCQData[] = []
+
+  for (const subjectId of CONCEPTUAL_PRACTICE_SUBJECT_IDS) {
+    const subject = SUBJECTS[subjectId]
+    for (const unit of subject.units) {
+      for (const subtopic of unit.subtopics) {
+        for (const difficulty of MCQ_DIFFICULTIES) {
+          const candidate = {
+            subject: subject.name,
+            unit: unit.name,
+            subtopic: subtopic.name,
+            difficulty,
+          }
+
+          if (!covered.has(mcqKey(candidate))) {
+            const mcq = generatedConceptualMCQ(subject.name, unit.name, subtopic.name, difficulty)
+            covered.add(mcqKey(mcq))
+            generated.push(mcq)
+          }
+        }
+      }
+    }
+  }
+
+  return generated
+}
+
+export const MCQ_DATABASE: MCQData[] = [
+  ...CURATED_MCQ_DATABASE,
+  ...buildGeneratedConceptualMCQs(),
 ]
 
 // ─────────────────────────────────────────────────────────────────────

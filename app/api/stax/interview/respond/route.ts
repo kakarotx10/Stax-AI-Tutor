@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { InterviewEngine } from '@/lib/interviewEngine'
 import { generateAIFollowUp, generateCrossQuestion } from '@/lib/interviewAIHelper'
+import { requireAuth } from '@/src/middleware/auth.middleware'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
     const {
       interviewType,
       domain,
@@ -21,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Reconstruct engine from state
     const engineDomain = domain === 'all' ? 'placement' : domain
-    const engine = new InterviewEngine(engineDomain as 'placement' | 'frontend' | 'backend' | 'aiml')
+    const engine = new InterviewEngine(engineDomain as 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml')
     
     // Restore engine state (simplified - in production, store state in session/DB)
     // For now, we'll work with current question from state
