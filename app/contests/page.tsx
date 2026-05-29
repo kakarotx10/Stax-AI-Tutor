@@ -8,6 +8,8 @@ import { Domain } from '@/lib/subjects'
 import Link from 'next/link'
 import axios from 'axios'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 import {
   CompetitionHeader,
   DomainBadge,
@@ -138,14 +140,7 @@ export default function ContestsPage() {
   })
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Loading contests...</p>
-        </div>
-      </div>
-    )
+    return <LoadingState label="Loading contests..." />
   }
 
   return (
@@ -162,7 +157,7 @@ export default function ContestsPage() {
           />
         </motion.div>
 
-        <section className="grid gap-5 rounded-[10px] border border-border bg-surface-1 p-4 shadow-soft lg:grid-cols-[1fr_auto] lg:items-end">
+        <section className="grid gap-5 rounded-2xl border border-border bg-surface-1/80 p-4 shadow-soft lg:grid-cols-[1fr_auto] lg:items-end">
           <DomainFilterBar selectedDomain={domainFilter} onSelect={setDomainFilter} />
           <div className="space-y-3">
             <h3 className="text-caption font-semibold uppercase text-muted-foreground">Filter by Level</h3>
@@ -183,13 +178,20 @@ export default function ContestsPage() {
         </section>
 
         <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {filteredContests.map((contest, idx) => (
+          {filteredContests.length === 0 ? (
+            <EmptyState
+              icon={Trophy}
+              title="No contests found"
+              description="Try a different domain or level filter."
+              className="md:col-span-2 xl:col-span-3"
+            />
+          ) : filteredContests.map((contest, idx) => (
             <motion.div
               key={contest.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="group flex h-full flex-col rounded-[10px] border border-border bg-card p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/30"
+              className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-primary/60 hover:bg-muted/40"
             >
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="flex flex-wrap gap-2">
@@ -229,6 +231,5 @@ export default function ContestsPage() {
     </main>
   )
 }
-
 
 

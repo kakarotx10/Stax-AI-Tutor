@@ -10,10 +10,13 @@ import {
   Target,
   TrendingUp,
   XCircle,
+  type LucideIcon,
 } from 'lucide-react';
 import { authOptions } from '@/src/lib/auth';
 import { getDashboardStats } from '@/src/controllers/user.controller';
 import JourneyMap from '@/components/JourneyMap';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +49,7 @@ function StatCard({
   label: string;
   value: string | number;
   helper: string;
-  icon: typeof FileText;
+  icon: LucideIcon;
   tone?: 'primary' | 'success' | 'warning' | 'destructive' | 'info';
 }) {
   const tones = {
@@ -58,7 +61,7 @@ function StatCard({
   };
 
   return (
-    <div className="rounded-[10px] border border-border bg-card p-5 shadow-card">
+    <Card className="p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-caption uppercase text-muted-foreground">{label}</p>
@@ -69,16 +72,19 @@ function StatCard({
           <Icon className="h-5 w-5" />
         </span>
       </div>
-    </div>
+    </Card>
   );
 }
 
 function ProgressRows({ data }: { data: DashboardData }) {
   if (data.perSubject.length === 0) {
     return (
-      <div className="rounded-[8px] border border-border bg-surface-1 p-4 text-body-sm text-muted-foreground">
-        Start a lesson to create your first Mongo progress record.
-      </div>
+      <EmptyState
+        icon={Target}
+        title="No progress yet"
+        description="Start a lesson to create your first saved progress record."
+        className="p-6"
+      />
     );
   }
 
@@ -89,7 +95,7 @@ function ProgressRows({ data }: { data: DashboardData }) {
         const total = item.totalSubtopics ?? 0;
         const done = percent(completed, total);
         return (
-          <div key={item._id} className="rounded-[8px] border border-border bg-surface-1 p-4">
+          <div key={item._id} className="rounded-xl border border-border bg-surface-1/80 p-4">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-medium text-foreground">{item._id}</p>
@@ -114,9 +120,12 @@ function ActivityTimeline({ data }: { data: DashboardData }) {
 
   if (data.attempts.timeline.length === 0) {
     return (
-      <div className="rounded-[8px] border border-border bg-surface-1 p-4 text-body-sm text-muted-foreground">
-        No submission timeline yet.
-      </div>
+      <EmptyState
+        icon={LineChart}
+        title="No timeline yet"
+        description="Submission activity will appear after your first attempt."
+        className="p-6"
+      />
     );
   }
 
@@ -165,7 +174,7 @@ export default async function DashboardPage() {
               Your saved submissions, progress, wrong answers, and recent learning activity from MongoDB.
             </p>
           </div>
-          <div className="rounded-[8px] border border-border bg-card px-4 py-3 text-right shadow-soft">
+          <div className="surface-panel px-4 py-3 text-right">
             <p className="text-caption uppercase text-muted-foreground">Last active</p>
             <p className="mt-1 text-body-sm font-medium text-foreground">
               {formatDate(data.user.lastActiveAt ?? data.attempts.summary.lastAttemptAt)}
@@ -205,30 +214,31 @@ export default async function DashboardPage() {
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
-          <div className="rounded-[10px] border border-border bg-card p-6 shadow-card">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-3">
               <div>
-                <h2 className="text-h4 text-foreground">Submission timeline</h2>
-                <p className="text-body-sm text-muted-foreground">Last 14 days</p>
+                <CardTitle>Submission timeline</CardTitle>
+                <CardDescription>Last 14 days</CardDescription>
               </div>
               <LineChart className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <ActivityTimeline data={data} />
-          </div>
+            </CardHeader>
+            <CardContent>
+              <ActivityTimeline data={data} />
+            </CardContent>
+          </Card>
 
-          <div className="rounded-[10px] border border-border bg-card p-6 shadow-card">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-3">
               <div>
-                <h2 className="text-h4 text-foreground">Attempt mix</h2>
-                <p className="text-body-sm text-muted-foreground">By activity type</p>
+                <CardTitle>Attempt mix</CardTitle>
+                <CardDescription>By activity type</CardDescription>
               </div>
               <BarChart3 className="h-5 w-5 text-muted-foreground" />
-            </div>
+            </CardHeader>
+            <CardContent>
             <div className="space-y-3">
               {data.attempts.byType.length === 0 ? (
-                <p className="rounded-[8px] border border-border bg-surface-1 p-4 text-body-sm text-muted-foreground">
-                  No attempts saved yet.
-                </p>
+                <EmptyState icon={BarChart3} title="No attempts yet" description="Your activity mix will populate as you practice." className="p-6" />
               ) : (
                 data.attempts.byType.map((item) => {
                   const width = percent(item.count, totalAttempts);
@@ -246,41 +256,48 @@ export default async function DashboardPage() {
                 })
               )}
             </div>
-          </div>
+            </CardContent>
+          </Card>
         </section>
 
         <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[10px] border border-border bg-card p-6 shadow-card">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-3">
               <div>
-                <h2 className="text-h4 text-foreground">Progress cards</h2>
-                <p className="text-body-sm text-muted-foreground">Mongo Progress collection</p>
+                <CardTitle>Progress cards</CardTitle>
+                <CardDescription>Mongo Progress collection</CardDescription>
               </div>
               <Target className="h-5 w-5 text-muted-foreground" />
-            </div>
-            <ProgressRows data={data} />
-          </div>
+            </CardHeader>
+            <CardContent>
+              <ProgressRows data={data} />
+            </CardContent>
+          </Card>
 
-          <div className="rounded-[10px] border border-border bg-card p-6 shadow-card">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <Card>
+            <CardHeader className="flex-row items-center justify-between gap-3">
               <div>
-                <h2 className="text-h4 text-foreground">Recent activity</h2>
-                <p className="text-body-sm text-muted-foreground">Latest saved attempts</p>
+                <CardTitle>Recent activity</CardTitle>
+                <CardDescription>Latest saved attempts</CardDescription>
               </div>
               <Activity className="h-5 w-5 text-muted-foreground" />
-            </div>
+            </CardHeader>
+            <CardContent>
             <div className="space-y-3">
               {data.attempts.recent.length === 0 ? (
-                <p className="rounded-[8px] border border-border bg-surface-1 p-4 text-body-sm text-muted-foreground">
-                  Complete a MCQ, coding, SQL, or assignment challenge to see history.
-                </p>
+                <EmptyState
+                  icon={Activity}
+                  title="No recent activity"
+                  description="Complete a MCQ, coding, SQL, or assignment challenge to see history."
+                  className="p-6"
+                />
               ) : (
                 data.attempts.recent.map((attempt) => {
                   const passed = attempt.status === 'accepted' || attempt.status === 'completed';
                   return (
                     <div
                       key={attempt.id}
-                      className="rounded-[8px] border border-border bg-surface-1 p-4"
+                      className="rounded-xl border border-border bg-surface-1/80 p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -312,27 +329,27 @@ export default async function DashboardPage() {
                 })
               )}
             </div>
-          </div>
+            </CardContent>
+          </Card>
         </section>
 
-        <section className="rounded-[10px] border border-border bg-card p-6 shadow-card">
-          <div className="mb-5 flex items-center justify-between gap-3">
+        <Card>
+          <CardHeader className="flex-row items-center justify-between gap-3">
             <div>
-              <h2 className="text-h4 text-foreground">Weak topics</h2>
-              <p className="text-body-sm text-muted-foreground">Topics with recent wrong or failed attempts</p>
+              <CardTitle>Weak topics</CardTitle>
+              <CardDescription>Topics with recent wrong or failed attempts</CardDescription>
             </div>
             <XCircle className="h-5 w-5 text-muted-foreground" />
-          </div>
+          </CardHeader>
+          <CardContent>
           {data.attempts.weakTopics.length === 0 ? (
-            <p className="rounded-[8px] border border-border bg-surface-1 p-4 text-body-sm text-muted-foreground">
-              No weak-topic signal yet.
-            </p>
+            <EmptyState icon={XCircle} title="No weak-topic signal yet" description="Wrong or failed attempts will surface here for targeted review." className="p-6" />
           ) : (
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {data.attempts.weakTopics.map((topic) => (
                 <div
                   key={`${topic.subjectId}-${topic.unitId}-${topic.subtopicId}`}
-                  className="rounded-[8px] border border-border bg-surface-1 p-4"
+                  className="rounded-xl border border-border bg-surface-1/80 p-4"
                 >
                   <p className="font-medium text-foreground">{topic.subtopicName ?? topic.subtopicId}</p>
                   <p className="mt-1 text-caption text-muted-foreground">
@@ -346,7 +363,8 @@ export default async function DashboardPage() {
               ))}
             </div>
           )}
-        </section>
+          </CardContent>
+        </Card>
 
         <section id="learning-paths" className="border-t border-border pt-8">
           <JourneyMap />

@@ -8,6 +8,8 @@ import { Domain } from '@/lib/subjects'
 import Link from 'next/link'
 import axios from 'axios'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 import {
   CompetitionHeader,
   DomainBadge,
@@ -115,14 +117,7 @@ export default function MarathonsPage() {
   }, [domainFilter])
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          <p className="text-muted-foreground">Loading marathons...</p>
-        </div>
-      </div>
-    )
+    return <LoadingState label="Loading marathons..." />
   }
 
   return (
@@ -139,18 +134,25 @@ export default function MarathonsPage() {
           />
         </motion.div>
 
-        <section className="rounded-[10px] border border-border bg-surface-1 p-4 shadow-soft">
+        <section className="rounded-2xl border border-border bg-surface-1/80 p-4 shadow-soft">
           <DomainFilterBar selectedDomain={domainFilter} onSelect={setDomainFilter} />
         </section>
 
         <section className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          {marathons.map((marathon, idx) => (
+          {marathons.length === 0 ? (
+            <EmptyState
+              icon={Flame}
+              title="No marathons found"
+              description="Try a different domain filter or check back later."
+              className="lg:col-span-2"
+            />
+          ) : marathons.map((marathon, idx) => (
             <motion.div
               key={marathon.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="group flex h-full flex-col rounded-[10px] border border-border bg-card p-5 shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/30"
+              className="group flex h-full flex-col rounded-2xl border border-border bg-card p-5 shadow-card transition duration-200 hover:-translate-y-1 hover:border-primary/60 hover:bg-muted/40"
             >
               <div className="mb-5 flex items-start justify-between gap-4">
                 <div className="flex flex-wrap gap-2">
@@ -184,7 +186,6 @@ export default function MarathonsPage() {
     </main>
   )
 }
-
 
 
 

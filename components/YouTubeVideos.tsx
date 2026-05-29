@@ -21,7 +21,7 @@ export default function YouTubeVideos({ videoIds, title = 'Video Lectures' }: Yo
     >
       <div className="flex items-center gap-2 mb-4">
         <Youtube className="w-6 h-6 text-red-500" />
-        <h3 className="text-xl font-bold text-neon-cyan">{title}</h3>
+        <h3 className="text-xl font-bold text-primary">{title}</h3>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

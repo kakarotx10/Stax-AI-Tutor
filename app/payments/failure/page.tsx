@@ -4,6 +4,8 @@ import { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { XCircle, ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { LoadingState } from '@/components/ui/loading-state'
 
 function PaymentFailureContent() {
   const searchParams = useSearchParams()
@@ -12,34 +14,36 @@ function PaymentFailureContent() {
   const status = searchParams?.get('status')
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
+    <main className="flex min-h-screen items-center justify-center p-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card p-8 max-w-lg text-center"
+        className="surface-card max-w-lg p-8 text-center"
       >
-        <XCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-        <h1 className="text-3xl font-bold mb-2">Payment Failed</h1>
+        <span className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-destructive/25 bg-destructive/10 text-destructive">
+          <XCircle className="h-8 w-8" />
+        </span>
+        <h1 className="mb-2 text-h3">Payment failed</h1>
         <p className="text-muted-foreground mb-4">Something went wrong with your payment.</p>
         {txnid && (
           <p className="text-sm text-muted-foreground/80 mb-4">Transaction ID: {txnid}</p>
         )}
         <p className="text-sm text-muted-foreground/80 mb-6">Status: {status || 'failed'}</p>
-        <button
+        <Button
           onClick={() => router.push('/pricing')}
-          className="btn-primary flex items-center gap-2 mx-auto"
+          className="mx-auto"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="h-4 w-4" />
           Back to Pricing
-        </button>
+        </Button>
       </motion.div>
-    </div>
+    </main>
   )
 }
 
 export default function PaymentFailurePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center p-8 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<LoadingState label="Loading payment status..." />}>
       <PaymentFailureContent />
     </Suspense>
   )

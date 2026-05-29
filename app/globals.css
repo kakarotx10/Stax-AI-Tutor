@@ -4,60 +4,109 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
-    /* Surfaces — near-black with slight cool tint */
-    --background: 240 6% 6%;
-    --foreground: 0 0% 98%;
-    --surface-1: 240 6% 8%;
-    --card: 240 5% 11%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 5% 13%;
-    --popover-foreground: 0 0% 98%;
-    --muted: 240 5% 14%;
-    --muted-foreground: 240 5% 64%;
-    --foreground-subtle: 240 4% 52%;
-    --foreground-faint: 240 4% 38%;
+    color-scheme: light;
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --surface-1: 210 40% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --muted: 210 40% 94%;
+    --muted-foreground: 215 16% 43%;
+    --foreground-subtle: 215 16% 48%;
+    --foreground-faint: 215 16% 62%;
 
-    /* Brand — single electric violet, Linear-grade */
-    --primary: 263 70% 60%;
-    --primary-hover: 263 70% 65%;
-    --primary-pressed: 263 70% 54%;
+    --primary: 189 94% 35%;
+    --primary-hover: 189 93% 30%;
+    --primary-pressed: 189 95% 26%;
     --primary-foreground: 0 0% 100%;
-    --ring: 263 70% 60%;
+    --ring: 189 94% 35%;
 
-    /* Secondary + accent collapse into neutrals; keep tokens for shadcn compatibility */
-    --secondary: 240 5% 14%;
-    --secondary-foreground: 0 0% 98%;
-    --accent: 240 5% 14%;
-    --accent-foreground: 0 0% 98%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --accent: 263 70% 58%;
+    --accent-foreground: 0 0% 100%;
+    --highlight: 158 64% 40%;
+    --highlight-foreground: 0 0% 100%;
 
-    /* Semantic — desaturated, not neon */
-    --destructive: 0 72% 58%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-    --success: 142 52% 48%;
+    --success: 151 65% 36%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 56%;
-    --warning-foreground: 0 0% 8%;
-    --info: 217 80% 58%;
+    --warning: 37 92% 50%;
+    --warning-foreground: 24 10% 10%;
+    --info: 217 91% 55%;
     --info-foreground: 0 0% 100%;
 
-    /* Borders — single hairline tone, two opacities */
-    --border: 240 6% 20%;
-    --border-strong: 240 6% 28%;
-    --input: 240 6% 20%;
+    --border: 214 32% 88%;
+    --border-strong: 214 28% 78%;
+    --input: 214 32% 88%;
 
-    --radius: 0.625rem;
+    --radius: 0.75rem;
+    --shadow-card:
+      0 1px 2px hsl(222 47% 11% / 0.05),
+      0 10px 30px hsl(222 47% 11% / 0.08);
+    --shadow-soft:
+      0 1px 2px hsl(222 47% 11% / 0.05),
+      0 6px 18px hsl(222 47% 11% / 0.06);
+    --shadow-elevated:
+      0 2px 6px hsl(222 47% 11% / 0.08),
+      0 24px 60px hsl(222 47% 11% / 0.14);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+    --surface-1: 222 42% 10%;
+    --card: 222 38% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 38% 12%;
+    --popover-foreground: 210 40% 98%;
+    --muted: 222 32% 16%;
+    --muted-foreground: 215 20% 70%;
+    --foreground-subtle: 215 18% 63%;
+    --foreground-faint: 215 15% 45%;
+
+    --primary: 188 86% 53%;
+    --primary-hover: 188 86% 60%;
+    --primary-pressed: 188 82% 45%;
+    --primary-foreground: 222 47% 8%;
+    --ring: 188 86% 53%;
+
+    --secondary: 222 32% 16%;
+    --secondary-foreground: 210 40% 98%;
+    --accent: 263 86% 72%;
+    --accent-foreground: 222 47% 8%;
+    --highlight: 156 72% 48%;
+    --highlight-foreground: 222 47% 8%;
+
+    --destructive: 0 84% 64%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 151 67% 48%;
+    --success-foreground: 222 47% 8%;
+    --warning: 40 95% 58%;
+    --warning-foreground: 24 10% 10%;
+    --info: 213 94% 68%;
+    --info-foreground: 222 47% 8%;
+
+    --border: 220 25% 20%;
+    --border-strong: 218 22% 30%;
+    --input: 220 25% 20%;
+
     --shadow-card:
       inset 0 1px 0 hsl(0 0% 100% / 0.04),
-      0 1px 2px hsl(0 0% 0% / 0.5),
-      0 8px 24px hsl(0 0% 0% / 0.32);
+      0 1px 2px hsl(0 0% 0% / 0.35),
+      0 18px 44px hsl(0 0% 0% / 0.34);
     --shadow-soft:
       inset 0 1px 0 hsl(0 0% 100% / 0.03),
-      0 1px 2px hsl(0 0% 0% / 0.35);
+      0 1px 2px hsl(0 0% 0% / 0.22),
+      0 10px 26px hsl(0 0% 0% / 0.22);
     --shadow-elevated:
       inset 0 1px 0 hsl(0 0% 100% / 0.05),
-      0 2px 4px hsl(0 0% 0% / 0.5),
-      0 16px 40px hsl(0 0% 0% / 0.4);
+      0 2px 6px hsl(0 0% 0% / 0.45),
+      0 28px 70px hsl(0 0% 0% / 0.48);
   }
 
   * {
@@ -73,11 +122,12 @@
   body {
     @apply min-h-screen bg-background font-sans text-body text-foreground antialiased;
     background-image:
-      radial-gradient(800px circle at 50% -200px, hsl(263 70% 60% / 0.08), transparent 60%),
-      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(240 6% 4%) 100%);
+      radial-gradient(900px circle at 12% -160px, hsl(var(--primary) / 0.14), transparent 55%),
+      radial-gradient(700px circle at 88% 0%, hsl(var(--accent) / 0.12), transparent 52%),
+      linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--surface-1)) 100%);
     background-attachment: fixed;
-    overflow-x: hidden;
     font-feature-settings: "cv11", "ss01", "ss03";
+    overflow-x: hidden;
   }
 
   h1 {
@@ -97,7 +147,7 @@
   }
 
   ::selection {
-    background: hsl(var(--primary) / 0.34);
+    background: hsl(var(--primary) / 0.24);
     color: hsl(var(--foreground));
   }
 
@@ -107,30 +157,44 @@
   textarea {
     font: inherit;
   }
+
+  button,
+  [role="button"],
+  a,
+  summary {
+    @apply cursor-pointer;
+  }
 }
 
 @layer components {
-  /* Legacy alias — `.glass-card` kept so existing pages don't break; rename to .surface-card over time */
   .glass-card,
   .surface-card {
-    @apply rounded-[10px] border border-border bg-card text-card-foreground;
-    box-shadow: var(--shadow-card);
+    @apply rounded-2xl border border-border/80 bg-card/90 text-card-foreground shadow-card backdrop-blur-xl;
+  }
+
+  .surface-panel {
+    @apply rounded-2xl border border-border/80 bg-surface-1/80 shadow-soft backdrop-blur-xl;
+  }
+
+  .state-card {
+    @apply rounded-2xl border border-dashed border-border bg-card/70 p-8 text-center shadow-soft;
+  }
+
+  .icon-tile {
+    @apply flex shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary shadow-soft;
   }
 
   .neon-glow,
   .neon-text {
-    /* legacy no-ops — neutralized after palette swap */
     @apply text-foreground;
   }
 
   .btn-primary {
-    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition-all duration-150 hover:bg-[hsl(var(--primary-hover))] active:bg-[hsl(var(--primary-pressed))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50;
-    box-shadow: var(--shadow-soft);
+    @apply inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:bg-[hsl(var(--primary-hover))] active:translate-y-0 active:bg-[hsl(var(--primary-pressed))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-50;
   }
 
   .btn-secondary {
-    @apply inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-border bg-card px-4 text-sm font-medium text-foreground transition-all duration-150 hover:border-[hsl(var(--border-strong))] hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50;
-    box-shadow: var(--shadow-soft);
+    @apply inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-border bg-card/90 px-4 py-2 text-sm font-semibold text-foreground shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-border-strong hover:bg-muted active:translate-y-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:translate-y-0 disabled:opacity-50;
   }
 
   .page-shell {
@@ -153,8 +217,26 @@
     @apply max-w-2xl text-body-lg text-muted-foreground;
   }
 
-  .control-input {
-    @apply w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+  .control-input,
+  .select-control,
+  .textarea-control {
+    @apply w-full rounded-xl border border-input bg-background/70 px-3 py-2 text-sm text-foreground shadow-soft transition-all duration-200 placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .select-control {
+    @apply h-10 appearance-none pr-9;
+  }
+
+  .textarea-control {
+    @apply min-h-28 resize-y leading-6;
+  }
+
+  .subtle-grid {
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.42) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.42) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: linear-gradient(to bottom, black, transparent 82%);
   }
 }
 
@@ -168,13 +250,13 @@ html::-webkit-scrollbar-track {
 }
 
 html::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.55);
+  background: hsl(var(--muted-foreground) / 0.48);
   border-radius: 999px;
   border: 2px solid hsl(var(--background));
 }
 
 html::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--foreground) / 0.72);
+  background: hsl(var(--foreground) / 0.62);
 }
 
 @media (prefers-reduced-motion: reduce) {

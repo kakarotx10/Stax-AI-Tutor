@@ -109,7 +109,7 @@ export default function GamifiedJourney({ subjectId, unitId }: GamifiedJourneyPr
             return (
               <section
                 key={subtopic.id}
-                className="rounded-[10px] border border-border bg-card p-6 shadow-soft"
+                className="rounded-2xl border border-border bg-card p-6 shadow-soft"
               >
                 {/* Module header */}
                 <div className="mb-6 flex items-start justify-between gap-6">

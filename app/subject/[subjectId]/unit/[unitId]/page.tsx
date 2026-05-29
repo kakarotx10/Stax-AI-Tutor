@@ -75,11 +75,11 @@ export default function UnitPage() {
         <div className="mb-8">
           <div className="flex justify-between mb-2">
             <span className="text-sm text-muted-foreground">Progress</span>
-            <span className="text-sm text-neon-cyan font-bold">{xp} XP</span>
+            <span className="text-sm text-primary font-bold">{xp} XP</span>
           </div>
           <div className="h-3 bg-card rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-neon-cyan to-neon-purple"
+              className="h-full bg-gradient-to-r from-primary to-accent"
               initial={{ width: 0 }}
               animate={{ width: `${(xp / unit.xpReward) * 100}%` }}
               transition={{ duration: 0.5 }}

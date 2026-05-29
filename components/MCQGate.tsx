@@ -4,9 +4,12 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios'
 import confetti from 'canvas-confetti'
-import { CheckCircle2, XCircle, Loader2, RotateCcw, AlertCircle } from 'lucide-react'
+import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
+import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 
 interface MCQ {
   question: string
@@ -196,7 +199,7 @@ export default function MCQGate({
         spread: 60,
         origin: { y: 0.6 },
       })
-      toast.success('Correct! 🎉')
+      toast.success('Correct!')
     } else {
       setWrongCount(prev => prev + 1)
       toast.error('Incorrect. Let\'s review this concept.')
@@ -322,26 +325,17 @@ export default function MCQGate({
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        >
-          <Loader2 className="w-12 h-12 text-neon-cyan" />
-        </motion.div>
-      </div>
-    )
+    return <LoadingState label="Loading questions..." />
   }
 
   if (mcqs.length === 0) {
     return (
-      <div className="glass-card p-8 text-center">
-        <p className="text-red-400">No questions available</p>
-        <button onClick={fetchMCQs} className="btn-primary mt-4">
-          Retry
-        </button>
-      </div>
+      <EmptyState
+        icon={AlertCircle}
+        title="No questions available"
+        description="Try loading this gate again."
+        action={<Button onClick={fetchMCQs}>Retry</Button>}
+      />
     )
   }
 
@@ -352,14 +346,14 @@ export default function MCQGate({
     <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold neon-text mb-4">MCQ Gate</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-4">MCQ Gate</h1>
         <p className="text-muted-foreground">
           Answer correctly to unlock coding challenges
         </p>
         <div className="flex items-center justify-center gap-4 mt-4">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-neon-green" />
-            <span className="text-neon-green font-bold">{correctCount}</span>
+            <CheckCircle2 className="w-5 h-5 text-success" />
+            <span className="text-success font-bold">{correctCount}</span>
           </div>
           <div className="flex items-center gap-2">
             <XCircle className="w-5 h-5 text-red-400" />
@@ -376,11 +370,11 @@ export default function MCQGate({
         key={currentIndex}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-8 space-y-6"
+        className="surface-card space-y-6 p-6 sm:p-8"
       >
         {needsReinforcement && (
-          <div className="bg-neon-cyan/20 border border-neon-cyan p-4 rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-neon-cyan" />
+          <div className="flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 p-4">
+            <AlertCircle className="h-5 w-5 text-primary" />
             <span className="text-sm">Reinforcement Question - Let's make sure you understand!</span>
           </div>
         )}
@@ -398,22 +392,22 @@ export default function MCQGate({
                 key={idx}
                 onClick={() => handleAnswerSelect(idx)}
                 disabled={showExplanation}
-                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                className={`w-full rounded-xl border p-4 text-left transition-all ${
                   showResult
                     ? isCorrectOption
-                      ? 'bg-neon-green/20 border-neon-green'
+                      ? 'border-success bg-success/10'
                       : isSelected
-                      ? 'bg-red-400/20 border-red-400'
+                      ? 'border-destructive bg-destructive/10'
                       : 'border-border'
                     : isSelected
-                    ? 'border-neon-cyan bg-neon-cyan/10'
-                    : 'border-border hover:border-neon-cyan/50'
+                    ? 'border-primary bg-primary/10 shadow-soft'
+                    : 'border-border bg-card/70 hover:border-primary/50 hover:bg-muted/40'
                 }`}
                 whileHover={!showExplanation ? { scale: 1.02 } : {}}
                 whileTap={!showExplanation ? { scale: 0.98 } : {}}
               >
                 <div className="flex items-center gap-3">
-                  <span className="font-bold text-neon-cyan w-8">{String.fromCharCode(65 + idx)}.</span>
+                  <span className="font-bold text-primary w-8">{String.fromCharCode(65 + idx)}.</span>
                   <span>{option}</span>
                   {showResult && (
                     <motion.div
@@ -422,7 +416,7 @@ export default function MCQGate({
                       className="ml-auto"
                     >
                       {isCorrectOption ? (
-                        <CheckCircle2 className="w-6 h-6 text-neon-green" />
+                        <CheckCircle2 className="w-6 h-6 text-success" />
                       ) : isSelected ? (
                         <XCircle className="w-6 h-6 text-red-400" />
                       ) : null}
@@ -443,12 +437,12 @@ export default function MCQGate({
               exit={{ opacity: 0, y: -20 }}
               className={`p-4 rounded-lg ${
                 isCorrect
-                  ? 'bg-neon-green/20 border border-neon-green'
-                  : 'bg-red-400/20 border border-red-400'
+                  ? 'border border-success/30 bg-success/10'
+                  : 'border border-destructive/30 bg-destructive/10'
               }`}
             >
               <h3 className="font-bold mb-2">
-                {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+                {isCorrect ? 'Correct' : 'Incorrect'}
               </h3>
               <p className="text-sm">{currentMCQ.explanation}</p>
             </motion.div>
@@ -458,29 +452,28 @@ export default function MCQGate({
         {/* Actions */}
         <div className="flex justify-end gap-4">
           {!showExplanation ? (
-            <button
+            <Button
               onClick={handleSubmit}
               disabled={selectedAnswer === null}
-              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Submit Answer
-            </button>
+            </Button>
           ) : needsReinforcement && reinforcementMCQ ? (
             <div className="flex gap-2">
               {reinforcementMCQ.options.map((_, idx) => (
-                <button
+                <Button
                   key={idx}
                   onClick={() => handleReinforcementAnswer(idx)}
-                  className="btn-secondary"
+                  variant="secondary"
                 >
                   {String.fromCharCode(65 + idx)}
-                </button>
+                </Button>
               ))}
             </div>
           ) : (
-            <button onClick={handleNext} className="btn-primary">
+            <Button onClick={handleNext}>
               {currentIndex < mcqs.length - 1 ? 'Next Question' : 'Complete'}
-            </button>
+            </Button>
           )}
         </div>
       </motion.div>

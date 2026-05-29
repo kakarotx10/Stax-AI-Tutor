@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { User, Trophy, Award, Target, TrendingUp, Clock, Flame, Star } from 'lucide-react'
-import { UserProfile, UserStats } from '@/lib/types/profile'
+import { Trophy, Award, Target, TrendingUp, Clock, Flame, Star } from 'lucide-react'
+import { UserProfile } from '@/lib/types/profile'
 import { checkAndAddArraysBadge } from '@/lib/badges'
 import { useUserStats } from '@/lib/hooks/useDatabase'
 import { syncProfileWithDatabase } from '@/lib/database/profileSync'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -180,38 +182,30 @@ export default function ProfilePage() {
   }
 
   if (loading || statsLoading || !profile || !userId) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading profile...</p>
-        </div>
-      </div>
-    )
+    return <LoadingState label="Loading profile..." />
   }
 
   const levelProgress = (profile.totalXP % 1000) / 10 // Assuming 1000 XP per level
   const nextLevelXP = 1000 - (profile.totalXP % 1000)
 
   return (
-    <div className="page-shell">
+    <main className="page-shell pt-24">
       <div className="page-container space-y-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-8"
+          className="surface-card p-6 sm:p-8"
         >
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
             <div className="relative">
-              <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary text-6xl font-bold text-primary-foreground">
+              <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-primary text-5xl font-bold text-primary-foreground shadow-soft sm:h-32 sm:w-32 sm:text-6xl">
                 {profile.displayName.charAt(0).toUpperCase()}
               </div>
               <div className="absolute -bottom-2 -right-2 rounded-full border-4 border-background bg-success p-2">
                 <Star className="w-6 h-6 text-success-foreground" />
               </div>
             </div>
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <h1 className="mb-2 text-h2">{profile.displayName}</h1>
               <p className="mb-4 text-muted-foreground">@{profile.username}</p>
               {profile.bio && <p className="text-foreground/80">{profile.bio}</p>}
@@ -232,26 +226,25 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            <div className="text-right">
+            <div className="rounded-2xl border border-border bg-surface-1/80 p-4 text-left lg:text-right">
               <div className="mb-2 text-h2 text-primary">{profile.totalXP}</div>
               <div className="text-muted-foreground">Total XP</div>
-              <div className="mt-4 text-h4 text-secondary">#{profile.rank}</div>
+              <div className="mt-4 text-h4 text-accent">#{profile.rank}</div>
               <div className="text-muted-foreground">Global Rank</div>
             </div>
           </div>
         </motion.div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
-            className="glass-card p-6"
+            className="surface-card p-6"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-neon-green/20 rounded-lg">
-                <Target className="w-8 h-8 text-neon-green" />
+              <div className="rounded-xl bg-success/10 p-3 text-success">
+                <Target className="h-8 w-8" />
               </div>
               <div>
                 <div className="text-h3 text-success">{profile.stats.problemsSolved}</div>
@@ -264,14 +257,14 @@ export default function ProfilePage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="glass-card p-6"
+            className="surface-card p-6"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-neon-purple/20 rounded-lg">
-                <Trophy className="w-8 h-8 text-neon-purple" />
+              <div className="rounded-xl bg-accent/10 p-3 text-accent">
+                <Trophy className="h-8 w-8" />
               </div>
               <div>
-                <div className="text-h3 text-secondary">{profile.stats.contestsWon}</div>
+                <div className="text-h3 text-accent">{profile.stats.contestsWon}</div>
                 <div className="text-body-sm text-muted-foreground">Contests Won</div>
               </div>
             </div>
@@ -281,11 +274,11 @@ export default function ProfilePage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="glass-card p-6"
+            className="surface-card p-6"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-neon-cyan/20 rounded-lg">
-                <Flame className="w-8 h-8 text-neon-cyan" />
+              <div className="rounded-xl bg-primary/10 p-3 text-primary">
+                <Flame className="h-8 w-8" />
               </div>
               <div>
                 <div className="text-h3 text-primary">{profile.stats.currentStreak}</div>
@@ -298,50 +291,49 @@ export default function ProfilePage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="glass-card p-6"
+            className="surface-card p-6"
           >
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-neon-pink/20 rounded-lg">
-                <Clock className="w-8 h-8 text-neon-pink" />
+              <div className="rounded-xl bg-info/10 p-3 text-info">
+                <Clock className="h-8 w-8" />
               </div>
               <div>
-                <div className="text-h3 text-accent">{Math.round(profile.stats.averageTime)}</div>
+                <div className="text-h3 text-info">{Math.round(profile.stats.averageTime)}</div>
                 <div className="text-body-sm text-muted-foreground">Avg Time (min)</div>
               </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Badges */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass-card p-6"
+          className="surface-card p-6"
         >
           <h2 className="mb-4 flex items-center gap-2 text-h4">
-            <Award className="w-6 h-6 text-neon-yellow" />
+            <Award className="h-6 w-6 text-warning" />
             Badges
             {profile.badges.length > 0 && (
               <span className="ml-2 text-body-sm text-muted-foreground">({profile.badges.length})</span>
             )}
           </h2>
           {profile.badges.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
               {profile.badges.map((badge) => (
                 <motion.div
                   key={badge.id}
-                  className="relative rounded-lg border border-border bg-card p-4 text-center transition-colors hover:border-primary/60"
+                  className="relative rounded-2xl border border-border bg-card/80 p-4 text-center shadow-soft transition-colors hover:border-primary/60"
                 >
                   {badge.rarity === 'epic' && (
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-neon-purple rounded-full animate-pulse" />
+                    <div className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-accent" />
                   )}
                   <div className="text-4xl mb-2">{badge.icon}</div>
                   <div className="text-body-sm font-bold">{badge.name}</div>
                   <div className={`text-xs mt-1 ${
-                    badge.rarity === 'epic' ? 'text-neon-purple' :
-                    badge.rarity === 'rare' ? 'text-neon-cyan' :
-                    badge.rarity === 'legendary' ? 'text-neon-yellow' :
+                    badge.rarity === 'epic' ? 'text-accent' :
+                    badge.rarity === 'rare' ? 'text-primary' :
+                    badge.rarity === 'legendary' ? 'text-warning' :
                     'text-muted-foreground'
                   }`}>
                     {badge.rarity}
@@ -353,28 +345,28 @@ export default function ProfilePage() {
               ))}
             </div>
           ) : (
-            <div className="py-8 text-center text-muted-foreground">
-              <Award className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p>No badges earned yet. Complete units to earn badges!</p>
-            </div>
+            <EmptyState
+              icon={Award}
+              title="No badges earned yet"
+              description="Complete units to earn badges and show progress on your profile."
+            />
           )}
         </motion.div>
 
-        {/* Achievements */}
         {profile.achievements.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="glass-card p-6"
+            className="surface-card p-6"
           >
             <h2 className="mb-4 flex items-center gap-2 text-h4">
-              <TrendingUp className="w-6 h-6 text-neon-green" />
+              <TrendingUp className="h-6 w-6 text-success" />
               Achievements
             </h2>
             <div className="space-y-3">
               {profile.achievements.map((achievement) => (
-                <div key={achievement.id} className="flex items-center gap-4 rounded-lg border border-border bg-card p-4">
+                <div key={achievement.id} className="flex items-center gap-4 rounded-2xl border border-border bg-card/80 p-4">
                   <div className="text-3xl">{achievement.icon}</div>
                   <div className="flex-1">
                     <div className="font-bold">{achievement.name}</div>
@@ -395,6 +387,6 @@ export default function ProfilePage() {
           </motion.div>
         )}
       </div>
-    </div>
+    </main>
   )
 }

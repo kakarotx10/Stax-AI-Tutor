@@ -752,7 +752,7 @@ public class Solution {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <Loader2 className="w-16 h-16 text-neon-cyan animate-spin mx-auto mb-4" />
+            <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
             <p className="text-xl text-muted-foreground">Loading question...</p>
           </motion.div>
         </div>
@@ -806,7 +806,7 @@ public class Solution {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center"
         >
-          <Loader2 className="w-16 h-16 text-neon-cyan animate-spin mx-auto mb-4" />
+          <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
           <p className="text-xl text-muted-foreground">Generating your personalized assignment...</p>
           <p className="text-sm text-muted-foreground/80 mt-2">This may take a moment</p>
         </motion.div>
@@ -845,13 +845,13 @@ public class Solution {
         {/* Header with Personalized Note */}
         <div className="glass-card p-6">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-neon-purple/20 rounded-lg">
-              <Sparkles className="w-8 h-8 text-neon-purple" />
+            <div className="p-3 bg-accent/20 rounded-lg">
+              <Sparkles className="w-8 h-8 text-accent" />
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold neon-text mb-2">{assignment.title}</h1>
+              <h1 className="text-3xl font-bold text-foreground mb-2">{assignment.title}</h1>
               <div className="flex items-center gap-3 mb-4">
-                <span className="px-3 py-1 bg-neon-cyan/20 border border-neon-cyan rounded-full text-sm">
+                <span className="px-3 py-1 bg-primary/20 border border-primary rounded-full text-sm">
                   {assignment.targetDifficulty} Level
                 </span>
                 {assignment.verified && (
@@ -861,11 +861,11 @@ public class Solution {
                   </span>
                 )}
               </div>
-              <div className="bg-neon-purple/10 border border-neon-purple/30 rounded-lg p-4 mb-4">
+              <div className="bg-accent/10 border border-accent/30 rounded-lg p-4 mb-4">
                 <div className="flex items-start gap-2">
-                  <Target className="w-5 h-5 text-neon-purple mt-0.5" />
+                  <Target className="w-5 h-5 text-accent mt-0.5" />
                   <div>
-                    <p className="font-semibold text-neon-purple mb-1">Personalized for You</p>
+                    <p className="font-semibold text-accent mb-1">Personalized for You</p>
                     <p className="text-foreground/80 text-sm">{assignment.personalizedNote}</p>
                   </div>
                 </div>
@@ -889,7 +889,7 @@ public class Solution {
             <ul className="space-y-2">
               {assignment.learningObjectives.map((objective, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-neon-green mt-0.5 flex-shrink-0" />
+                  <CheckCircle2 className="w-5 h-5 text-success mt-0.5 flex-shrink-0" />
                   <span className="text-foreground/80">{objective}</span>
                 </li>
               ))}
@@ -928,7 +928,7 @@ public class Solution {
             <ul className="space-y-2">
               {assignment.constraints.map((constraint, idx) => (
                 <li key={idx} className="text-foreground/80 flex items-start gap-2">
-                  <span className="text-neon-cyan">•</span>
+                  <span className="text-primary">•</span>
                   <span>{constraint}</span>
                 </li>
               ))}
@@ -1025,7 +1025,7 @@ public class Solution {
           <div className="glass-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <Lightbulb className="w-6 h-6 text-neon-yellow" />
+                <Lightbulb className="w-6 h-6 text-warning" />
                 Hints
               </h2>
               <button
@@ -1054,10 +1054,10 @@ public class Solution {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="bg-neon-yellow/10 border border-neon-yellow/30 rounded-lg p-4"
+                  className="bg-warning/10 border border-warning/30 rounded-lg p-4"
                 >
                   <p className="text-foreground/80">
-                    <span className="font-semibold text-neon-yellow">Hint {currentHintIndex + 1}:</span>{' '}
+                    <span className="font-semibold text-warning">Hint {currentHintIndex + 1}:</span>{' '}
                     {assignment.hints[currentHintIndex]}
                   </p>
                 </motion.div>
@@ -1075,7 +1075,7 @@ public class Solution {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6 text-neon-green" />
+                <CheckCircle2 className="w-6 h-6 text-success" />
                 Query Results
               </h2>
               <span className="text-muted-foreground">{sqlRowCount} row{sqlRowCount !== 1 ? 's' : ''}</span>
@@ -1085,11 +1085,11 @@ public class Solution {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-neon-cyan/30">
+                  <tr className="border-b border-primary/30">
                     {Object.keys(sqlResults[0] || {}).map((key) => (
                       <th
                         key={key}
-                        className="px-4 py-2 text-left text-neon-cyan font-semibold"
+                        className="px-4 py-2 text-left text-primary font-semibold"
                       >
                         {key}
                       </th>
@@ -1100,7 +1100,7 @@ public class Solution {
                   {sqlResults.map((row, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-border/30 hover:bg-neon-cyan/5 transition-colors"
+                      className="border-b border-border/30 hover:bg-primary/5 transition-colors"
                     >
                       {Object.values(row).map((value: any, colIdx) => (
                         <td key={colIdx} className="px-4 py-2 text-foreground/80">
@@ -1185,10 +1185,10 @@ public class Solution {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="glass-card p-6 bg-gradient-to-r from-neon-green/20 to-neon-cyan/20 border-2 border-neon-green"
+            className="glass-card p-6 bg-gradient-to-r from-success/20 to-primary/20 border-2 border-success"
           >
             <div className="text-center">
-              <CheckCircle2 className="w-16 h-16 text-neon-green mx-auto mb-4" />
+              <CheckCircle2 className="w-16 h-16 text-success mx-auto mb-4" />
               <h2 className="text-2xl font-bold mb-2">Assignment Completed! 🎉</h2>
               <p className="text-foreground/80">Great job! You've mastered this personalized challenge!</p>
             </div>

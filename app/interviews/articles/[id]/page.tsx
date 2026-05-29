@@ -40,7 +40,7 @@ export default function ArticleDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading article...</p>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default function ArticleDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-neon-cyan transition-colors"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -78,10 +78,10 @@ export default function ArticleDetailPage() {
           animate={{ opacity: 1, y: 0 }}
           className="glass-card p-8 mb-6"
         >
-          <h1 className="text-4xl font-bold neon-text mb-4">{article.title}</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-4">{article.title}</h1>
           
           {article.featuredImage && (
-            <div className="w-full h-64 bg-gradient-to-br from-neon-cyan to-neon-purple rounded-lg mb-6" />
+            <div className="w-full h-64 bg-gradient-to-br from-primary to-accent rounded-lg mb-6" />
           )}
 
           <div className="flex items-center gap-4 text-muted-foreground mb-4">
@@ -112,7 +112,7 @@ export default function ArticleDetailPage() {
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mt-4">
             {article.tags.map(tag => (
-              <span key={tag} className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-full text-sm">
+              <span key={tag} className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm">
                 {tag}
               </span>
             ))}
@@ -149,7 +149,7 @@ export default function ArticleDetailPage() {
               <span>{article.likes}</span>
             </button>
             <button className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all">
-              <MessageCircle className="w-5 h-5 text-neon-cyan" />
+              <MessageCircle className="w-5 h-5 text-primary" />
               <span>{article.comments}</span>
             </button>
           </div>

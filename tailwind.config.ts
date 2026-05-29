@@ -26,16 +26,16 @@ const config: Config = {
         mono: ['var(--font-mono)', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       fontSize: {
-        display:   ['4rem',    { lineHeight: '1.0',  letterSpacing: '-0.035em', fontWeight: '700' }],
-        h1:        ['2.75rem', { lineHeight: '1.05', letterSpacing: '-0.025em', fontWeight: '700' }],
-        h2:        ['2rem',    { lineHeight: '1.15', letterSpacing: '-0.02em',  fontWeight: '650' }],
-        h3:        ['1.5rem',  { lineHeight: '1.25', letterSpacing: '-0.015em', fontWeight: '600' }],
-        h4:        ['1.25rem', { lineHeight: '1.3',  letterSpacing: '-0.01em',  fontWeight: '600' }],
+        display:   ['4rem',    { lineHeight: '1.0',  letterSpacing: '0', fontWeight: '700' }],
+        h1:        ['2.75rem', { lineHeight: '1.05', letterSpacing: '0', fontWeight: '700' }],
+        h2:        ['2rem',    { lineHeight: '1.15', letterSpacing: '0', fontWeight: '650' }],
+        h3:        ['1.5rem',  { lineHeight: '1.25', letterSpacing: '0', fontWeight: '600' }],
+        h4:        ['1.25rem', { lineHeight: '1.3',  letterSpacing: '0', fontWeight: '600' }],
         'body-lg': ['1.0625rem', { lineHeight: '1.6', letterSpacing: '0',       fontWeight: '400' }],
         body:      ['0.9375rem', { lineHeight: '1.6', letterSpacing: '0',       fontWeight: '400' }],
         'body-sm': ['0.8125rem', { lineHeight: '1.55', letterSpacing: '0',      fontWeight: '400' }],
         caption:   ['0.75rem',   { lineHeight: '1.4', letterSpacing: '0',       fontWeight: '500' }],
-        eyebrow:   ['0.6875rem', { lineHeight: '1.4', letterSpacing: '0.08em',  fontWeight: '500' }],
+        eyebrow:   ['0.6875rem', { lineHeight: '1.4', letterSpacing: '0.06em',  fontWeight: '650' }],
       },
       fontWeight: {
         normal: '400',
@@ -72,6 +72,10 @@ const config: Config = {
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
+        },
+        highlight: {
+          DEFAULT: 'hsl(var(--highlight))',
+          foreground: 'hsl(var(--highlight-foreground))',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -115,6 +119,8 @@ const config: Config = {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        xl: 'calc(var(--radius) + 2px)',
+        '2xl': 'calc(var(--radius) + 8px)',
       },
       animation: {
         'glow': 'glow 2.4s ease-in-out infinite',
@@ -168,7 +174,6 @@ const config: Config = {
   plugins: [],
 }
 export default config
-
 
 
 

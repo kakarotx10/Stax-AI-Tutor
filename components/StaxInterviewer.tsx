@@ -256,12 +256,12 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                 repeat: Infinity,
                 repeatDelay: 3
               }}
-              className="w-16 h-16 bg-gradient-to-br from-neon-purple to-neon-cyan rounded-full flex items-center justify-center text-3xl font-bold"
+              className="w-16 h-16 bg-gradient-to-br from-accent to-primary rounded-full flex items-center justify-center text-3xl font-bold"
             >
               S
             </motion.div>
             <div>
-              <h1 className="text-3xl font-bold neon-text">Stax AI Interviewer</h1>
+              <h1 className="text-3xl font-bold text-foreground">Stax AI Interviewer</h1>
               <p className="text-muted-foreground capitalize">
                 {interviewType} Round {domain !== 'all' && `- ${domain}`}
               </p>
@@ -292,15 +292,15 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                     <div
                       className={`max-w-[80%] rounded-lg p-4 ${
                         message.role === 'user'
-                          ? 'bg-neon-cyan/20 text-foreground'
-                          : 'bg-neon-purple/20 text-foreground'
+                          ? 'bg-primary/20 text-foreground'
+                          : 'bg-accent/20 text-foreground'
                       }`}
                     >
                       {message.role === 'stax' && (
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs font-bold text-neon-purple">STAX</span>
+                          <span className="text-xs font-bold text-accent">STAX</span>
                           {message.type === 'coding' && (
-                            <Code className="w-4 h-4 text-neon-cyan" />
+                            <Code className="w-4 h-4 text-primary" />
                           )}
                         </div>
                       )}
@@ -324,7 +324,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
               >
                 <h3 className="text-xl font-bold mb-4">{codingChallenge.title}</h3>
                 <p className="text-foreground/80 mb-4">{codingChallenge.description}</p>
-                <div className="border border-neon-cyan/30 rounded-lg overflow-hidden mb-4">
+                <div className="border border-primary/30 rounded-lg overflow-hidden mb-4">
                   <MonacoEditor
                     height="300px"
                     language={codingChallenge.language || 'python'}
@@ -355,7 +355,7 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                   className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
                     isListening
                       ? 'bg-red-500 hover:bg-red-600 animate-pulse'
-                      : 'bg-neon-cyan hover:bg-neon-cyan/80'
+                      : 'bg-primary hover:bg-primary/80'
                   } disabled:opacity-50`}
                 >
                   {isListening ? (
@@ -367,10 +367,10 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
                 <button
                   onClick={stopSpeaking}
                   disabled={!isSpeaking}
-                  className="w-12 h-12 rounded-full bg-neon-purple/20 hover:bg-neon-purple/30 flex items-center justify-center disabled:opacity-50"
+                  className="w-12 h-12 rounded-full bg-accent/20 hover:bg-accent/30 flex items-center justify-center disabled:opacity-50"
                 >
                   {isSpeaking ? (
-                    <VolumeX className="w-6 h-6 text-neon-purple" />
+                    <VolumeX className="w-6 h-6 text-accent" />
                   ) : (
                     <Volume2 className="w-6 h-6 text-muted-foreground" />
                   )}
@@ -396,13 +396,13 @@ export default function StaxInterviewer({ interviewType, domain, onEnd }: StaxIn
               }}
               className="glass-card p-8 text-center"
             >
-              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-neon-purple via-neon-cyan to-neon-green rounded-full flex items-center justify-center text-6xl font-bold shadow-card">
+              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-accent via-primary to-success rounded-full flex items-center justify-center text-6xl font-bold shadow-card">
                 S
               </div>
               <h2 className="text-2xl font-bold mb-2">Stax</h2>
               <p className="text-muted-foreground text-sm mb-4">Your AI Interviewer</p>
               <div className="flex items-center justify-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-neon-green animate-pulse' : 'bg-muted'}`} />
+                <div className={`w-3 h-3 rounded-full ${isSpeaking ? 'bg-success animate-pulse' : 'bg-muted'}`} />
                 <span className="text-xs text-muted-foreground">
                   {isSpeaking ? 'Speaking' : 'Ready'}
                 </span>

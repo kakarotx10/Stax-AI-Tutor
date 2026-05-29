@@ -74,14 +74,14 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
           }}
           transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 1 }}
         >
-          <Trophy className="w-32 h-32 text-neon-cyan mx-auto mb-4" />
+          <Trophy className="w-32 h-32 text-primary mx-auto mb-4" />
         </motion.div>
 
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-6xl font-bold neon-text mb-4"
+          className="text-6xl font-bold text-foreground mb-4"
         >
           🎉 YOU UNLOCKED CODING MODE! 🎉
         </motion.h1>
@@ -104,18 +104,18 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
           >
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center">
-                <Zap className="w-8 h-8 text-neon-cyan mx-auto mb-2" />
-                <div className="text-3xl font-bold text-neon-cyan">{xp}</div>
+                <Zap className="w-8 h-8 text-primary mx-auto mb-2" />
+                <div className="text-3xl font-bold text-primary">{xp}</div>
                 <div className="text-sm text-muted-foreground">XP Earned</div>
               </div>
               <div className="text-center">
-                <Star className="w-8 h-8 text-neon-purple mx-auto mb-2" />
-                <div className="text-3xl font-bold text-neon-purple">1</div>
+                <Star className="w-8 h-8 text-accent mx-auto mb-2" />
+                <div className="text-3xl font-bold text-accent">1</div>
                 <div className="text-sm text-muted-foreground">Unit Completed</div>
               </div>
               <div className="text-center">
-                <Sparkles className="w-8 h-8 text-neon-pink mx-auto mb-2" />
-                <div className="text-3xl font-bold text-neon-pink">85%</div>
+                <Sparkles className="w-8 h-8 text-accent mx-auto mb-2" />
+                <div className="text-3xl font-bold text-accent">85%</div>
                 <div className="text-sm text-muted-foreground">Accuracy</div>
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
             {/* Leaderboard Preview */}
             <div>
               <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-neon-cyan" />
+                <Trophy className="w-6 h-6 text-primary" />
                 Leaderboard
               </h3>
               <div className="space-y-2">
@@ -135,7 +135,7 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
                     transition={{ delay: 0.6 + idx * 0.1 }}
                     className={`flex items-center justify-between p-3 rounded-lg ${
                       entry.isCurrentUser
-                        ? 'bg-neon-cyan/20 border border-neon-cyan'
+                        ? 'bg-primary/20 border border-primary'
                         : 'bg-card/50'
                     }`}
                   >
@@ -144,7 +144,7 @@ export default function LeaderboardUnlock({ xp, unit, onComplete }: LeaderboardU
                       <span className="font-bold">#{entry.rank}</span>
                       <span>{entry.name}</span>
                     </div>
-                    <span className="text-neon-cyan font-bold">{entry.xp} XP</span>
+                    <span className="text-primary font-bold">{entry.xp} XP</span>
                   </motion.div>
                 ))}
               </div>

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import {
   PRICING_PLANS,
@@ -12,10 +11,36 @@ import {
 } from '@/lib/pricing'
 import { DOMAINS, type Domain } from '@/lib/subjects'
 import { Button } from '@/components/ui/Button'
-import { Check, X, Sparkles, Crown, Star, Zap } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/Card'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { DomainIcon } from '@/components/competition/CompetitionUI'
+import { ArrowRight, Check, Crown, Layers3, ShieldCheck, Sparkles, Star, X, Zap } from 'lucide-react'
+
+const paidPlanIds = ['platinum', 'gold', 'silver'] as const
+
+const planVisuals = {
+  platinum: {
+    icon: Crown,
+    label: 'Best for full preparation',
+    accent: 'border-primary/35 bg-primary/10 text-primary',
+    bar: 'bg-primary',
+  },
+  gold: {
+    icon: Star,
+    label: 'Balanced coverage',
+    accent: 'border-warning/35 bg-warning/10 text-warning',
+    bar: 'bg-warning',
+  },
+  silver: {
+    icon: Zap,
+    label: 'Focused starter',
+    accent: 'border-info/35 bg-info/10 text-info',
+    bar: 'bg-info',
+  },
+}
 
 export default function PricingPage() {
-  const router = useRouter()
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null)
   const [customDomains, setCustomDomains] = useState<Domain[]>([])
   const [showCustomBuilder, setShowCustomBuilder] = useState(false)
@@ -124,73 +149,101 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="page-shell">
-      <div className="page-container">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
+    <main className="page-shell pt-20">
+      <div className="page-container space-y-8">
+        <motion.header
+          initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="page-header mb-16 text-center"
+          className="grid gap-6 border-b border-border pb-8 lg:grid-cols-[1fr_360px] lg:items-end"
         >
-          <h1 className="page-title">
-            Choose Your Plan
-          </h1>
-          <p className="page-description mx-auto">
-            Select the perfect plan for your learning journey. Upgrade or downgrade anytime.
-          </p>
-        </motion.div>
+          <div>
+            <Badge variant="secondary" className="mb-4">Pricing</Badge>
+            <h1 className="max-w-3xl text-h1 text-foreground">
+              Pick the prep coverage you need.
+            </h1>
+            <p className="mt-3 max-w-2xl text-body-lg text-muted-foreground">
+              Upgrade from focused domain practice to complete interview preparation without changing your learning flow.
+            </p>
+          </div>
+          <div className="rounded-2xl border border-border bg-card/80 p-4 shadow-soft backdrop-blur-xl">
+            <div className="flex items-start gap-3">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-success/25 bg-success/10 text-success">
+                <ShieldCheck className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Included in every plan</p>
+                <p className="mt-1 text-body-sm text-muted-foreground">
+                  Progress tracking, AI practice, saved attempts, and dashboard history.
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.header>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {(['platinum', 'gold', 'silver'] as PlanType[]).map((planId) => {
+        <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          {paidPlanIds.map((planId, index) => {
             const plan = PRICING_PLANS[planId]
+            const visual = planVisuals[planId]
+            const Icon = visual.icon
+
             return (
-              <motion.div
+              <motion.article
                 key={planId}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: planId === 'platinum' ? 0.1 : planId === 'gold' ? 0.2 : 0.3 }}
-                className={`glass-card relative p-6 ${plan.popular ? 'ring-2 ring-primary' : ''}`}
+                transition={{ delay: index * 0.06 }}
+                className={`group relative grid min-h-[392px] grid-rows-[auto_auto_auto_1fr_auto] overflow-hidden rounded-2xl border bg-card/90 p-5 shadow-card backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:shadow-elevated ${
+                  plan.popular ? 'border-primary/55' : 'border-border hover:border-border-strong'
+                }`}
               >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="rounded-full bg-primary px-4 py-1 text-sm font-bold text-primary-foreground">
-                      {plan.badge}
-                    </span>
+                <div className={`absolute inset-x-0 top-0 h-1 ${visual.bar}`} />
+                <div className="flex min-h-11 items-start justify-between gap-3 pt-1">
+                  <div className="min-w-0">
+                    <p className="text-caption uppercase text-muted-foreground">{visual.label}</p>
+                    <div className="mt-2 h-6">
+                      {plan.popular && (
+                        <Badge variant="solid">
+                          {plan.badge}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
-                )}
-                
-                <div className="text-center mb-6">
-                  <div className="text-4xl mb-2">
-                    {planId === 'platinum' && <Crown className="w-12 h-12 text-neon-cyan mx-auto mb-2" />}
-                    {planId === 'gold' && <Star className="w-12 h-12 text-yellow-400 mx-auto mb-2" />}
-                    {planId === 'silver' && <Zap className="w-12 h-12 text-muted-foreground mx-auto mb-2" />}
-                  </div>
-                  <h3 className="mb-2 text-h4">{plan.name}</h3>
-                  <p className="mb-4 text-body-sm text-muted-foreground">{plan.description}</p>
-                  
-                  <div className="mb-4">
-                    <span className="text-h3 text-primary">
-                      ₹{plan.price}
-                    </span>
-                    {plan.originalPrice && (
-                      <span className="ml-2 text-muted-foreground line-through">
-                        ₹{plan.originalPrice}
-                      </span>
-                    )}
-                    <div className="mt-1 text-body-sm text-muted-foreground">/{plan.duration}</div>
-                  </div>
+                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${visual.accent}`}>
+                    <Icon className="h-5 w-5" />
+                  </span>
                 </div>
 
-                <div className="space-y-3 mb-6">
-                  <div className="text-sm font-semibold text-neon-cyan mb-2">
-                    Includes {plan.domains.length} domain{plan.domains.length > 1 ? 's' : ''}:
+                <div className="mt-5">
+                  <h2 className="text-h4 text-foreground">{plan.name}</h2>
+                  <p className="mt-2 min-h-[44px] text-body-sm leading-6 text-muted-foreground">
+                    {plan.description}
+                  </p>
+                </div>
+
+                <div className="mt-5 min-h-[98px] rounded-2xl border border-border bg-surface-1/70 p-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-foreground">₹{plan.price}</span>
+                    <span className="text-body-sm text-muted-foreground">/{plan.duration}</span>
                   </div>
-                  {plan.domains.map(domainId => (
-                    <div key={domainId} className="text-sm text-muted-foreground">
-                      • {DOMAINS[domainId].name}
-                    </div>
-                  ))}
+                  {plan.originalPrice && (
+                    <p className="mt-1 text-caption text-muted-foreground">
+                      Usually <span className="line-through">₹{plan.originalPrice}</span>
+                    </p>
+                  )}
+                </div>
+
+                <div className="mt-5 space-y-3 pb-5">
+                  <p className="text-sm font-semibold text-foreground">
+                    {plan.domains.length} domain{plan.domains.length > 1 ? 's' : ''} included
+                  </p>
+                  <div className="space-y-2">
+                    {plan.domains.map(domainId => (
+                      <div key={domainId} className="flex items-center gap-2 text-body-sm text-muted-foreground">
+                        <DomainIcon domain={domainId} className="h-4 w-4 text-primary" />
+                        <span>{DOMAINS[domainId].name}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 <Button
@@ -198,52 +251,85 @@ export default function PricingPage() {
                   variant={plan.popular ? 'primary' : 'secondary'}
                   className="w-full"
                 >
-                  Choose Plan
+                  Continue with {plan.name.replace(' Plan', '')}
+                  <ArrowRight className="h-4 w-4" />
                 </Button>
-              </motion.div>
+              </motion.article>
             )
           })}
 
-          {/* Custom Plan Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+          <motion.article
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="glass-card relative border-2 border-dashed border-secondary p-6"
+            transition={{ delay: 0.2 }}
+            className="relative grid min-h-[392px] grid-rows-[auto_auto_auto_1fr_auto] overflow-hidden rounded-2xl border border-dashed border-border bg-card/70 p-5 shadow-soft backdrop-blur-xl transition duration-200 hover:-translate-y-1 hover:border-accent/50 hover:bg-card/90"
           >
-            <div className="text-center mb-6">
-              <Sparkles className="w-12 h-12 text-neon-purple mx-auto mb-2" />
-              <h3 className="mb-2 text-h4">{PRICING_PLANS.custom.name}</h3>
-              <p className="mb-4 text-body-sm text-muted-foreground">{PRICING_PLANS.custom.description}</p>
-              
-              <div className="mb-4">
-                <span className="text-h3 text-secondary">
-                  ₹{customPrice || 0}
-                </span>
-                <div className="mt-1 text-body-sm text-muted-foreground">/month</div>
+            <div className="absolute inset-x-0 top-0 h-1 bg-accent" />
+            <div className="flex min-h-11 items-start justify-between gap-3 pt-1">
+              <div className="min-w-0">
+                <p className="text-caption uppercase text-muted-foreground">Build your own</p>
+                <div className="mt-2 h-6" />
+              </div>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/25 bg-accent/10 text-accent">
+                <Sparkles className="h-5 w-5" />
+              </span>
+            </div>
+            <div className="mt-5">
+              <h2 className="text-h4 text-foreground">{PRICING_PLANS.custom.name}</h2>
+              <p className="mt-2 min-h-[44px] text-body-sm leading-6 text-muted-foreground">
+                Choose only the domains that match your current interview target.
+              </p>
+            </div>
+            <div className="mt-5 min-h-[98px] rounded-2xl border border-border bg-surface-1/70 p-4">
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold text-foreground">₹{customPrice || 0}</span>
+                <span className="text-body-sm text-muted-foreground">/month</span>
+              </div>
+              <p className="mt-1 text-caption text-muted-foreground">
+                {customDomains.length || 'No'} domain{customDomains.length === 1 ? '' : 's'} selected
+              </p>
+            </div>
+            <div className="mt-5 space-y-2 pb-5 text-body-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Layers3 className="h-4 w-4 text-accent" />
+                Modular domain access
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-4 w-4 text-success" />
+                Same dashboard and progress system
               </div>
             </div>
-
             <Button
               onClick={() => handlePlanSelect('custom')}
               variant="secondary"
               className="w-full"
             >
-              Build Custom Plan
+              Build custom bundle
             </Button>
-          </motion.div>
-        </div>
+          </motion.article>
+        </section>
 
-        {/* Custom Plan Builder */}
         {showCustomBuilder && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-8 max-w-4xl mx-auto"
+            className="rounded-2xl border border-border bg-card/90 p-5 shadow-card backdrop-blur-xl sm:p-6"
           >
-            <h2 className="mb-6 text-center text-h3">Build Your Custom Plan</h2>
+            <div className="mb-5 flex flex-col gap-3 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-caption uppercase text-accent">Custom builder</p>
+                <h2 className="mt-1 text-h3">Choose domains</h2>
+                <p className="mt-2 text-body-sm text-muted-foreground">
+                  Select only the learning areas you want unlocked this month.
+                </p>
+              </div>
+              <div className="rounded-xl border border-border bg-surface-1/80 px-4 py-3">
+                <p className="text-caption uppercase text-muted-foreground">Total</p>
+                <p className="text-2xl font-bold text-foreground">₹{customPrice}</p>
+              </div>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {(Object.keys(DOMAINS) as Domain[]).map(domainId => {
                 const domain = DOMAINS[domainId]
                 const isSelected = customDomains.includes(domainId)
@@ -255,16 +341,18 @@ export default function PricingPage() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => toggleDomain(domainId)}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    className={`cursor-pointer rounded-2xl border p-4 transition-all ${
                       isSelected
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border hover:border-primary/60'
+                        ? 'border-primary bg-primary/10 shadow-soft'
+                        : 'border-border bg-card/70 hover:border-primary/60 hover:bg-muted/50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{domain.icon}</span>
-                        <div>
+                        <span className="icon-tile h-10 w-10">
+                          <DomainIcon domain={domainId} className="h-5 w-5" />
+                        </span>
+                        <div className="min-w-0">
                           <h3 className="font-bold">{domain.name}</h3>
                           <p className="text-sm text-muted-foreground">{domain.subjects.length} subjects</p>
                         </div>
@@ -281,17 +369,14 @@ export default function PricingPage() {
               })}
             </div>
 
-            <div className="border-t border-border pt-6">
-              <div className="flex items-center justify-between mb-6">
+            <div className="border-t border-border pt-5">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <div className="text-h4">
-                    Total: ₹{customPrice}
-                  </div>
                   <div className="text-body-sm text-muted-foreground">
                     {customDomains.length} domain{customDomains.length !== 1 ? 's' : ''} selected
                   </div>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <Button
                     onClick={() => {
                       setShowCustomBuilder(false)
@@ -313,53 +398,57 @@ export default function PricingPage() {
           </motion.div>
         )}
 
-        {/* Features Comparison */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="glass-card p-8 mt-12"
+          className="mt-12"
         >
-          <h2 className="mb-8 text-center text-h3">Feature Comparison</h2>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-4 px-4">Feature</th>
-                  <th className="text-center py-4 px-4">Silver</th>
-                  <th className="text-center py-4 px-4">Gold</th>
-                  <th className="text-center py-4 px-4">Platinum</th>
-                </tr>
-              </thead>
-              <tbody>
+          <Card>
+            <CardHeader className="text-center">
+              <ShieldCheck className="mx-auto h-8 w-8 text-success" />
+              <CardTitle>Feature comparison</CardTitle>
+              <CardDescription>Compare plan coverage before checkout.</CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Feature</TableHead>
+                  <TableHead className="text-center">Silver</TableHead>
+                  <TableHead className="text-center">Gold</TableHead>
+                  <TableHead className="text-center">Platinum</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {PRICING_PLANS.platinum.features.map((feature, idx) => (
-                  <tr key={feature.id} className="border-b border-border">
-                    <td className="py-4 px-4">{feature.name}</td>
-                    <td className="text-center py-4 px-4">
+                  <TableRow key={feature.id}>
+                    <TableCell>{feature.name}</TableCell>
+                    <TableCell className="text-center">
                       {PRICING_PLANS.silver.features[idx]?.included ? (
-                        <Check className="w-5 h-5 text-neon-green mx-auto" />
+                        <Check className="mx-auto h-5 w-5 text-success" />
                       ) : (
-                        <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                        <X className="mx-auto h-5 w-5 text-muted-foreground" />
                       )}
-                    </td>
-                    <td className="text-center py-4 px-4">
+                    </TableCell>
+                    <TableCell className="text-center">
                       {PRICING_PLANS.gold.features[idx]?.included ? (
-                        <Check className="w-5 h-5 text-neon-green mx-auto" />
+                        <Check className="mx-auto h-5 w-5 text-success" />
                       ) : (
-                        <X className="w-5 h-5 text-muted-foreground mx-auto" />
+                        <X className="mx-auto h-5 w-5 text-muted-foreground" />
                       )}
-                    </td>
-                    <td className="text-center py-4 px-4">
-                      <Check className="w-5 h-5 text-neon-green mx-auto" />
-                    </td>
-                  </tr>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <Check className="mx-auto h-5 w-5 text-success" />
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
-    </div>
+    </main>
   )
 }

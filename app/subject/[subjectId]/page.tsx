@@ -75,7 +75,7 @@ export default function SubjectPage() {
                   onClick={() => handleUnitClick(unit.id)}
                   disabled={!interactive}
                   className={cn(
-                    'group relative flex w-full flex-col gap-4 rounded-[10px] border border-border bg-card p-6 text-left shadow-soft transition-all duration-150 ease-out-quart',
+                    'group relative flex w-full flex-col gap-4 rounded-2xl border border-border bg-card p-6 text-left shadow-soft transition-all duration-150 ease-out-quart',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                     interactive &&
                       'hover:-translate-y-px hover:border-[hsl(var(--border-strong))] hover:bg-[hsl(var(--card))] hover:shadow-card',
@@ -89,7 +89,7 @@ export default function SubjectPage() {
                     </span>
 
                     {completed ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-md border border-success/25 bg-success/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success">
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-success/25 bg-success/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success">
                         <CheckCircle2 className="h-3 w-3" />
                         Done
                       </span>
@@ -99,7 +99,7 @@ export default function SubjectPage() {
                         Locked
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-primary">
+                      <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/25 bg-primary/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-primary">
                         Available
                       </span>
                     )}

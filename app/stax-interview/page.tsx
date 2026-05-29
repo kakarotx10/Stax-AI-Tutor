@@ -2,8 +2,10 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mic, MicOff, Code, FileText, Users, ArrowRight } from 'lucide-react'
+import { Code, FileText, Users, ArrowRight, CheckCircle2 } from 'lucide-react'
 import StaxInterviewer from '@/components/StaxInterviewer'
+import { Button } from '@/components/ui/Button'
+import { Badge } from '@/components/ui/badge'
 
 export type InterviewType = 'technical' | 'hr' | 'resume'
 export type InterviewDomain = 'placement' | 'frontend' | 'backend' | 'fullstack' | 'aiml' | 'all'
@@ -26,115 +28,102 @@ export default function StaxInterviewPage() {
     )
   }
 
+  const interviewOptions = [
+    {
+      value: 'technical' as const,
+      title: 'Technical Round',
+      description: 'Practice coding problems, algorithms, and domain-specific questions.',
+      icon: Code,
+      bullets: ['Real-time coding challenges', 'Algorithm and DSA questions', 'Domain-specific problems', 'Follow-up questions'],
+      tone: 'text-primary bg-primary/10 border-primary/25',
+    },
+    {
+      value: 'hr' as const,
+      title: 'HR Round',
+      description: 'Practice behavioral questions and communication clarity.',
+      icon: Users,
+      bullets: ['Behavioral questions', 'Situation-based scenarios', 'Teamwork and leadership', 'Career goals discussion'],
+      tone: 'text-accent bg-accent/10 border-accent/25',
+    },
+    {
+      value: 'resume' as const,
+      title: 'Resume Round',
+      description: 'Discuss your projects, experience, and achievements.',
+      icon: FileText,
+      bullets: ['Project deep-dives', 'Experience discussion', 'Skills validation', 'Achievement highlights'],
+      tone: 'text-success bg-success/10 border-success/25',
+    },
+  ]
+
   return (
-    <div className="min-h-screen p-8 pt-24">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
+    <main className="page-shell pt-24">
+      <div className="page-container max-w-6xl space-y-8">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="page-header text-center"
         >
-          <h1 className="text-5xl font-bold neon-text mb-4">
-            Meet <span className="text-neon-purple">Stax</span> AI Interviewer
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Practice interviews with AI-powered voice conversations
+          <Badge variant="default" className="mb-4">AI mock interviews</Badge>
+          <h1 className="page-title">Meet Stax AI Interviewer</h1>
+          <p className="page-description mx-auto">
+            Practice interviews with focused voice conversations, structured prompts, and domain-aware rounds.
           </p>
         </motion.div>
 
-        {/* Interview Type Selection */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => setSelectedType('technical')}
-            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
-              selectedType === 'technical'
-                ? 'border-neon-cyan shadow-card'
-                : 'border-border hover:border-neon-cyan/50'
-            }`}
-          >
-            <Code className="w-16 h-16 text-neon-cyan mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-center mb-2">Technical Round</h2>
-            <p className="text-muted-foreground text-center mb-4">
-              Practice coding problems, algorithms, and domain-specific questions
-            </p>
-            <ul className="text-sm text-foreground/80 space-y-1">
-              <li>• Real-time coding challenges</li>
-              <li>• Algorithm & DSA questions</li>
-              <li>• Domain-specific problems</li>
-              <li>• Cross-questioning & follow-ups</li>
-            </ul>
-          </motion.div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {interviewOptions.map((option, index) => {
+            const Icon = option.icon
+            const selected = selectedType === option.value
 
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => setSelectedType('hr')}
-            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
-              selectedType === 'hr'
-                ? 'border-neon-purple shadow-card'
-                : 'border-border hover:border-neon-purple/50'
-            }`}
-          >
-            <Users className="w-16 h-16 text-neon-purple mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-center mb-2">HR Round</h2>
-            <p className="text-muted-foreground text-center mb-4">
-              Practice behavioral questions and soft skills
-            </p>
-            <ul className="text-sm text-foreground/80 space-y-1">
-              <li>• Behavioral questions</li>
-              <li>• Situation-based scenarios</li>
-              <li>• Teamwork & leadership</li>
-              <li>• Career goals discussion</li>
-            </ul>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => setSelectedType('resume')}
-            className={`glass-card p-8 rounded-lg border cursor-pointer transition-all ${
-              selectedType === 'resume'
-                ? 'border-neon-green shadow-card'
-                : 'border-border hover:border-neon-green/50'
-            }`}
-          >
-            <FileText className="w-16 h-16 text-neon-green mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-center mb-2">Resume Round</h2>
-            <p className="text-muted-foreground text-center mb-4">
-              Discuss your projects, experience, and achievements
-            </p>
-            <ul className="text-sm text-foreground/80 space-y-1">
-              <li>• Project deep-dives</li>
-              <li>• Experience discussion</li>
-              <li>• Skills validation</li>
-              <li>• Achievement highlights</li>
-            </ul>
-          </motion.div>
+            return (
+              <motion.button
+                key={option.value}
+                type="button"
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.08 }}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setSelectedType(option.value)}
+                className={`surface-card p-6 text-left transition-all ${
+                  selected ? 'border-primary ring-2 ring-primary/40' : 'hover:border-primary/50'
+                }`}
+              >
+                <span className={`mb-5 flex h-14 w-14 items-center justify-center rounded-xl border ${option.tone}`}>
+                  <Icon className="h-7 w-7" />
+                </span>
+                <h2 className="text-h4 text-foreground">{option.title}</h2>
+                <p className="mt-2 text-body-sm text-muted-foreground">{option.description}</p>
+                <ul className="mt-5 space-y-2 text-body-sm text-muted-foreground">
+                  {option.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-success" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              </motion.button>
+            )
+          })}
         </div>
 
-        {/* Domain Selection (for Technical Round) */}
         {selectedType === 'technical' && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="glass-card p-6 mb-8"
+            className="surface-card p-6"
           >
-            <h3 className="text-xl font-bold mb-4">Select Domain:</h3>
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+            <h3 className="mb-4 text-h4">Select domain</h3>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-6">
               {(['all', 'placement', 'frontend', 'backend', 'fullstack', 'aiml'] as InterviewDomain[]).map((domain) => (
                 <button
                   key={domain}
+                  type="button"
                   onClick={() => setSelectedDomain(domain)}
-                  className={`px-4 py-3 rounded-lg transition-all ${
+                  className={`rounded-xl border px-4 py-3 text-sm font-semibold transition-all ${
                     selectedDomain === domain
-                      ? 'bg-neon-cyan text-primary-foreground font-bold'
-                      : 'bg-card text-muted-foreground hover:text-foreground'
+                      ? 'border-primary bg-primary text-primary-foreground shadow-soft'
+                      : 'border-border bg-card/80 text-muted-foreground hover:border-primary/50 hover:text-foreground'
                   }`}
                 >
                   {domain === 'fullstack' ? 'Full Stack' : domain.charAt(0).toUpperCase() + domain.slice(1)}
@@ -144,24 +133,24 @@ export default function StaxInterviewPage() {
           </motion.div>
         )}
 
-        {/* Start Button */}
         {selectedType && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <button
+            <Button
               onClick={() => setStarted(true)}
-              className="btn-primary text-lg px-8 py-4 flex items-center gap-3 mx-auto"
+              size="lg"
+              className="mx-auto"
             >
               Start Interview with Stax
-              <ArrowRight className="w-5 h-5" />
-            </button>
+              <ArrowRight className="h-5 w-5" />
+            </Button>
           </motion.div>
         )}
       </div>
-    </div>
+    </main>
   )
 }
 

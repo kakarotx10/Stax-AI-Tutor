@@ -19,6 +19,8 @@ import { InterviewExperience, InterviewArticle } from '@/lib/types/interviews'
 import { Domain } from '@/lib/subjects'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 import {
   CompetitionHeader,
   DomainBadge,
@@ -173,7 +175,7 @@ export default function InterviewsPage() {
           </Button>
         </div>
 
-        <section className="space-y-5 rounded-[10px] border border-border bg-surface-1 p-4 shadow-soft">
+        <section className="space-y-5 rounded-2xl border border-border bg-surface-1/80 p-4 shadow-soft">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -189,20 +191,17 @@ export default function InterviewsPage() {
         </section>
 
         {loading ? (
-          <div className="rounded-[10px] border border-border bg-card p-12 text-center shadow-card">
-            <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-            <p className="text-muted-foreground">Loading interview resources...</p>
-          </div>
+          <LoadingState label="Loading interview resources..." variant="skeleton" />
         ) : activeTab === 'experiences' ? (
           <section className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             {filteredExperiences.length === 0 ? (
-              <div className="rounded-[10px] border border-border bg-card p-12 text-center shadow-card lg:col-span-2">
-                <Briefcase className="mx-auto mb-4 h-14 w-14 text-muted-foreground/70" />
-                <p className="mb-4 text-muted-foreground">No interview experiences found</p>
-                <Button asChild>
-                  <Link href="/interviews/post">Share Your Experience</Link>
-                </Button>
-              </div>
+              <EmptyState
+                icon={Briefcase}
+                title="No interview experiences found"
+                description="Share a real interview journey to help other learners prepare."
+                action={<Button asChild><Link href="/interviews/post">Share Experience</Link></Button>}
+                className="lg:col-span-2"
+              />
             ) : (
               filteredExperiences.map((exp, idx) => (
                 <motion.article
@@ -210,7 +209,7 @@ export default function InterviewsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.06 }}
-                  className="group rounded-[10px] border border-border bg-card shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/30"
+                  className="group rounded-2xl border border-border bg-card shadow-card transition duration-200 hover:-translate-y-1 hover:border-primary/60 hover:bg-muted/40"
                 >
                   <Link href={`/interviews/experiences/${exp.id}`} className="block h-full p-5">
                     <div className="mb-5 flex items-start justify-between gap-4">
@@ -245,13 +244,13 @@ export default function InterviewsPage() {
         ) : (
           <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredArticles.length === 0 ? (
-              <div className="rounded-[10px] border border-border bg-card p-12 text-center shadow-card md:col-span-2 xl:col-span-3">
-                <BookOpen className="mx-auto mb-4 h-14 w-14 text-muted-foreground/70" />
-                <p className="mb-4 text-muted-foreground">No articles found</p>
-                <Button asChild>
-                  <Link href="/interviews/post">Write an Article</Link>
-                </Button>
-              </div>
+              <EmptyState
+                icon={BookOpen}
+                title="No articles found"
+                description="Write a preparation note, resume breakdown, or interview guide."
+                action={<Button asChild><Link href="/interviews/post">Write Article</Link></Button>}
+                className="md:col-span-2 xl:col-span-3"
+              />
             ) : (
               filteredArticles.map((art, idx) => (
                 <motion.article
@@ -259,12 +258,12 @@ export default function InterviewsPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.06 }}
-                  className="group rounded-[10px] border border-border bg-card shadow-card transition duration-200 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/30"
+                  className="group rounded-2xl border border-border bg-card shadow-card transition duration-200 hover:-translate-y-1 hover:border-primary/60 hover:bg-muted/40"
                 >
                   <Link href={`/interviews/articles/${art.id}`} className="flex h-full flex-col p-5">
                     {art.featuredImage && (
                       <div
-                        className="mb-5 h-40 rounded-[8px] border border-border bg-muted bg-cover bg-center"
+                        className="mb-5 h-40 rounded-xl border border-border bg-muted bg-cover bg-center"
                         style={{ backgroundImage: `url(${art.featuredImage})` }}
                       />
                     )}

@@ -293,7 +293,7 @@ rl.on('line', (line) => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading contest...</p>
         </div>
       </div>
@@ -305,7 +305,7 @@ rl.on('line', (line) => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold neon-text">Contest Problems</h1>
+          <h1 className="text-3xl font-bold text-foreground">Contest Problems</h1>
           <div className="flex gap-4">
             <button
               onClick={handleComplete}
@@ -331,13 +331,13 @@ rl.on('line', (line) => {
                 }}
                 className={`px-4 py-2 rounded-lg transition-all ${
                   currentProblemIndex === index
-                    ? 'bg-neon-cyan text-primary-foreground font-bold'
+                    ? 'bg-primary text-primary-foreground font-bold'
                     : 'bg-card hover:bg-card/80'
-                } ${solvedProblems.has(index) ? 'border-2 border-neon-green' : ''}`}
+                } ${solvedProblems.has(index) ? 'border-2 border-success' : ''}`}
               >
                 <div className="flex items-center gap-2">
                   {solvedProblems.has(index) && (
-                    <CheckCircle className="w-4 h-4 text-neon-green" />
+                    <CheckCircle className="w-4 h-4 text-success" />
                   )}
                   Problem {index + 1}
                 </div>
@@ -354,7 +354,7 @@ rl.on('line', (line) => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">{currentProblem.title}</h2>
                 {solvedProblems.has(currentProblemIndex) && (
-                  <div className="flex items-center gap-2 text-neon-green">
+                  <div className="flex items-center gap-2 text-success">
                     <CheckCircle className="w-6 h-6" />
                     <span className="font-bold">Solved!</span>
                   </div>
@@ -372,11 +372,11 @@ rl.on('line', (line) => {
                     {currentProblem.testCases.examples.map((ex: any, idx: number) => (
                       <div key={idx} className="mb-4 p-4 bg-card rounded-lg border border-border">
                         <p className="text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-neon-cyan">Input:</span>{' '}
+                          <span className="font-bold text-primary">Input:</span>{' '}
                           <code className="text-foreground bg-background px-2 py-1 rounded">{ex.input}</code>
                         </p>
                         <p className="text-sm text-muted-foreground mb-2">
-                          <span className="font-bold text-neon-green">Output:</span>{' '}
+                          <span className="font-bold text-success">Output:</span>{' '}
                           <code className="text-foreground bg-background px-2 py-1 rounded">{ex.output}</code>
                         </p>
                         {ex.explanation && (
@@ -473,13 +473,13 @@ rl.on('line', (line) => {
                       key={idx}
                       className={`p-3 rounded-lg border ${
                         result.passed
-                          ? 'bg-neon-green/10 border-neon-green'
+                          ? 'bg-success/10 border-success'
                           : 'bg-red-500/10 border-red-500'
                       }`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         {result.passed ? (
-                          <CheckCircle className="w-5 h-5 text-neon-green" />
+                          <CheckCircle className="w-5 h-5 text-success" />
                         ) : (
                           <X className="w-5 h-5 text-red-500" />
                         )}

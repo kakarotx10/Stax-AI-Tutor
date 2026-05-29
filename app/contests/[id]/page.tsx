@@ -332,7 +332,7 @@ export default function ContestDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading contest...</p>
         </div>
       </div>
@@ -362,7 +362,7 @@ export default function ContestDetailPage() {
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-bold neon-text mb-2">{contest.title}</h1>
+              <h1 className="text-4xl font-bold text-foreground mb-2">{contest.title}</h1>
               <p className="text-muted-foreground">{contest.description}</p>
             </div>
             {contest.status === 'active' && !joined && (
@@ -374,11 +374,11 @@ export default function ContestDetailPage() {
 
           <div className="flex gap-4 mb-6 flex-wrap">
             <div className="glass-card px-4 py-2 flex items-center gap-2">
-              <Users className="w-5 h-5 text-neon-cyan" />
+              <Users className="w-5 h-5 text-primary" />
               <span>{contest.participants} participants</span>
             </div>
             <div className="glass-card px-4 py-2 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-neon-yellow" />
+              <Zap className="w-5 h-5 text-warning" />
               <span>{contest.xpMultiplier}x XP</span>
             </div>
             {contest.status === 'active' && (
@@ -405,7 +405,7 @@ export default function ContestDetailPage() {
                       onClick={() => setSelectedProblem(p.id)}
                       className={`w-full text-left p-4 rounded-lg transition-all ${
                         selectedProblem === p.id
-                          ? 'bg-neon-cyan/20 border-2 border-neon-cyan'
+                          ? 'bg-primary/20 border-2 border-primary'
                           : 'bg-card hover:bg-card/80'
                       }`}
                     >
@@ -415,7 +415,7 @@ export default function ContestDetailPage() {
                           <p className="text-sm text-muted-foreground">{p.difficulty} • {p.points} pts</p>
                         </div>
                         {p.solvedBy > 0 && (
-                          <CheckCircle className="w-5 h-5 text-neon-green" />
+                          <CheckCircle className="w-5 h-5 text-success" />
                         )}
                       </div>
                     </button>
@@ -427,7 +427,7 @@ export default function ContestDetailPage() {
             {/* Leaderboard */}
             <div className="glass-card p-6 mt-6">
               <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                <Trophy className="w-6 h-6 text-neon-yellow" />
+                <Trophy className="w-6 h-6 text-warning" />
                 Leaderboard
               </h2>
               {contest.leaderboard.length === 0 ? (
@@ -438,7 +438,7 @@ export default function ContestDetailPage() {
                     <div key={entry.userId} className="flex items-center justify-between p-2">
                       <div className="flex items-center gap-2">
                         <span className="font-bold">{entry.badge}</span>
-                        <span className={entry.userId === userId ? 'text-neon-cyan font-bold' : ''}>
+                        <span className={entry.userId === userId ? 'text-primary font-bold' : ''}>
                           {entry.username}
                         </span>
                       </div>
@@ -460,7 +460,7 @@ export default function ContestDetailPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-2xl font-bold">{problemDetails?.title || problem?.title || 'Loading problem...'}</h2>
                   {solvedProblems.has(selectedProblem) && (
-                    <div className="flex items-center gap-2 text-neon-green">
+                    <div className="flex items-center gap-2 text-success">
                       <CheckCircle className="w-6 h-6" />
                       <span className="font-bold">Solved!</span>
                     </div>
@@ -474,17 +474,17 @@ export default function ContestDetailPage() {
                   {problemDetails?.examples && problemDetails.examples.length > 0 && (
                     <div className="mb-6">
                       <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-neon-yellow" />
+                        <Sparkles className="w-5 h-5 text-warning" />
                         Examples:
                       </h3>
                       {problemDetails.examples.map((ex: any, idx: number) => (
                         <div key={idx} className="mb-4 p-4 bg-card rounded-lg border border-border">
                           <p className="text-sm text-muted-foreground mb-2">
-                            <span className="font-bold text-neon-cyan">Input:</span>{' '}
+                            <span className="font-bold text-primary">Input:</span>{' '}
                             <code className="text-foreground bg-background px-2 py-1 rounded">{ex.input}</code>
                           </p>
                           <p className="text-sm text-muted-foreground mb-2">
-                            <span className="font-bold text-neon-green">Output:</span>{' '}
+                            <span className="font-bold text-success">Output:</span>{' '}
                             <code className="text-foreground bg-background px-2 py-1 rounded">{ex.output}</code>
                           </p>
                           {ex.explanation && (

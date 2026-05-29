@@ -40,7 +40,7 @@ export default function ExperienceDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading experience...</p>
         </div>
       </div>
@@ -66,7 +66,7 @@ export default function ExperienceDetailPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-neon-cyan transition-colors"
+          className="mb-6 flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           Back
@@ -80,7 +80,7 @@ export default function ExperienceDetailPage() {
         >
           <div className="flex items-start justify-between mb-4">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold neon-text mb-4">{experience.title}</h1>
+              <h1 className="text-4xl font-bold text-foreground mb-4">{experience.title}</h1>
               <div className="flex items-center gap-4 text-muted-foreground mb-4">
                 <div className="flex items-center gap-2">
                   <Building className="w-5 h-5" />
@@ -99,7 +99,7 @@ export default function ExperienceDetailPage() {
               </div>
             </div>
             <div className={`px-4 py-2 rounded-full text-sm font-bold ${
-              experience.verdict === 'selected' ? 'bg-neon-green/20 text-neon-green' :
+              experience.verdict === 'selected' ? 'bg-success/20 text-success' :
               experience.verdict === 'rejected' ? 'bg-red-500/20 text-red-400' :
               'bg-muted text-muted-foreground'
             }`}>
@@ -126,7 +126,7 @@ export default function ExperienceDetailPage() {
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mt-4">
             {experience.tags.map(tag => (
-              <span key={tag} className="px-3 py-1 bg-neon-purple/20 text-neon-purple rounded-full text-sm">
+              <span key={tag} className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm">
                 {tag}
               </span>
             ))}
@@ -155,15 +155,15 @@ export default function ExperienceDetailPage() {
             transition={{ delay: 0.2 }}
             className="glass-card p-8 mb-6"
           >
-            <h2 className="text-2xl font-bold mb-6 text-neon-cyan">Interview Rounds</h2>
+            <h2 className="text-2xl font-bold mb-6 text-primary">Interview Rounds</h2>
             <div className="space-y-6">
               {experience.rounds.map((round, idx) => (
-                <div key={idx} className="border-l-4 border-neon-cyan pl-6">
+                <div key={idx} className="border-l-4 border-primary pl-6">
                   <div className="flex items-center gap-4 mb-2">
-                    <span className="text-2xl font-bold text-neon-cyan">Round {round.roundNumber}</span>
+                    <span className="text-2xl font-bold text-primary">Round {round.roundNumber}</span>
                     <span className="text-lg font-semibold">{round.roundName}</span>
                     <span className={`px-2 py-1 rounded text-xs font-bold ${
-                      round.difficulty === 'easy' ? 'bg-neon-green/20 text-neon-green' :
+                      round.difficulty === 'easy' ? 'bg-success/20 text-success' :
                       round.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
                       'bg-red-500/20 text-red-400'
                     }`}>
@@ -173,7 +173,7 @@ export default function ExperienceDetailPage() {
                   <p className="text-muted-foreground mb-4">{round.description}</p>
                   {round.questions && round.questions.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="font-semibold mb-2 text-neon-cyan">Questions Asked:</h4>
+                      <h4 className="font-semibold mb-2 text-primary">Questions Asked:</h4>
                       <ul className="list-disc list-inside space-y-1 text-foreground/80">
                         {round.questions.map((q, qIdx) => (
                           <li key={qIdx}>{q}</li>
@@ -183,7 +183,7 @@ export default function ExperienceDetailPage() {
                   )}
                   {round.feedback && (
                     <div className="mt-4 p-4 bg-card rounded-lg">
-                      <h4 className="font-semibold mb-2 text-neon-cyan">Feedback:</h4>
+                      <h4 className="font-semibold mb-2 text-primary">Feedback:</h4>
                       <p className="text-foreground/80">{round.feedback}</p>
                     </div>
                   )}
@@ -201,11 +201,11 @@ export default function ExperienceDetailPage() {
             transition={{ delay: 0.3 }}
             className="glass-card p-8 mb-6"
           >
-            <h2 className="text-2xl font-bold mb-6 text-neon-cyan">Tips & Advice</h2>
+            <h2 className="text-2xl font-bold mb-6 text-primary">Tips & Advice</h2>
             <ul className="space-y-3">
               {experience.tips.map((tip, idx) => (
                 <li key={idx} className="flex items-start gap-3">
-                  <span className="text-neon-cyan mt-1">💡</span>
+                  <span className="text-primary mt-1">💡</span>
                   <span className="text-foreground/80">{tip}</span>
                 </li>
               ))}
@@ -229,7 +229,7 @@ export default function ExperienceDetailPage() {
               <span>{experience.likes}</span>
             </button>
             <button className="flex items-center gap-2 px-4 py-2 bg-card rounded-lg hover:bg-card/80 transition-all">
-              <MessageCircle className="w-5 h-5 text-neon-cyan" />
+              <MessageCircle className="w-5 h-5 text-primary" />
               <span>{experience.comments}</span>
             </button>
           </div>

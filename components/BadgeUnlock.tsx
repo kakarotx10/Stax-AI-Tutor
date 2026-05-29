@@ -100,7 +100,7 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                 className="absolute inset-0"
               >
-                <Sparkles className="w-40 h-40 text-neon-purple opacity-50" />
+                <Sparkles className="w-40 h-40 text-accent opacity-50" />
               </motion.div>
             </div>
           </motion.div>
@@ -129,10 +129,10 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.7 }}
-                className="bg-gradient-to-r from-neon-cyan/20 via-neon-purple/20 to-neon-pink/20 p-6 rounded-lg border border-neon-cyan/50 mb-8"
+                className="bg-gradient-to-r from-primary/20 via-accent/20 to-accent/20 p-6 rounded-lg border border-primary/50 mb-8"
               >
                 <h3 className="text-xl font-bold mb-4 flex items-center justify-center gap-2">
-                  <CheckCircle2 className="w-6 h-6 text-neon-green" />
+                  <CheckCircle2 className="w-6 h-6 text-success" />
                   Achievements Unlocked
                 </h3>
                 <div className="space-y-2 text-left">
@@ -158,17 +158,17 @@ export default function BadgeUnlock({ subtopicName, onClose }: BadgeUnlockProps)
                 className="flex items-center justify-center gap-4 mb-8"
               >
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-neon-cyan">+100</div>
+                  <div className="text-3xl font-bold text-primary">+100</div>
                   <div className="text-sm text-muted-foreground">XP Earned</div>
                 </div>
-                <div className="w-px h-12 bg-neon-cyan/30" />
+                <div className="w-px h-12 bg-primary/30" />
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-neon-purple">1</div>
+                  <div className="text-3xl font-bold text-accent">1</div>
                   <div className="text-sm text-muted-foreground">Badge</div>
                 </div>
-                <div className="w-px h-12 bg-neon-cyan/30" />
+                <div className="w-px h-12 bg-primary/30" />
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-neon-pink">3</div>
+                  <div className="text-3xl font-bold text-accent">3</div>
                   <div className="text-sm text-muted-foreground">Phases</div>
                 </div>
               </motion.div>

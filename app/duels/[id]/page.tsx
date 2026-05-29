@@ -87,7 +87,7 @@ export default function DuelDetailPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading duel...</p>
         </div>
       </div>
@@ -120,17 +120,17 @@ export default function DuelDetailPage() {
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-4xl font-bold neon-text flex items-center gap-3">
-              <Sword className="w-10 h-10 text-neon-cyan" />
+            <h1 className="text-4xl font-bold text-foreground flex items-center gap-3">
+              <Sword className="w-10 h-10 text-primary" />
               Duel Battle
             </h1>
             <div className="flex items-center gap-4">
               <div className="glass-card px-4 py-2">
-                <Clock className="w-5 h-5 inline mr-2 text-neon-purple" />
+                <Clock className="w-5 h-5 inline mr-2 text-accent" />
                 <span className="font-bold">{Math.floor(timeElapsed / 60)}:{(timeElapsed % 60).toString().padStart(2, '0')}</span>
               </div>
               <div className="glass-card px-4 py-2">
-                <Trophy className="w-5 h-5 inline mr-2 text-neon-yellow" />
+                <Trophy className="w-5 h-5 inline mr-2 text-warning" />
                 <span className="font-bold">{duel.xpReward} XP</span>
               </div>
             </div>
@@ -140,27 +140,27 @@ export default function DuelDetailPage() {
           <div className="glass-card p-6 mb-6">
             <div className="flex items-center justify-around">
               <div className="text-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center text-3xl font-bold mb-2 mx-auto">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-3xl font-bold mb-2 mx-auto">
                   {isChallenger ? 'You' : opponentName.charAt(0)}
                 </div>
                 <p className="font-bold text-lg">{isChallenger ? 'You' : opponentName}</p>
                 {mySolution && (
                   <div className="mt-2 flex items-center gap-2 justify-center">
-                    <CheckCircle className="w-5 h-5 text-neon-green" />
-                    <span className="text-sm text-neon-green">Submitted</span>
+                    <CheckCircle className="w-5 h-5 text-success" />
+                    <span className="text-sm text-success">Submitted</span>
                   </div>
                 )}
               </div>
-              <div className="text-4xl font-bold text-neon-cyan">VS</div>
+              <div className="text-4xl font-bold text-primary">VS</div>
               <div className="text-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-neon-green to-neon-yellow flex items-center justify-center text-3xl font-bold mb-2 mx-auto">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-success to-warning flex items-center justify-center text-3xl font-bold mb-2 mx-auto">
                   {!isChallenger ? 'You' : opponentName.charAt(0)}
                 </div>
                 <p className="font-bold text-lg">{opponentName}</p>
                 {opponentSolution && (
                   <div className="mt-2 flex items-center gap-2 justify-center">
-                    <CheckCircle className="w-5 h-5 text-neon-green" />
-                    <span className="text-sm text-neon-green">Submitted</span>
+                    <CheckCircle className="w-5 h-5 text-success" />
+                    <span className="text-sm text-success">Submitted</span>
                   </div>
                 )}
               </div>
@@ -179,8 +179,8 @@ export default function DuelDetailPage() {
                   <h3 className="font-bold mb-2">Examples:</h3>
                   {(duel.problem as any).examples.map((ex: any, idx: number) => (
                     <div key={idx} className="mb-4 p-4 bg-card rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Input: <code className="text-neon-cyan">{ex.input}</code></p>
-                      <p className="text-sm text-muted-foreground mb-1">Output: <code className="text-neon-green">{ex.output}</code></p>
+                      <p className="text-sm text-muted-foreground mb-1">Input: <code className="text-primary">{ex.input}</code></p>
+                      <p className="text-sm text-muted-foreground mb-1">Output: <code className="text-success">{ex.output}</code></p>
                       {ex.explanation && <p className="text-sm text-muted-foreground/80 mt-2">{ex.explanation}</p>}
                     </div>
                   ))}
@@ -237,7 +237,7 @@ export default function DuelDetailPage() {
             >
               <h3 className="text-2xl font-bold mb-4 text-center">
                 {duel.winnerId === userId ? (
-                  <span className="text-neon-green">🎉 Victory! 🎉</span>
+                  <span className="text-success">🎉 Victory! 🎉</span>
                 ) : (
                   <span className="text-muted-foreground">Defeat</span>
                 )}

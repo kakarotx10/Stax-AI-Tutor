@@ -56,7 +56,7 @@ export default function CountdownTimer({ endDate, onComplete, className = '' }: 
       animate={{ scale: timeRemaining < 60000 ? [1, 1.05, 1] : 1 }}
       transition={{ duration: 1, repeat: timeRemaining < 60000 ? Infinity : 0 }}
     >
-      <Clock className={`w-6 h-6 ${timeRemaining < 300000 ? 'text-red-500' : 'text-neon-purple'}`} />
+      <Clock className={`w-6 h-6 ${timeRemaining < 300000 ? 'text-red-500' : 'text-accent'}`} />
       <div className="flex items-center gap-2">
         {days > 0 && (
           <>

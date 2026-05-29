@@ -5,8 +5,10 @@ import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { ArrowRight, Mail, LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Label } from '@/components/ui/label';
 
 function LoginForm() {
   const router = useRouter();
@@ -37,38 +39,55 @@ function LoginForm() {
 
   return (
     <>
-      <h2 className="mb-6 text-h4 text-foreground">Sign in</h2>
+      <div className="mb-6">
+        <p className="text-caption font-semibold uppercase text-primary">Welcome back</p>
+        <h2 className="mt-2 text-h3 text-foreground">Sign in to Stax</h2>
+        <p className="mt-2 text-body-sm text-muted-foreground">
+          Continue your learning dashboard and saved practice sessions.
+        </p>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="mb-1 block text-body-sm font-medium text-foreground">
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-foreground">
             Email
-          </label>
-          <Input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          </Label>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="email"
+              type="email"
+              required
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         </div>
-        <div>
-          <label htmlFor="password" className="mb-1 block text-body-sm font-medium text-foreground">
+        <div className="space-y-2">
+          <Label htmlFor="password" className="text-foreground">
             Password
-          </label>
-          <Input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          </Label>
+          <div className="relative">
+            <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              id="password"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="pl-9"
+            />
+          </div>
         </div>
         <Button
           type="submit"
-          disabled={loading}
+          loading={loading}
           className="w-full"
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          Sign in
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </form>
       <p className="mt-6 text-center text-body-sm text-muted-foreground">

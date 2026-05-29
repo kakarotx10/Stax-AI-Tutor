@@ -90,7 +90,7 @@ export default function ContestCompletePage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-neon-cyan border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <p className="text-muted-foreground">Loading results...</p>
         </div>
       </div>
@@ -110,9 +110,9 @@ export default function ContestCompletePage() {
             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             className="inline-block mb-6"
           >
-            <Trophy className="w-32 h-32 text-neon-yellow drop-shadow-card" />
+            <Trophy className="w-32 h-32 text-warning drop-shadow-card" />
           </motion.div>
-          <h1 className="text-5xl font-bold neon-text mb-4">Contest Completed!</h1>
+          <h1 className="text-5xl font-bold text-foreground mb-4">Contest Completed!</h1>
           <p className="text-2xl text-muted-foreground">{contest?.title}</p>
         </motion.div>
 
@@ -123,7 +123,7 @@ export default function ContestCompletePage() {
             transition={{ delay: 0.2 }}
             className="glass-card p-6 text-center"
           >
-            <div className="text-5xl font-bold text-neon-yellow mb-2">#{userRank}</div>
+            <div className="text-5xl font-bold text-warning mb-2">#{userRank}</div>
             <div className="text-muted-foreground">Your Rank</div>
           </motion.div>
 
@@ -133,7 +133,7 @@ export default function ContestCompletePage() {
             transition={{ delay: 0.3 }}
             className="glass-card p-6 text-center"
           >
-            <div className="text-5xl font-bold text-neon-green mb-2">{xpEarned}</div>
+            <div className="text-5xl font-bold text-success mb-2">{xpEarned}</div>
             <div className="text-muted-foreground">XP Earned</div>
           </motion.div>
 
@@ -143,7 +143,7 @@ export default function ContestCompletePage() {
             transition={{ delay: 0.4 }}
             className="glass-card p-6 text-center"
           >
-            <div className="text-5xl font-bold text-neon-cyan mb-2">{problemsSolved}</div>
+            <div className="text-5xl font-bold text-primary mb-2">{problemsSolved}</div>
             <div className="text-muted-foreground">Problems Solved</div>
           </motion.div>
         </div>
@@ -154,13 +154,13 @@ export default function ContestCompletePage() {
           transition={{ delay: 0.5 }}
           className="glass-card p-8 text-center mb-8"
         >
-          <Sparkles className="w-16 h-16 text-neon-purple mx-auto mb-4" />
+          <Sparkles className="w-16 h-16 text-accent mx-auto mb-4" />
           <h2 className="text-3xl font-bold mb-4">Congratulations!</h2>
           <p className="text-muted-foreground text-lg mb-6">
             You've completed the contest! Your performance has been recorded and XP has been added to your profile.
           </p>
           {userRank <= 3 && (
-            <div className="flex items-center justify-center gap-2 text-neon-yellow text-xl font-bold">
+            <div className="flex items-center justify-center gap-2 text-warning text-xl font-bold">
               <Award className="w-6 h-6" />
               <span>Top {userRank} Finish!</span>
             </div>

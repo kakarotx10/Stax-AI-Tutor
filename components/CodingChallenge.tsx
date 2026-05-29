@@ -10,6 +10,10 @@ import { DOMAINS } from '@/lib/subjects'
 import { saveUserAttempt, saveUserProgress } from '@/lib/userAttempts'
 import FrontendEditor from './FrontendEditor'
 import MonacoEditor from './MonacoEditor'
+import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
+import { NativeSelect } from '@/components/ui/native-select'
 
 /**
  * Render text that contains backtick-wrapped inline code (`like this`) into
@@ -26,7 +30,7 @@ function InlineMarkdown({ text }: { text: string }) {
         part.startsWith('`') && part.endsWith('`') ? (
           <code
             key={i}
-            className="rounded-[4px] border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground"
+            className="rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[0.85em] text-foreground"
           >
             {part.slice(1, -1)}
           </code>
@@ -492,26 +496,17 @@ public class Solution {
   // Show FrontendEditor for frontend/backend subjects
   if (isFrontendBackend) {
     if (loading) {
-      return (
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          >
-            <Loader2 className="h-8 w-8 text-primary" />
-          </motion.div>
-        </div>
-      )
+      return <LoadingState label="Loading question..." />
     }
 
     if (!frontendQuestion) {
       return (
-        <div className="glass-card p-8 text-center">
-          <p className="text-red-400">Failed to load question</p>
-          <button onClick={fetchFrontendBackendQuestion} className="btn-primary mt-4">
-            Retry
-          </button>
-        </div>
+        <EmptyState
+          icon={AlertCircle}
+          title="Failed to load question"
+          description="Try loading the frontend challenge again."
+          action={<Button onClick={fetchFrontendBackendQuestion}>Retry</Button>}
+        />
       )
     }
 
@@ -532,26 +527,17 @@ public class Solution {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-        >
-          <Loader2 className="h-8 w-8 text-primary" />
-        </motion.div>
-      </div>
-    )
+    return <LoadingState label="Loading problem..." />
   }
 
   if (!problem) {
     return (
-      <div className="surface-card p-8 text-center">
-        <p className="text-body-sm text-destructive">Failed to load problem.</p>
-        <button onClick={fetchProblem} className="btn-primary mt-4">
-          Retry
-        </button>
-      </div>
+      <EmptyState
+        icon={AlertCircle}
+        title="Failed to load problem"
+        description="Try loading this coding challenge again."
+        action={<Button onClick={fetchProblem}>Retry</Button>}
+      />
     )
   }
 
@@ -567,10 +553,10 @@ public class Solution {
             <span
               className={
                 difficulty === 'Basic'
-                  ? 'inline-flex items-center rounded-md border border-success/25 bg-success/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success'
+                  ? 'inline-flex items-center rounded-md border border-success/25 bg-success/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-success'
                   : difficulty === 'Medium'
                   ? 'inline-flex items-center rounded-md border border-warning/25 bg-warning/15 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-warning'
-                  : 'inline-flex items-center rounded-md border border-destructive/25 bg-destructive/12 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-destructive'
+                  : 'inline-flex items-center rounded-md border border-destructive/25 bg-destructive/10 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.04em] text-destructive'
               }
             >
               {difficulty}
@@ -578,16 +564,16 @@ public class Solution {
             <span className="text-caption text-muted-foreground">{unit}</span>
           </div>
         </div>
-        <button
+        <Button
           onClick={() =>
             setDifficulty(
               difficulty === 'Basic' ? 'Medium' : difficulty === 'Medium' ? 'Advanced' : 'Basic'
             )
           }
-          className="btn-secondary"
+          variant="secondary"
         >
           Change difficulty
-        </button>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -617,7 +603,7 @@ public class Solution {
               {problem.examples.map((ex, idx) => (
                 <div
                   key={idx}
-                  className="rounded-[8px] border border-border bg-surface-1 p-4"
+                  className="rounded-xl border border-border bg-surface-1 p-4"
                 >
                   <p className="mb-1 text-eyebrow uppercase text-muted-foreground">
                     Example {idx + 1}
@@ -627,7 +613,7 @@ public class Solution {
                       <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
                         Input
                       </p>
-                      <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                      <pre className="mt-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                         {ex.input}
                       </pre>
                     </div>
@@ -635,7 +621,7 @@ public class Solution {
                       <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
                         Output
                       </p>
-                      <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                      <pre className="mt-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                         {ex.output}
                       </pre>
                     </div>
@@ -669,7 +655,7 @@ public class Solution {
                 {problem.testCases.map((testCase, idx) => (
                   <div
                     key={idx}
-                    className="rounded-[8px] border border-border bg-surface-1 p-4"
+                    className="rounded-xl border border-border bg-surface-1 p-4"
                   >
                     <p className="mb-2 flex items-center gap-2 text-eyebrow uppercase text-muted-foreground">
                       <span>Case {String(idx + 1).padStart(2, '0')}</span>
@@ -683,7 +669,7 @@ public class Solution {
                         <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
                           Input
                         </p>
-                        <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                        <pre className="mt-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                           {testCase.input}
                         </pre>
                       </div>
@@ -691,7 +677,7 @@ public class Solution {
                         <p className="text-caption font-medium uppercase tracking-[0.04em] text-muted-foreground">
                           Expected
                         </p>
-                        <pre className="mt-1 overflow-x-auto rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                        <pre className="mt-1 overflow-x-auto rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                           {testCase.output}
                         </pre>
                       </div>
@@ -724,23 +710,23 @@ public class Solution {
         <div className="min-w-0 space-y-6">
           {/* Language Selector + Hint */}
           <div className="flex items-center gap-3">
-            <select
+            <NativeSelect
               value={language}
               onChange={(e) => {
                 setLanguage(e.target.value)
                 setCode(languageTemplates[e.target.value])
               }}
-              className="h-10 rounded-md border border-border bg-surface-1 px-3 text-body-sm text-foreground shadow-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+              className="w-36"
               aria-label="Select language"
             >
               <option value="python">Python</option>
               <option value="cpp">C++</option>
               <option value="java">Java</option>
-            </select>
-            <button
+            </NativeSelect>
+            <Button
               onClick={handleGetHint}
               disabled={hintLoading}
-              className="btn-secondary"
+              variant="secondary"
             >
               {hintLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -748,11 +734,11 @@ public class Solution {
                 <Lightbulb className="h-4 w-4" />
               )}
               Get AI hint
-            </button>
+            </Button>
           </div>
 
           {/* Editor */}
-          <div className="overflow-hidden rounded-[10px] border border-border bg-card shadow-card">
+          <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
             <MonacoEditor
               height="500px"
               language={language}
@@ -780,16 +766,16 @@ public class Solution {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="glass-card p-6 border border-neon-cyan/50"
+                className="surface-card border-primary/40 p-6"
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <Lightbulb className="w-6 h-6 text-neon-cyan" />
+                  <Lightbulb className="w-6 h-6 text-primary" />
                   <h3 className="text-xl font-bold">AI Hint</h3>
                 </div>
                 <div className="space-y-3">
                   <div>
                     <span className="text-sm text-muted-foreground">Problematic Line:</span>
-                    <span className="ml-2 text-neon-cyan font-bold">Line {hint.problematicLine}</span>
+                    <span className="ml-2 text-primary font-bold">Line {hint.problematicLine}</span>
                   </div>
                   <div>
                     <span className="text-sm text-muted-foreground">Concept:</span>
@@ -798,11 +784,11 @@ public class Solution {
                   <div className="bg-background p-4 rounded-lg">
                     <p className="text-foreground/80">{hint.explanation}</p>
                   </div>
-                  <div className="bg-neon-cyan/10 p-4 rounded-lg border border-neon-cyan/30">
-                    <p className="text-neon-cyan font-bold">💡 Hint: {hint.hint}</p>
+                  <div className="rounded-xl border border-primary/30 bg-primary/10 p-4">
+                    <p className="font-bold text-primary">Hint: {hint.hint}</p>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    Review: <span className="text-neon-purple">{hint.reviewConcept}</span>
+                    Review: <span className="text-accent">{hint.reviewConcept}</span>
                   </div>
                 </div>
               </motion.div>
@@ -811,7 +797,7 @@ public class Solution {
 
           {/* Progressive Hints */}
           {problem.hints.length > 0 && (
-            <div className="glass-card p-4">
+            <div className="surface-card p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-muted-foreground">Progressive Hints</span>
                 <span className="text-xs text-muted-foreground/80">
@@ -824,7 +810,7 @@ public class Solution {
               {currentHintIndex < problem.hints.length - 1 && (
                 <button
                   onClick={handleNextHint}
-                  className="text-sm text-neon-cyan hover:underline"
+                  className="text-sm text-primary hover:underline"
                 >
                   Show next hint →
                 </button>
@@ -833,10 +819,11 @@ public class Solution {
           )}
 
           {/* Run Button */}
-          <button
+          <Button
             onClick={handleRun}
             disabled={executing || !code.trim()}
-            className="btn-primary w-full flex items-center justify-center gap-2 text-lg py-4 disabled:opacity-50"
+            className="w-full"
+            size="lg"
           >
             {executing ? (
               <>
@@ -849,7 +836,7 @@ public class Solution {
                 Run Code
               </>
             )}
-          </button>
+          </Button>
 
           {/* Test Results */}
           <AnimatePresence>
@@ -866,13 +853,13 @@ public class Solution {
                 <div className="space-y-3">
                   {testResults.map((result, idx) => {
                     const tone = result.passed
-                      ? 'border-success/25 bg-success/8'
-                      : 'border-destructive/25 bg-destructive/8'
+                      ? 'border-success/25 bg-success/10'
+                      : 'border-destructive/25 bg-destructive/10'
                     const accent = result.passed ? 'text-success' : 'text-destructive'
                     return (
                       <div
                         key={idx}
-                        className={`min-w-0 overflow-hidden rounded-[8px] border p-4 ${tone}`}
+                        className={`min-w-0 overflow-hidden rounded-xl border p-4 ${tone}`}
                       >
                         <div className="mb-3 flex flex-wrap items-center gap-2">
                           <span
@@ -900,7 +887,7 @@ public class Solution {
                               Input
                             </dt>
                             <dd>
-                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                                 {result.input}
                               </pre>
                             </dd>
@@ -910,7 +897,7 @@ public class Solution {
                               Expected
                             </dt>
                             <dd>
-                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
+                              <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-border bg-background px-3 py-2 font-mono text-caption text-foreground">
                                 {result.expected}
                               </pre>
                             </dd>
@@ -921,14 +908,14 @@ public class Solution {
                                 Got
                               </dt>
                               <dd>
-                                <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-[6px] border border-destructive/25 bg-destructive/8 px-3 py-2 font-mono text-caption text-destructive">
+                                <pre className="mt-1 max-w-full overflow-x-auto whitespace-pre-wrap break-all rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2 font-mono text-caption text-destructive">
                                   {result.got}
                                 </pre>
                               </dd>
                             </div>
                           )}
                           {!result.passed && result.error && (
-                            <div className="min-w-0 rounded-[6px] border border-destructive/25 bg-destructive/8 p-3">
+                            <div className="min-w-0 rounded-lg border border-destructive/25 bg-destructive/10 p-3">
                               <p className={`text-caption font-medium uppercase tracking-[0.04em] ${accent}`}>
                                 Error
                               </p>
@@ -951,22 +938,22 @@ public class Solution {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="glass-card p-6 border-2 border-neon-green"
+              className="surface-card border-success/50 p-6"
             >
               <div className="flex items-center gap-3 mb-4">
-                <Trophy className="w-8 h-8 text-neon-green" />
-                <h3 className="text-2xl font-bold text-neon-green">Challenge Complete!</h3>
+                <Trophy className="w-8 h-8 text-success" />
+                <h3 className="text-2xl font-bold text-success">Challenge Complete!</h3>
               </div>
               <p className="text-foreground/80 mb-4">
                 Great job! You've mastered the {difficulty} level for {unit}.
               </p>
-              <button
+              <Button
                 onClick={handleNextDifficulty}
-                className="btn-primary w-full flex items-center justify-center gap-2"
+                className="w-full"
               >
                 {difficulty === 'Advanced' ? 'Complete Unit' : `Try ${difficulty === 'Basic' ? 'Medium' : 'Advanced'} Level`}
                 <ArrowRight className="w-5 h-5" />
-              </button>
+              </Button>
             </motion.div>
           )}
         </div>

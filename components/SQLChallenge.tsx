@@ -304,7 +304,7 @@ export default function SQLChallenge({
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
         >
-          <Loader2 className="w-12 h-12 text-neon-cyan" />
+          <Loader2 className="w-12 h-12 text-primary" />
         </motion.div>
       </div>
     )
@@ -326,10 +326,10 @@ export default function SQLChallenge({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold neon-text mb-2">{question.title}</h1>
+          <h1 className="text-4xl font-bold text-foreground mb-2">{question.title}</h1>
           <div className="flex items-center gap-4">
             <span className={`px-4 py-1 rounded-full font-bold ${
-              difficulty === 'Basic' ? 'bg-neon-green/20 text-neon-green' :
+              difficulty === 'Basic' ? 'bg-success/20 text-success' :
               difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' :
               'bg-red-500/20 text-red-500'
             }`}>
@@ -343,15 +343,15 @@ export default function SQLChallenge({
       {/* Problem Description */}
       <div className="glass-card p-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Database className="w-6 h-6 text-neon-cyan" />
+          <Database className="w-6 h-6 text-primary" />
           Problem Description
         </h2>
         <p className="text-foreground/80 mb-4">{question.description}</p>
 
         {/* Hints */}
         {question.hints && question.hints.length > 0 && (
-          <div className="mt-4 p-4 bg-neon-purple/10 border border-neon-purple/30 rounded-lg">
-            <h3 className="text-lg font-semibold text-neon-purple mb-2">Hints:</h3>
+          <div className="mt-4 p-4 bg-accent/10 border border-accent/30 rounded-lg">
+            <h3 className="text-lg font-semibold text-accent mb-2">Hints:</h3>
             <ul className="list-disc list-inside space-y-1 text-foreground/80">
               {question.hints.map((hint, idx) => (
                 <li key={idx}>{hint}</li>
@@ -365,7 +365,7 @@ export default function SQLChallenge({
       <div className="glass-card p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Database className="w-6 h-6 text-neon-cyan" />
+            <Database className="w-6 h-6 text-primary" />
             SQL Query Editor
           </h2>
           <div className="flex gap-2">
@@ -398,7 +398,7 @@ export default function SQLChallenge({
         </div>
 
         {/* Monaco Editor */}
-        <div className="border border-neon-cyan/30 rounded-lg overflow-hidden">
+        <div className="border border-primary/30 rounded-lg overflow-hidden">
           <MonacoEditor
             height="400px"
             language="sql"
@@ -466,7 +466,7 @@ export default function SQLChallenge({
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6 text-neon-green" />
+                <CheckCircle2 className="w-6 h-6 text-success" />
                 Query Results
               </h2>
               <span className="text-muted-foreground">{results.length} row{results.length !== 1 ? 's' : ''}</span>
@@ -476,11 +476,11 @@ export default function SQLChallenge({
             <div className="overflow-x-auto">
               <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b border-neon-cyan/30">
+                  <tr className="border-b border-primary/30">
                     {Object.keys(results[0] || {}).map((key) => (
                       <th
                         key={key}
-                        className="px-4 py-2 text-left text-neon-cyan font-semibold"
+                        className="px-4 py-2 text-left text-primary font-semibold"
                       >
                         {key}
                       </th>
@@ -491,7 +491,7 @@ export default function SQLChallenge({
                   {results.map((row, idx) => (
                     <tr
                       key={idx}
-                      className="border-b border-border/30 hover:bg-neon-cyan/5 transition-colors"
+                      className="border-b border-border/30 hover:bg-primary/5 transition-colors"
                     >
                       {Object.values(row).map((value: any, colIdx) => (
                         <td key={colIdx} className="px-4 py-2 text-foreground/80">
@@ -512,12 +512,12 @@ export default function SQLChallenge({
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="glass-card p-6 bg-neon-green/10 border border-neon-green/50"
+          className="glass-card p-6 bg-success/10 border border-success/50"
         >
           <div className="flex items-center gap-3">
-            <CheckCircle2 className="w-8 h-8 text-neon-green" />
+            <CheckCircle2 className="w-8 h-8 text-success" />
             <div>
-              <h3 className="text-xl font-bold text-neon-green">Query Executed Successfully!</h3>
+              <h3 className="text-xl font-bold text-success">Query Executed Successfully!</h3>
               <p className="text-foreground/80">Great job! Your SQL query returned the correct results.</p>
             </div>
           </div>

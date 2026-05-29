@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Stax AI — Brand</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #07070A;
+    --bg-elev: #0E0E14;
+    --bg-card: #12121A;
+    --border: #1F1F2B;
+    --text: #F5F5F7;
+    --text-dim: #8B8B98;
+    --text-faint: #4A4A57;
+    --accent: #0A84FF;
+    --accent-light: #5CC8FF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: 'Geist', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { padding: 80px 48px 120px; max-width: 1280px; margin: 0 auto; }
+
+  .eyebrow {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 24px;
+  }
+  h1 .accent { color: var(--accent); }
+
+  .lede {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 560px;
+    line-height: 1.5;
+    margin-bottom: 80px;
+  }
+
+  .section { margin-bottom: 80px; }
+  .section-title {
+    font-family: 'Geist Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Hero showcase */
+  .hero {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(10,132,255,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .hero img { position: relative; width: 480px; max-width: 100%; }
+
+  /* Asset grid */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .tile {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px 32px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 220px;
+    transition: border-color 0.2s;
+  }
+  .tile:hover { border-color: #2A2A3A; }
+  .tile.light { background: #F5F5F7; border-color: #E5E5EA; }
+  .tile.checker {
+    background-color: var(--bg-card);
+    background-image:
+      linear-gradient(45deg, #1A1A24 25%, transparent 25%),
+      linear-gradient(-45deg, #1A1A24 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #1A1A24 75%),
+      linear-gradient(-45deg, transparent 75%, #1A1A24 75%);
+    background-size: 16px 16px;
+    background-position: 0 0, 0 8px, 8px -8px, 8px 0;
+  }
+
+  .tile-asset {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+  .tile-label {
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    text-align: center;
+    width: 100%;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .tile.light .tile-label { color: #8B8B98; border-color: #E5E5EA; }
+
+  /* Scale row */
+  .scale-row {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 32px;
+  }
+  .scale-item { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .scale-item .px { font-family: 'Geist Mono', monospace; font-size: 11px; color: var(--text-faint); }
+
+  /* Colors */
+  .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .color-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .color-swatch { height: 140px; }
+  .color-meta { padding: 20px 24px; }
+  .color-name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .color-hex { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--text-dim); }
+
+  /* Mockup row */
+  .mockup-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+  .mockup {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .mockup-browser {
+    background: #0A0A10;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mockup-browser .dot { width: 10px; height: 10px; border-radius: 50%; background: #2A2A3A; }
+  .mockup-browser .url {
+    margin-left: 12px;
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+  .mockup-body { padding: 32px; min-height: 220px; }
+  .mockup-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .mockup-nav img { height: 28px; }
+  .mockup-nav-links {
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .mockup-cta {
+    background: var(--accent);
+    color: white;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .mockup-hero {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .mockup-sub {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .phone {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .phone-frame {
+    width: 180px;
+    aspect-ratio: 9 / 19;
+    background: #000;
+    border-radius: 28px;
+    border: 2px solid #1F1F2B;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .phone-frame::before {
+    content: '';
+    width: 60px;
+    height: 4px;
+    background: #1F1F2B;
+    border-radius: 4px;
+    position: absolute;
+    top: 8px;
+  }
+  .phone-frame img { width: 56px; margin-top: 32px; }
+  .phone-name { color: white; font-size: 11px; font-weight: 500; margin-top: 12px; }
+
+  /* Spacing helpers */
+  .row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'Geist Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+
+  <div class="eyebrow">Brand System / v1.0</div>
+  <h1>Stax <span class="accent">AI</span></h1>
+  <p class="lede">A complete identity system for an AI-powered interview assistant and meeting copilot. Built for clarity at every scale — from 16px favicon to billboard.</p>
+
+  <!-- HERO -->
+  <div class="section">
+    <div class="section-title">01 — Primary Lockup</div>
+    <div class="hero">
+      <img src="logo-horizontal-dark.svg" alt="Stax AI primary logo"/>
+    </div>
+  </div>
+
+  <!-- MARKS -->
+  <div class="section">
+    <div class="section-title">02 — Symbol</div>
+    <div class="grid grid-3">
+      <div class="tile">
+        <div class="tile-asset"><img src="mark.svg" width="160" alt="Mark on dark"/></div>
+        <div class="tile-label">Primary · Gradient</div>
+      </div>
+      <div class="tile">
+        <div class="tile-asset"><img src="mark-mono-white.svg" width="160" alt="Mark mono white"/></div>
+        <div class="tile-label">Mono · Dark BG</div>
+      </div>
+      <div class="tile light">
+        <div class="tile-asset"><img src="mark-mono-black.svg" width="160" alt="Mark mono black"/></div>
+        <div class="tile-label">Mono · Light BG</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCALE -->
+  <div class="section">
+    <div class="section-title">03 — Scales Cleanly</div>
+    <div class="scale-row">
+      <div class="scale-item"><img src="mark.svg" width="160"/><div class="px">160px</div></div>
+      <div class="scale-item"><img src="mark.svg" width="96"/><div class="px">96px</div></div>
+      <div class="scale-item"><img src="mark.svg" width="64"/><div class="px">64px</div></div>
+      <div class="scale-item"><img src="mark.svg" width="40"/><div class="px">40px</div></div>
+      <div class="scale-item"><img src="favicon.svg" width="24"/><div class="px">24px</div></div>
+      <div class="scale-item"><img src="favicon.svg" width="16"/><div class="px">16px</div></div>
+    </div>
+  </div>
+
+  <!-- LOCKUPS -->
+  <div class="section">
+    <div class="section-title">04 — Lockups</div>
+    <div class="grid grid-2">
+      <div class="tile">
+        <div class="tile-asset"><img src="logo-horizontal-dark.svg" width="280"/></div>
+        <div class="tile-label">Horizontal · Dark</div>
+      </div>
+      <div class="tile light">
+        <div class="tile-asset"><img src="logo-horizontal-light.svg" width="280"/></div>
+        <div class="tile-label">Horizontal · Light</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP ICONS -->
+  <div class="section">
+    <div class="section-title">05 — App Icon & Social</div>
+    <div class="grid grid-4">
+      <div class="tile">
+        <div class="tile-asset"><img src="app-icon.svg" width="180"/></div>
+        <div class="tile-label">App Icon · 1024</div>
+      </div>
+      <div class="tile">
+        <div class="tile-asset"><img src="social-avatar.svg" width="180" style="border-radius:50%"/></div>
+        <div class="tile-label">Social · Circle</div>
+      </div>
+      <div class="tile">
+        <div class="tile-asset"><img src="favicon.svg" width="64"/></div>
+        <div class="tile-label">Favicon · 32</div>
+      </div>
+      <div class="tile checker">
+        <div class="tile-asset"><img src="mark-transparent.svg" width="120"/></div>
+        <div class="tile-label">Mark · Transparent</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLORS -->
+  <div class="section">
+    <div class="section-title">06 — Color</div>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background:#0A84FF"></div>
+        <div class="color-meta"><div class="color-name">Electric</div><div class="color-hex">#0A84FF</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#5CC8FF"></div>
+        <div class="color-meta"><div class="color-name">Signal</div><div class="color-hex">#5CC8FF</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#0B0B0F"></div>
+        <div class="color-meta"><div class="color-name">Obsidian</div><div class="color-hex">#0B0B0F</div></div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background:#F5F5F7"></div>
+        <div class="color-meta"><div class="color-name">Paper</div><div class="color-hex">#F5F5F7</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IN CONTEXT -->
+  <div class="section">
+    <div class="section-title">07 — In Context</div>
+    <div class="mockup-grid">
+      <div class="mockup">
+        <div class="mockup-browser">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <div class="url">stax.ai</div>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-nav">
+            <img src="logo-horizontal-dark.svg" alt="logo"/>
+            <div class="mockup-nav-links">
+              <span>Product</span><span>Pricing</span><span>Docs</span>
+              <span class="mockup-cta">Get started</span>
+            </div>
+          </div>
+          <div class="mockup-hero">Your AI copilot for<br/>every interview.</div>
+          <div class="mockup-sub">Real-time coaching, instant answers, and a transcript that actually understands the conversation.</div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phone-frame">
+          <img src="app-icon.svg" alt="app"/>
+          <div class="phone-name">Stax AI</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>Stax AI · Brand v1.0</span>
+    <span>The symbol is the conversation.</span>
+  </div>
+
+</body>
+</html>

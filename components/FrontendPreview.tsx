@@ -83,19 +83,19 @@ export default function FrontendPreview({ html, css, javascript, react, language
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Monitor className="w-5 h-5 text-neon-cyan" />
-          <h3 className="text-xl font-bold text-neon-cyan">Live Preview</h3>
+          <Monitor className="w-5 h-5 text-primary" />
+          <h3 className="text-xl font-bold text-primary">Live Preview</h3>
         </div>
         <button
           onClick={refreshPreview}
-          className="px-4 py-2 bg-neon-cyan/20 hover:bg-neon-cyan/30 text-neon-cyan rounded-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg flex items-center gap-2 transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
         </button>
       </div>
       
-      <div className="border border-neon-cyan/30 rounded-lg overflow-hidden bg-white">
+      <div className="border border-primary/30 rounded-lg overflow-hidden bg-white">
         <iframe
           key={iframeKey}
           srcDoc={previewHtml}

@@ -9,6 +9,8 @@ import { Domain } from '@/lib/subjects'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { Button } from '@/components/ui/Button'
+import { EmptyState } from '@/components/ui/empty-state'
+import { LoadingState } from '@/components/ui/loading-state'
 import {
   CompetitionHeader,
   DomainFilterBar,
@@ -149,7 +151,7 @@ export default function DuelsPage() {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="rounded-[10px] border border-border bg-card p-6 shadow-card sm:p-8"
+                  className="rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8"
                 >
                   <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
                     <div className="text-left">
@@ -162,22 +164,22 @@ export default function DuelsPage() {
                       </p>
 
                       <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                        <div className="rounded-[8px] border border-border bg-surface-1 p-3">
+                        <div className="rounded-xl border border-border bg-surface-1/80 p-3">
                           <p className="text-caption uppercase text-muted-foreground">Mode</p>
                           <p className="mt-1 font-semibold text-foreground">1v1</p>
                         </div>
-                        <div className="rounded-[8px] border border-border bg-surface-1 p-3">
+                        <div className="rounded-xl border border-border bg-surface-1/80 p-3">
                           <p className="text-caption uppercase text-muted-foreground">Reward</p>
                           <p className="mt-1 font-semibold text-warning">XP</p>
                         </div>
-                        <div className="rounded-[8px] border border-border bg-surface-1 p-3">
+                        <div className="rounded-xl border border-border bg-surface-1/80 p-3">
                           <p className="text-caption uppercase text-muted-foreground">Match</p>
                           <p className="mt-1 font-semibold text-success">Live</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="rounded-[8px] border border-border bg-surface-1 p-4 shadow-soft sm:p-5">
+                    <div className="rounded-2xl border border-border bg-surface-1/80 p-4 shadow-soft sm:p-5">
                       <DomainFilterBar
                         selectedDomain={selectedDomain}
                         onSelect={(domain) => {
@@ -206,7 +208,7 @@ export default function DuelsPage() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="relative overflow-hidden rounded-[10px] border border-border bg-card p-8 text-center shadow-card"
+                  className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 text-center shadow-card"
                 >
                   <div className="absolute inset-0 overflow-hidden">
                     {[...Array(20)].map((_, i) => (
@@ -280,7 +282,7 @@ export default function DuelsPage() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="relative overflow-hidden rounded-[10px] border border-border bg-card p-8 text-center shadow-card"
+                  className="relative overflow-hidden rounded-2xl border border-border bg-card p-8 text-center shadow-card"
                 >
                   <div className="relative z-10">
                     <motion.div
@@ -347,15 +349,9 @@ export default function DuelsPage() {
               className="space-y-4"
             >
               {loading ? (
-                <div className="rounded-[10px] border border-border bg-card p-8 text-center shadow-card">
-                  <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                  <p className="text-muted-foreground">Loading active duels...</p>
-                </div>
+                <LoadingState label="Loading active duels..." variant="skeleton" />
               ) : duels.length === 0 ? (
-                <div className="rounded-[10px] border border-border bg-card p-8 text-center shadow-card">
-                  <Clock className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
-                  <p className="text-muted-foreground">No active duels</p>
-                </div>
+                <EmptyState icon={Clock} title="No active duels" description="Queue for a duel to start a focused head-to-head match." />
               ) : (
                 duels.map((duel) => (
                   <motion.div
@@ -363,7 +359,7 @@ export default function DuelsPage() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     whileHover={{ scale: 1.02 }}
-                    className="cursor-pointer rounded-[10px] border border-border bg-card p-5 shadow-card transition hover:border-primary/60 hover:bg-muted/30"
+                    className="cursor-pointer rounded-2xl border border-border bg-card p-5 shadow-card transition hover:-translate-y-0.5 hover:border-primary/60 hover:bg-muted/40"
                     onClick={() => router.push(`/duels/${duel.id}`)}
                   >
                     <div className="flex items-center justify-between">
@@ -399,22 +395,16 @@ export default function DuelsPage() {
               className="space-y-4"
             >
               {loading ? (
-                <div className="rounded-[10px] border border-border bg-card p-8 text-center shadow-card">
-                  <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                  <p className="text-muted-foreground">Loading duel history...</p>
-                </div>
+                <LoadingState label="Loading duel history..." variant="skeleton" />
               ) : duels.length === 0 ? (
-                <div className="rounded-[10px] border border-border bg-card p-8 text-center shadow-card">
-                  <Trophy className="w-16 h-16 text-muted-foreground/60 mx-auto mb-4" />
-                  <p className="text-muted-foreground">No duel history yet</p>
-                </div>
+                <EmptyState icon={Trophy} title="No duel history yet" description="Completed duels will appear here with rewards and outcomes." />
               ) : (
                 duels.map((duel) => (
                   <motion.div
                     key={duel.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="rounded-[10px] border border-border bg-card p-5 shadow-card"
+                    className="rounded-2xl border border-border bg-card p-5 shadow-card"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">

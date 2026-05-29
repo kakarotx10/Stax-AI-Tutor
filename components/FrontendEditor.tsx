@@ -232,10 +232,10 @@ export default function FrontendEditor({
         >
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold text-neon-cyan mb-2">{question.title}</h2>
+              <h2 className="text-2xl font-bold text-primary mb-2">{question.title}</h2>
               <p className="text-foreground/80 mb-4">{question.description}</p>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-neon-purple">Requirements:</h3>
+                <h3 className="text-lg font-semibold text-accent">Requirements:</h3>
                 <ul className="list-disc list-inside space-y-1 text-foreground/80">
                   {question.requirements.map((req, idx) => (
                     <li key={idx}>{req}</li>
@@ -255,7 +255,7 @@ export default function FrontendEditor({
           </div>
           <button
             onClick={() => setShowHints(!showHints)}
-            className="text-sm text-neon-cyan hover:text-neon-purple transition-colors"
+            className="text-sm text-primary hover:text-accent transition-colors"
           >
             {showHints ? 'Hide' : 'Show'} Hints
           </button>
@@ -263,9 +263,9 @@ export default function FrontendEditor({
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mt-4 p-4 bg-neon-cyan/10 border border-neon-cyan/30 rounded-lg"
+              className="mt-4 p-4 bg-primary/10 border border-primary/30 rounded-lg"
             >
-              <h4 className="font-semibold text-neon-cyan mb-2">Hints:</h4>
+              <h4 className="font-semibold text-primary mb-2">Hints:</h4>
               <ul className="list-disc list-inside space-y-1 text-foreground/80">
                 {question.hints.map((hint, idx) => (
                   <li key={idx}>{hint}</li>
@@ -283,7 +283,7 @@ export default function FrontendEditor({
             onClick={() => setViewMode('code')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'code' 
-                ? 'bg-neon-cyan text-primary-foreground' 
+                ? 'bg-primary text-primary-foreground' 
                 : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -294,7 +294,7 @@ export default function FrontendEditor({
             onClick={() => setViewMode('split')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'split' 
-                ? 'bg-neon-cyan text-primary-foreground' 
+                ? 'bg-primary text-primary-foreground' 
                 : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -304,7 +304,7 @@ export default function FrontendEditor({
             onClick={() => setViewMode('preview')}
             className={`px-4 py-2 rounded-lg transition-all ${
               viewMode === 'preview' 
-                ? 'bg-neon-cyan text-primary-foreground' 
+                ? 'bg-primary text-primary-foreground' 
                 : 'bg-card text-muted-foreground hover:text-foreground'
             }`}
           >
@@ -314,7 +314,7 @@ export default function FrontendEditor({
         </div>
         <button
           onClick={refreshPreview}
-          className="px-4 py-2 bg-neon-purple/20 hover:bg-neon-purple/30 text-neon-purple rounded-lg flex items-center gap-2 transition-all"
+          className="px-4 py-2 bg-accent/20 hover:bg-accent/30 text-accent rounded-lg flex items-center gap-2 transition-all"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh Preview
@@ -340,7 +340,7 @@ export default function FrontendEditor({
                   onClick={() => setActiveTab(tab)}
                   className={`px-4 py-2 flex items-center gap-2 transition-all border-b-2 ${
                     activeTab === tab
-                      ? 'border-neon-cyan text-neon-cyan'
+                      ? 'border-primary text-primary'
                       : 'border-transparent text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -353,7 +353,7 @@ export default function FrontendEditor({
             </div>
 
             {/* Monaco Editor */}
-            <div className="border border-neon-cyan/30 rounded-lg overflow-hidden">
+            <div className="border border-primary/30 rounded-lg overflow-hidden">
               <MonacoEditor
                 height="500px"
                 language={getLanguageForTab(activeTab)}
@@ -381,12 +381,12 @@ export default function FrontendEditor({
           >
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Monitor className="w-5 h-5 text-neon-cyan" />
-                <h3 className="text-xl font-bold text-neon-cyan">Live Preview</h3>
+                <Monitor className="w-5 h-5 text-primary" />
+                <h3 className="text-xl font-bold text-primary">Live Preview</h3>
               </div>
             </div>
             
-            <div className="border border-neon-cyan/30 rounded-lg overflow-hidden bg-white">
+            <div className="border border-primary/30 rounded-lg overflow-hidden bg-white">
               <iframe
                 key={previewKey}
                 srcDoc={generatePreviewHtml()}
@@ -403,7 +403,7 @@ export default function FrontendEditor({
       <div className="flex items-center justify-end gap-4">
         <button
           onClick={handleRun}
-          className="px-6 py-3 bg-neon-purple hover:bg-neon-purple/80 text-foreground rounded-lg font-semibold transition-all flex items-center gap-2"
+          className="px-6 py-3 bg-accent hover:bg-accent/80 text-foreground rounded-lg font-semibold transition-all flex items-center gap-2"
         >
           <Zap className="w-5 h-5" />
           Run Code
@@ -411,13 +411,13 @@ export default function FrontendEditor({
         {!completed && (
           <button
             onClick={handleSubmit}
-            className="px-6 py-3 bg-neon-cyan hover:bg-neon-cyan/80 text-primary-foreground rounded-lg font-semibold transition-all"
+            className="px-6 py-3 bg-primary hover:bg-primary/80 text-primary-foreground rounded-lg font-semibold transition-all"
           >
             Submit Solution
           </button>
         )}
         {completed && (
-          <div className="px-6 py-3 bg-neon-green text-primary-foreground rounded-lg font-semibold">
+          <div className="px-6 py-3 bg-success text-primary-foreground rounded-lg font-semibold">
             ✓ Completed!
           </div>
         )}
